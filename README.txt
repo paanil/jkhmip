@@ -3,11 +3,13 @@ Render-kurssi, harkka
 
 Contents of this file:
 
-ABOUT THIS PROJECT
-LICENSE
+* ABOUT THIS PROJECT
+* LICENSE
+
 
 ABOUT THIS PROJECT
 ==================
+
 
 
 
