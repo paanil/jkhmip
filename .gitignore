@@ -1,5 +1,5 @@
-bin/*
-obj/*
-*.dll
+/bin
+/obj
+/*.dll
 *.depend
 *.layout
