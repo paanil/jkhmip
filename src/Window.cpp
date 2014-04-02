@@ -33,7 +33,7 @@ Window::Window() :
 
 bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsync)
 {
-    // set gl attributes
+    // Set GL attributes.
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -52,7 +52,7 @@ bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsy
         flags |= SDL_WINDOW_FULLSCREEN;
     }
 
-    // create sdl window
+    // Create SDL window.
     window = SDL_CreateWindow(title.c_str(), x, y, w, h, flags);
     if (window == 0)
     {
@@ -60,7 +60,7 @@ bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsy
         return false;
     }
 
-    // create gl context
+    // Create GL context.
     context = SDL_GL_CreateContext(window);
     if (context == 0)
     {
@@ -68,10 +68,10 @@ bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsy
         return false;
     }
 
-    // set vsync on or off
+    // Set vsync on or off.
     SDL_GL_SetSwapInterval(vsync ? 1 : 0);
 
-    // initialize glew
+    // Initialize GLEW (after context is created).
     GLenum error = glewInit();
     if (error != GLEW_NO_ERROR)
     {

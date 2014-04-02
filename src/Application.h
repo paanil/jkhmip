@@ -35,6 +35,7 @@ public:
 
     /// Initializes application.
     /// \param title Title for the application window.
+    /// \return false on fail.
     bool Init(const String &title);
     /// Runs the application. Init must be called
     /// before application can be run.
@@ -43,6 +44,9 @@ public:
 private:
     /// Polls events and handles (some of) them.
     void HandleEvents();
+
+    /// Renders the scene.
+    void Render();
 
 private:
     /// Structure for application settings.
