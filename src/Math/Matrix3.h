@@ -24,10 +24,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Vector3.h"
 
+/// 3x3 Matrix class.
+///
 class Matrix3
 {
 public:
-
+    /// Member data in union.
+    /// data helps doing operations to all elements.
+    /// mat is for operations like transpose.
+    /// mij (where i = row, j = column) are for operations
+    /// that need to be done memory layout independently.
     union
     {
         struct
@@ -40,28 +46,31 @@ public:
             float mat[3][3];
         };
 
-        // Rows are contiguous in memory.
-        struct
-        {
-            float m11, m12, m13;
-            float m21, m22, m23;
-            float m31, m32, m33;
-        };
-
-//        // Columns are contiguous in memory.
+//        // Rows are contiguous in memory.
 //        struct
 //        {
-//            float m11, m21, m31;
-//            float m12, m22, m32;
-//            float m13, m23, m33;
+//            float m11, m12, m13;
+//            float m21, m22, m23;
+//            float m31, m32, m33;
 //        };
+
+        // Columns are contiguous in memory.
+        struct
+        {
+            float m11, m21, m31;
+            float m12, m22, m32;
+            float m13, m23, m33;
+        };
     };
 
+    /// Constructors.
     Matrix3() {}
     Matrix3(const Matrix3 &m) = default;
 
+    /// Assign operator.
     Matrix3 &operator=(const Matrix3 &m) = default;
 
+    /// Basic matrix arithmetic.
     Matrix3 operator+(const Matrix3 &m) const;
     Matrix3 operator-(const Matrix3 &m) const;
     Matrix3 operator*(float t) const;
@@ -71,15 +80,28 @@ public:
     Matrix3 &operator*=(float t);
     Matrix3 &operator/=(float t);
 
+    /// Matrix * matrix multiplication.
+    /// Uses mathematical conventions.
+    /// Example: Combining matrices A and B so that
+    /// matrix A is applied first, then B looks like this:
+    ///     M = B*A
     Matrix3 operator*(const Matrix3 &m) const;
+    /// Matrix * vector multiplication.
+    /// Uses mathematical conventions.
+    /// Example: Apply matrix M to vector v:
+    ///     v' = M*v
     Vector3 operator*(const Vector3 &v) const;
 
+    /// Returns determinant of the matrix.
     float Determinant() const;
+    /// Returns transpose of the matrix.
     Matrix3 Transposed() const;
 
     /* Static functions */
 
+    /// Creates a zero matrix.
     static Matrix3 Zero();
+    /// Creates an identity matrix.
     static Matrix3 Identity();
 
     /// Creates a uniform scale matrix.
@@ -94,6 +116,7 @@ public:
     static Matrix3 Rotation(const Vector3 &axis, float angle);
 };
 
+/// Multily with scalar on the left.
 inline Matrix3 operator*(float t, const Matrix3 &m) { return m * t; }
 
 #endif // __MATRIX3_H__

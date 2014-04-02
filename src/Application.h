@@ -24,19 +24,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Window.h"
 
+/// Application class.
+/// There should be only one instance at a time.
 class Application
 {
 public:
+    /// Constructor and destructor.
     Application();
     ~Application();
 
+    /// Initializes application.
+    /// \param title Title for the application window.
     bool Init(const String &title);
+    /// Runs the application. Init must be called
+    /// before application can be run.
     void Run();
 
 private:
+    /// Polls events and handles (some of) them.
     void HandleEvents();
 
 private:
+    /// Structure for application settings.
     struct Config
     {
         int screenWidth;
@@ -45,9 +54,14 @@ private:
         bool vsync;
     };
 
+    /// Application settings.
     Config config;
+    /// Application window.
     Window window;
+    /// True if SDL_Init succeeds.
     bool sdlReady;
+    /// The application stays inside
+    /// Run() as long as this is true.
     bool running;
 };
 

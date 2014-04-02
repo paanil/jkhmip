@@ -24,6 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 
+/// Hide the use of std::string so later can be
+/// replaced with own string implementation that is
+/// compatible with std::string.
 typedef std::string String;
 
 #endif // __TYPES_H__

@@ -22,17 +22,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __VECTOR2_H__
 #define __VECTOR2_H__
 
+/// 2-Dimensional vector class.
+///
 class Vector2
 {
 public:
+    /// Member data.
     float x, y;
 
+    /// Constructors.
     Vector2() {}
     Vector2(float x, float y) : x(x), y(y) {}
     Vector2(const Vector2 &v) = default;
 
+    /// Assign operator.
     Vector2 &operator=(const Vector2 &v) = default;
 
+    /// Basic vector arithmetic.
     Vector2 operator-() const;
     Vector2 operator+(const Vector2 &v) const;
     Vector2 operator-(const Vector2 &v) const;
@@ -43,12 +49,19 @@ public:
     Vector2 &operator*=(float t);
     Vector2 &operator/=(float t);
 
+    /// Returns dot product.
     float Dot(const Vector2 &v) const;
+    /// Returns length of the vector.
     float Length() const;
+    /// Normalizes this vector.
+    /// Not safe if length = 0.
     void Normalize();
+    /// Returns normalized vector leaving this unchanged.
+    /// Not safe if length = 0.
     Vector2 Normalized() const;
 };
 
+/// Multily with scalar on the left.
 inline Vector2 operator*(float t, const Vector2 &v) { return v * t; }
 
 #endif // __VECTOR2_H__

@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __MATH_H__
 #define __MATH_H__
 
+/// Namespace for math operations and constants.
+///
 namespace Math
 {
 

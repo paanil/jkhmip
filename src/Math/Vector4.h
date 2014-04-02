@@ -22,17 +22,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __VECTOR4_H__
 #define __VECTOR4_H__
 
+/// 4-Dimensional vector class.
+///
 class Vector4
 {
 public:
+    /// Memer data.
     float x, y, z, w;
 
+    /// Constructors.
     Vector4() {}
     Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
     Vector4(const Vector4 &v) = default;
 
+    /// Assign operator.
     Vector4 &operator=(const Vector4 &v) = default;
 
+    /// Basic vector arithmetic.
     Vector4 operator-() const;
     Vector4 operator+(const Vector4 &v) const;
     Vector4 operator-(const Vector4 &v) const;
@@ -43,9 +49,11 @@ public:
     Vector4 &operator*=(float t);
     Vector4 &operator/=(float t);
 
+    /// Returns dot product.
     float Dot(const Vector4 &v) const;
 };
 
+/// Multily with scalar on the left.
 inline Vector4 operator*(float t, const Vector4 &v) { return v * t; }
 
 #endif // __VECTOR4_H__

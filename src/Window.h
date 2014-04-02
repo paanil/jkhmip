@@ -24,13 +24,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Types.h"
 
+// Forward declarations.
 struct SDL_Window;
-#define GL_Context void * // "Forward declaring" SDL_GLContext which is actually a void pointer
+typedef void *SDL_GLContext;
 
 /// Simple window class.
+///
 class Window
 {
 public:
+    /// Constructor sets members to 0.
     Window();
 
     /// Creates a window with SDL and initializes GLEW.
@@ -42,11 +45,12 @@ public:
     /// Safe to call even if window  hasn't been created.
     void Destroy();
 
+    /// Updates the screen.
     void SwapBuffers();
 
 private:
     SDL_Window *window;
-    GL_Context context;
+    SDL_GLContext context;
 };
 
 #endif // __WINDOW_H__

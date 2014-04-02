@@ -22,17 +22,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __VECTOR3_H__
 #define __VECTOR3_H__
 
+/// 3-Dimensional vector class.
+///
 class Vector3
 {
 public:
+    /// Member data.
     float x, y, z;
 
+    /// Constructors.
     Vector3() {}
     Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
     Vector3(const Vector3 &v) = default;
 
+    /// Assign operator.
     Vector3 &operator=(const Vector3 &v) = default;
 
+    /// Basic vector arithmetic.
     Vector3 operator-() const;
     Vector3 operator+(const Vector3 &v) const;
     Vector3 operator-(const Vector3 &v) const;
@@ -43,13 +49,21 @@ public:
     Vector3 &operator*=(float t);
     Vector3 &operator/=(float t);
 
+    /// Returns dot product.
     float Dot(const Vector3 &v) const;
+    /// Returns length of the vector.
     float Length() const;
+    /// Normalizes this vector.
+    /// Not safe if length = 0.
     void Normalize();
+    /// Returns normalized vector leaving this unchanged.
+    /// Not safe if length = 0.
     Vector3 Normalized() const;
+    /// Returns cross product.
     Vector3 Cross(const Vector3 &v) const;
 };
 
+/// Multily with scalar on the left.
 inline Vector3 operator*(float t, const Vector3 &v) { return v * t; }
 
 #endif // __VECTOR3_H__

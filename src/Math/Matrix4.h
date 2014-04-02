@@ -25,10 +25,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Vector3.h"
 #include "Vector4.h"
 
+/// 4x4 Matrix class.
+///
 class Matrix4
 {
 public:
-
+    /// Member data in union.
+    /// data helps doing operations to all elements.
+    /// mat is for operations like transpose.
+    /// mij (where i = row, j = column) are for operations
+    /// that need to be done memory layout independently.
     union
     {
         struct
@@ -60,11 +66,14 @@ public:
         };
     };
 
+    /// Constructors.
     Matrix4() {}
     Matrix4(const Matrix4 &m) = default;
 
+    /// Assign operator.
     Matrix4 &operator=(const Matrix4 &m) = default;
 
+    /// Basic matrix arithmetic.
     Matrix4 operator+(const Matrix4 &m) const;
     Matrix4 operator-(const Matrix4 &m) const;
     Matrix4 operator*(float t) const;
@@ -74,20 +83,33 @@ public:
     Matrix4 &operator*=(float t);
     Matrix4 &operator/=(float t);
 
+    /// Matrix * matrix multiplication.
+    /// Uses mathematical conventions.
+    /// Example: Combining matrices A and B so that
+    /// matrix A is applied first, then B looks like this:
+    ///     M = B*A
     Matrix4 operator*(const Matrix4 &m) const;
+    /// Matrix * vector multiplication.
+    /// Uses mathematical conventions.
+    /// Example: Apply matrix M to vector v:
+    ///     v' = M*v
+    /// Note: In Matrix4 * Vector3 operation vector3 is
+    /// considered to be a Vector4 with w = 1.
     Vector3 operator*(const Vector3 &v) const;
     Vector4 operator*(const Vector4 &v) const;
 
     //TODO: float Determinant() const;
+    /// Returns transpose of the matrix.
     Matrix4 Transposed() const;
 
-    // Returns inverse of Translation * Rotation -matrix.
-    // For test purposes only.
+    /// Returns inverse of Translation * Rotation.
     Matrix4 InverseTR() const;
 
     /* Static functions */
 
+    /// Creates a zero matrix.
     static Matrix4 Zero();
+    /// Creates an identity matrix.
     static Matrix4 Identity();
 
     /// Creates a uniform scale matrix.
@@ -107,10 +129,19 @@ public:
 
     // Projections
 
+    /// Creates an orthographic projection matrix (symmetric one).
     static Matrix4 Ortho(float w, float h, float zNear, float zFar);
+
+    /// Creates a perspective projection matrix.
+    ///
+    /// \param fov field of view Y in degrees
+    /// \param aspect ascpect ratio
+    /// \param zNear near plane distance from eye
+    /// \param zFar far plane distance from eye
     static Matrix4 Perspective(float fov, float aspect, float zNear, float zFar);
 };
 
+/// Multily with scalar on the left.
 inline Matrix4 operator*(float t, const Matrix4 &m) { return m * t; }
 
 #endif // __MATRIX4_H__
