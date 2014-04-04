@@ -82,7 +82,7 @@ bool Application::Init(const String &title)
 
 void Application::Run()
 {
-    camera.SetPerspectiveProjection(50.0f, float(config.screenWidth)/config.screenHeight, 0.1f, 100.0f);
+    OnWindowResize(config.screenWidth, config.screenHeight); // Make sure the projection is OK.
     camera.SetPosition(Vector3(0.0f, 1.0f, 0.0f));
     yaw = pitch = roll = 0.0f;
 
@@ -130,6 +130,13 @@ void Application::HandleEvents()
             case SDL_WINDOWEVENT_CLOSE:
                 running = false;
                 break;
+
+            case SDL_WINDOWEVENT_RESIZED:
+                OnWindowResize(e.window.data1, e.window.data2);
+                break;
+
+            default:
+                break;
             }
             break;
 
@@ -149,6 +156,15 @@ void Application::HandleEvents()
             break;
         }
     }
+}
+
+void Application::OnWindowResize(int newWidth, int newHeight)
+{
+    config.screenWidth = newWidth;
+    config.screenHeight = newHeight;
+
+    glViewport(0, 0, config.screenWidth, config.screenHeight);
+    camera.SetPerspectiveProjection(50.0f, float(config.screenWidth)/config.screenHeight, 0.1f, 100.0f);
 }
 
 void Application::Update(float dt)
@@ -207,7 +223,7 @@ void Application::Render()
     // Code that renders the test app scene.
     // Not any proper rendering code!
 
-    Matrix4 ortho = Matrix4::Ortho(config.screenWidth, config.screenHeight, -1.0f, 1.0f);
+    Matrix4 ortho = Matrix4::Ortho(0.0f, config.screenWidth, config.screenHeight, 0.0f, -1.0f, 1.0f);
 
     Matrix4 proj = camera.GetProjection();
     Matrix4 view = camera.GetViewMatrix();
@@ -220,14 +236,11 @@ void Application::Render()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    float x = -390.0f;
-    float y = 250.0f;
-
     glBegin(GL_QUADS);
-        glColor3f(1.0f, 0.0f, 0.0f); glVertex2f(x,  y);
-        glColor3f(1.0f, 1.0f, 0.0f); glVertex2f(x, y + 40.0f);
-        glColor3f(0.0f, 1.0f, 0.0f); glVertex2f(x + 40.0f, y + 40.0f);
-        glColor3f(0.0f, 0.0f, 1.0f); glVertex2f(x + 40.0f, y);
+        glColor3f(1.0f, 0.0f, 0.0f); glVertex2f(10.0f, 50.0f);
+        glColor3f(1.0f, 1.0f, 0.0f); glVertex2f(10.0f, 10.0f);
+        glColor3f(0.0f, 1.0f, 0.0f); glVertex2f(50.0f, 10.0f);
+        glColor3f(0.0f, 0.0f, 1.0f); glVertex2f(50.0f, 50.0f);
     glEnd();
 
     glMatrixMode(GL_PROJECTION);

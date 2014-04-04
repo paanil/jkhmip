@@ -46,7 +46,7 @@ bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsy
     int x = SDL_WINDOWPOS_UNDEFINED;
     int y = SDL_WINDOWPOS_UNDEFINED;
 
-    Uint32 flags = SDL_WINDOW_OPENGL;
+    Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
     if (fullscreen)
     {
         flags |= SDL_WINDOW_FULLSCREEN;

@@ -261,6 +261,19 @@ Matrix4 Matrix4::Ortho(float w, float h, float zNear, float zFar)
     return result;
 }
 
+Matrix4 Matrix4::Ortho(float left, float right, float bottom, float top, float zNear, float zFar)
+{
+    Matrix4 result = Zero();
+    result.m11 = 2.0f / (right - left);
+    result.m22 = 2.0f / (top - bottom);
+    result.m33 = 2.0f / (zFar - zNear);
+    result.m14 = -(right + left)/(right - left);
+    result.m24 = -(top + bottom)/(top - bottom);
+    result.m34 = -(zFar + zNear)/(zFar - zNear);
+    result.m44 = 1.0f;
+    return result;
+}
+
 Matrix4 Matrix4::Perspective(float fov, float aspect, float zNear, float zFar)
 {
     float f = 1.0f / Math::Tan(fov * Math::DEG_TO_RAD / 2.0f);

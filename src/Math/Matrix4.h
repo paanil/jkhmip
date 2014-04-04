@@ -132,6 +132,8 @@ public:
 
     /// Creates an orthographic projection matrix (symmetric one).
     static Matrix4 Ortho(float w, float h, float zNear, float zFar);
+    /// Creates an orthographic projection matrix.
+    static Matrix4 Ortho(float left, float right, float bottom, float top, float zNear, float zFar);
 
     /// Creates a left-handed perspective projection matrix.
     ///

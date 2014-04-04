@@ -46,6 +46,9 @@ private:
     /// Polls events and handles (some of) them.
     void HandleEvents();
 
+    /// Event handler for window resize.
+    void OnWindowResize(int newWidth, int newHeight);
+
     /// Updates the "simulation".
     void Update(float dt);
 
