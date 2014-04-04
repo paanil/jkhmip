@@ -82,23 +82,32 @@ bool Application::Init(const String &title)
 
 void Application::Run()
 {
+    camera.SetPerspectiveProjection(50.0f, float(config.screenWidth)/config.screenHeight, 0.1f, 100.0f);
+    camera.SetPosition(Vector3(0.0f, 1.0f, 0.0f));
+    yaw = pitch = roll = 0.0f;
+
+    Uint32 lastTicks = 0;
+
 //    // Variables for fps printing
-//    Uint32 lastTicks = 0;
+//    Uint32 lastFPSTicks = 0;
 //    Uint32 frames = 0;
 
     while (running)
     {
-//        // Print fps every second.
-//        Uint32 ticks = SDL_GetTicks();
-//        if (ticks >= lastTicks + 1000)
+        Uint32 ticks = SDL_GetTicks();
+        Uint32 delta = ticks - lastTicks;
+        lastTicks = ticks;
+
+//        if (ticks >= lastFPSTicks + 1000)
 //        {
 //            LOG_DEBUG("FPS: %d", frames);
-//            lastTicks = ticks;
+//            lastFPSTicks = ticks;
 //            frames = 0;
 //        }
 //        frames++;
 
         HandleEvents();
+        Update(delta / 1000.0f);
         Render();
     }
 }
@@ -142,17 +151,66 @@ void Application::HandleEvents()
     }
 }
 
+void Application::Update(float dt)
+{
+    const Uint8 *keys = SDL_GetKeyboardState(0);
+
+    const float speed = 3.0f;
+    const float sensitivity = 0.25f;
+
+    // Camera movement
+
+    Vector3 pos = camera.GetPosition();
+    Vector3 right, up, look;
+    camera.GetRotationAxes(right, up, look);
+
+    Vector3 dir(0.0f, 0.0f, 0.0f);
+
+    if (keys[SDL_SCANCODE_W])
+        dir += look;
+    if (keys[SDL_SCANCODE_S])
+        dir -= look;
+    if (keys[SDL_SCANCODE_A])
+        dir -= right;
+    if (keys[SDL_SCANCODE_D])
+        dir += right;
+
+    dir.SafeNormalize();
+    pos += dir * (speed * dt);
+
+    camera.SetPosition(pos);
+
+    // Camera rotation
+
+    int relMouseX, relMouseY;
+    if (SDL_GetRelativeMouseState(&relMouseX, &relMouseY) & SDL_BUTTON(SDL_BUTTON_LEFT))
+    {
+        yaw += relMouseX * sensitivity;
+        pitch += relMouseY * sensitivity;
+
+        if (pitch > 85.0f)
+            pitch = 85.0f;
+        else if (pitch < -85.0f)
+            pitch = -85.0f;
+    }
+
+    Matrix3 rot =
+        Matrix3::RotationY(yaw) *
+        Matrix3::RotationX(pitch) *
+        Matrix3::RotationZ(roll);
+
+    camera.SetRotation(rot);
+}
+
 void Application::Render()
 {
     // Code that renders the test app scene.
     // Not any proper rendering code!
 
     Matrix4 ortho = Matrix4::Ortho(config.screenWidth, config.screenHeight, -1.0f, 1.0f);
-    Matrix4 persp = Matrix4::Perspective(50.0f, float(config.screenWidth) / config.screenHeight, 0.1f, 100.0f);
 
-    Matrix4 view = (Matrix4::Translation(-8.0f, 4.0f, -10.0f) *
-                    Matrix4::Rotation(0.0f, 1.0f, 0.0f, 35.0f) *
-                    Matrix4::Rotation(1.0f, 0.0f, 0.0f, 15.0f)).InverseTR();
+    Matrix4 proj = camera.GetProjection();
+    Matrix4 view = camera.GetViewMatrix();
 
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -173,7 +231,7 @@ void Application::Render()
     glEnd();
 
     glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(persp.data);
+    glLoadMatrixf(proj.data);
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixf(view.data);
 

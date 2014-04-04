@@ -76,6 +76,11 @@ float Vector3::Dot(const Vector3 &v) const
     return x*v.x + y*v.y + z*v.z;
 }
 
+float Vector3::LengthSqr() const
+{
+    return x*x + y*y + z*z;
+}
+
 float Vector3::Length() const
 {
     return Math::Sqrt(x*x + y*y + z*z);
@@ -91,6 +96,27 @@ Vector3 Vector3::Normalized() const
 {
     float invLen = 1.0f / Length();
     return Vector3(x * invLen, y * invLen, z * invLen);
+}
+
+void Vector3::SafeNormalize()
+{
+    float lenSqr = LengthSqr();
+    if (lenSqr > Math::EPSILON)
+    {
+        float invLen = 1.0f / Math::Sqrt(lenSqr);
+        x *= invLen; y *= invLen; z *= invLen;
+    }
+}
+
+Vector3 Vector3::SafeNormalized() const
+{
+    float lenSqr = LengthSqr();
+    if (lenSqr > Math::EPSILON)
+    {
+        float invLen = 1.0f / Math::Sqrt(lenSqr);
+        return Vector3(x * invLen, y * invLen, z * invLen);
+    }
+    return Vector3(0.0f, 0.0f, 0.0f);
 }
 
 Vector3 Vector3::Cross(const Vector3 &v) const

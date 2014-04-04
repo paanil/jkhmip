@@ -217,22 +217,16 @@ Matrix4 Matrix4::Rotation(float x, float y, float z, float angle)
     float c = Math::Cos(angle);
     float t = 1.0f - c;
 
-    Matrix4 result;
+    Matrix4 result = Zero();
     result.m11 = x*x*t + c;
     result.m12 = x*y*t - z*s;
     result.m13 = x*z*t + y*s;
-    result.m14 = 0.0f;
     result.m21 = x*y*t + z*s;
     result.m22 = y*y*t + c;
     result.m23 = y*z*t - x*s;
-    result.m24 = 0.0f;
     result.m31 = x*z*t - y*s;
     result.m32 = y*z*t + x*s;
     result.m33 = z*z*t + c;
-    result.m34 = 0.0f;
-    result.m41 = 0.0f;
-    result.m42 = 0.0f;
-    result.m43 = 0.0f;
     result.m44 = 1.0f;
     return result;
 }

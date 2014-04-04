@@ -43,6 +43,8 @@
 		</Linker>
 		<Unit filename="src/Application.cpp" />
 		<Unit filename="src/Application.h" />
+		<Unit filename="src/Camera.cpp" />
+		<Unit filename="src/Camera.h" />
 		<Unit filename="src/Logging.h" />
 		<Unit filename="src/Math/Math.cpp" />
 		<Unit filename="src/Math/Math.h" />

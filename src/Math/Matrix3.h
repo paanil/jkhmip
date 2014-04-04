@@ -112,8 +112,15 @@ public:
 
     /// Creates a rotation matrix from axis angle.
     /// Axis is expected to be a unit vector and angle in degrees.
+    /// In LH coordinate system the direction of rotation follows left-hand rule.
     static Matrix3 Rotation(float x, float y, float z, float angle);
     static Matrix3 Rotation(const Vector3 &axis, float angle);
+    /// Creates a rotation matrix around the basis axis denoted by the function name.
+    /// Angle is expected to be in degrees.
+    /// In LH coordinate system the direction of rotation follows left-hand rule.
+    static Matrix3 RotationX(float angle);
+    static Matrix3 RotationY(float angle);
+    static Matrix3 RotationZ(float angle);
 };
 
 /// Multily with scalar on the left.

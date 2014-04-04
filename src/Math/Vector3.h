@@ -51,14 +51,21 @@ public:
 
     /// Returns dot product.
     float Dot(const Vector3 &v) const;
+    /// Returns squared length of the vector.
+    float LengthSqr() const;
     /// Returns length of the vector.
     float Length() const;
     /// Normalizes this vector.
-    /// Not safe if length = 0.
+    /// Not safe if length == 0.
     void Normalize();
     /// Returns normalized vector leaving this unchanged.
-    /// Not safe if length = 0.
+    /// Not safe if length == 0.
     Vector3 Normalized() const;
+    /// Safe normalization.
+    /// Leaves this unchanged if length == 0.
+    void SafeNormalize();
+    /// Returns 0-vector if length == 0.
+    Vector3 SafeNormalized() const;
     /// Returns cross product.
     Vector3 Cross(const Vector3 &v) const;
 };

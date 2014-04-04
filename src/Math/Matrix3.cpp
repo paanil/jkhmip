@@ -176,6 +176,8 @@ Matrix3 Matrix3::Scale(const Vector3 &scale)
 
 Matrix3 Matrix3::Rotation(float x, float y, float z, float angle)
 {
+    angle *= Math::DEG_TO_RAD;
+
     float s = Math::Sin(angle);
     float c = Math::Cos(angle);
     float t = 1.0f - c;
@@ -196,4 +198,52 @@ Matrix3 Matrix3::Rotation(float x, float y, float z, float angle)
 Matrix3 Matrix3::Rotation(const Vector3 &axis, float angle)
 {
     return Rotation(axis.x, axis.y, axis.z, angle);
+}
+
+Matrix3 Matrix3::RotationX(float angle)
+{
+    angle *= Math::DEG_TO_RAD;
+
+    float s = Math::Sin(angle);
+    float c = Math::Cos(angle);
+
+    Matrix3 result = Zero();
+    result.m11 = 1.0f;
+    result.m22 = c;
+    result.m23 = -s;
+    result.m32 = s;
+    result.m33 = c;
+    return result;
+}
+
+Matrix3 Matrix3::RotationY(float angle)
+{
+    angle *= Math::DEG_TO_RAD;
+
+    float s = Math::Sin(angle);
+    float c = Math::Cos(angle);
+
+    Matrix3 result = Zero();
+    result.m11 = c;
+    result.m13 = s;
+    result.m22 = 1.0f;
+    result.m31 = -s;
+    result.m33 = c;
+    return result;
+}
+
+Matrix3 Matrix3::RotationZ(float angle)
+{
+    angle *= Math::DEG_TO_RAD;
+
+    float s = Math::Sin(angle);
+    float c = Math::Cos(angle);
+
+    Matrix3 result = Zero();
+    result.m11 = c;
+    result.m12 = -s;
+    result.m21 = s;
+    result.m22 = c;
+    result.m33 = 1.0f;
+    return result;
 }

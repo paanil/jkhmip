@@ -75,6 +75,11 @@ float Vector2::Dot(const Vector2 &v) const
     return x*v.x + y*v.y;
 }
 
+float Vector2::LengthSqr() const
+{
+    return x*x + y*y;
+}
+
 float Vector2::Length() const
 {
     return Math::Sqrt(x*x + y*y);
@@ -90,4 +95,25 @@ Vector2 Vector2::Normalized() const
 {
     float invLen = 1.0f / Length();
     return Vector2(x * invLen, y * invLen);
+}
+
+void Vector2::SafeNormalize()
+{
+    float lenSqr = LengthSqr();
+    if (lenSqr > Math::EPSILON)
+    {
+        float invLen = 1.0f / Math::Sqrt(lenSqr);
+        x *= invLen; y *= invLen;
+    }
+}
+
+Vector2 Vector2::SafeNormalized() const
+{
+    float lenSqr = LengthSqr();
+    if (lenSqr > Math::EPSILON)
+    {
+        float invLen = 1.0f / Math::Sqrt(lenSqr);
+        return Vector2(x * invLen, y * invLen);
+    }
+    return Vector2(0.0f, 0.0f);
 }

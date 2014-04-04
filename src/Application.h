@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __APPLICATION_H__
 
 #include "Window.h"
+#include "Camera.h"
 
 /// Application class.
 /// There should be only one instance at a time.
@@ -44,6 +45,9 @@ public:
 private:
     /// Polls events and handles (some of) them.
     void HandleEvents();
+
+    /// Updates the "simulation".
+    void Update(float dt);
 
     /// Renders the scene.
     void Render();
@@ -67,6 +71,10 @@ private:
     /// The application stays inside
     /// Run() as long as this is true.
     bool running;
+
+    /* Members for the test app */
+    Camera camera;
+    float yaw, pitch, roll;
 };
 
 #endif // __APPLICATION_H__

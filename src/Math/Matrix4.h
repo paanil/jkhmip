@@ -120,6 +120,7 @@ public:
 
     /// Creates a rotation matrix from axis angle.
     /// Axis is expected to be a unit vector and angle in degrees.
+    /// In LH coordinate system the direction of rotation follows left-hand rule.
     static Matrix4 Rotation(float x, float y, float z, float angle);
     static Matrix4 Rotation(const Vector3 &axis, float angle);
 
@@ -132,7 +133,7 @@ public:
     /// Creates an orthographic projection matrix (symmetric one).
     static Matrix4 Ortho(float w, float h, float zNear, float zFar);
 
-    /// Creates a perspective projection matrix.
+    /// Creates a left-handed perspective projection matrix.
     ///
     /// \param fov field of view Y in degrees
     /// \param aspect ascpect ratio

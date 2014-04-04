@@ -32,6 +32,8 @@ namespace Math
     const float DEG_TO_RAD = PI / 180.0f;
     const float RAD_TO_DEG = 180.0f / PI;
 
+    const float EPSILON = 0.0000001f;
+
     float Sin(float angleRad);
     float Cos(float angleRad);
     float Tan(float angleRad);
