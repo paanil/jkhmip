@@ -232,18 +232,6 @@ void Application::Render()
 
     // deprecated gl begins
     glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(ortho.data);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glBegin(GL_QUADS);
-        glColor3f(1.0f, 0.0f, 0.0f); glVertex2f(10.0f, 50.0f);
-        glColor3f(1.0f, 1.0f, 0.0f); glVertex2f(10.0f, 10.0f);
-        glColor3f(0.0f, 1.0f, 0.0f); glVertex2f(50.0f, 10.0f);
-        glColor3f(0.0f, 0.0f, 1.0f); glVertex2f(50.0f, 50.0f);
-    glEnd();
-
-    glMatrixMode(GL_PROJECTION);
     glLoadMatrixf(proj.data);
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixf(view.data);
@@ -253,6 +241,18 @@ void Application::Render()
         glColor3f(1.0f, 1.0f, 0.0f); glVertex3f(-5.0f, 0.0f,  5.0f);
         glColor3f(0.0f, 1.0f, 0.0f); glVertex3f( 5.0f, 0.0f,  5.0f);
         glColor3f(0.0f, 0.0f, 1.0f); glVertex3f( 5.0f, 0.0f, -5.0f);
+    glEnd();
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf(ortho.data);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glBegin(GL_QUADS);
+        glColor3f(1.0f, 0.0f, 0.0f); glVertex2f(10.0f, 50.0f);
+        glColor3f(1.0f, 1.0f, 0.0f); glVertex2f(10.0f, 10.0f);
+        glColor3f(0.0f, 1.0f, 0.0f); glVertex2f(50.0f, 10.0f);
+        glColor3f(0.0f, 0.0f, 1.0f); glVertex2f(50.0f, 50.0f);
     glEnd();
     // deprecated gl ends
 
