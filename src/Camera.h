@@ -13,6 +13,8 @@ public:
     Camera();
 
     void SetOrthoProjection(float w, float h, float zNear, float zFar);
+    void SetOrthoProjection(float left, float right, float bottom, float top, float zNear, float zFar);
+
     void SetPerspectiveProjection(float fov, float aspect, float zNear, float zFar);
 
     Matrix4 GetProjection() const;

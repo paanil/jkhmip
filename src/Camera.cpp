@@ -12,6 +12,11 @@ void Camera::SetOrthoProjection(float w, float h, float zNear, float zFar)
     projection = Matrix4::Ortho(w, h, zNear, zFar);
 }
 
+void Camera::SetOrthoProjection(float left, float right, float bottom, float top, float zNear, float zFar);
+{
+    projection = Matrix4::Ortho(left, right, bottom, top, zNear, zFar);
+}
+
 void Camera::SetPerspectiveProjection(float fov, float aspect, float zNear, float zFar)
 {
     projection = Matrix4::Perspective(fov, aspect, zNear, zFar);

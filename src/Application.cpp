@@ -98,6 +98,7 @@ void Application::Run()
         Uint32 delta = ticks - lastTicks;
         lastTicks = ticks;
 
+//        // Print fps every second
 //        if (ticks >= lastFPSTicks + 1000)
 //        {
 //            LOG_DEBUG("FPS: %d", frames);
@@ -210,10 +211,7 @@ void Application::Update(float dt)
             pitch = -85.0f;
     }
 
-    Matrix3 rot =
-        Matrix3::RotationY(yaw) *
-        Matrix3::RotationX(pitch) *
-        Matrix3::RotationZ(roll);
+    Matrix3 rot = Matrix3::RotationYXZ(Vector3(pitch, yaw, roll));
 
     camera.SetRotation(rot);
 }

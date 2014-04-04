@@ -144,7 +144,7 @@ public:
     static Matrix4 Perspective(float fov, float aspect, float zNear, float zFar);
 };
 
-/// Multily with scalar on the left.
+/// Multiply with scalar on the left.
 inline Matrix4 operator*(float t, const Matrix4 &m) { return m * t; }
 
 #endif // __MATRIX4_H__

@@ -53,7 +53,7 @@ public:
     float Dot(const Vector4 &v) const;
 };
 
-/// Multily with scalar on the left.
+/// Multiply with scalar on the left.
 inline Vector4 operator*(float t, const Vector4 &v) { return v * t; }
 
 #endif // __VECTOR4_H__

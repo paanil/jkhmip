@@ -68,7 +68,7 @@ public:
     Vector2 SafeNormalized() const;
 };
 
-/// Multily with scalar on the left.
+/// Multiply with scalar on the left.
 inline Vector2 operator*(float t, const Vector2 &v) { return v * t; }
 
 #endif // __VECTOR2_H__

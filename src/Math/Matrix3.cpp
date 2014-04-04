@@ -247,3 +247,9 @@ Matrix3 Matrix3::RotationZ(float angle)
     result.m33 = 1.0f;
     return result;
 }
+
+Matrix3 Matrix3::RotationYXZ(const Vector3 &angles)
+{
+    //TODO: do this more optimally
+    return RotationY(angles.y)*RotationX(angles.x)*RotationZ(angles.z);
+}

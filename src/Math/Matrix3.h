@@ -121,9 +121,15 @@ public:
     static Matrix3 RotationX(float angle);
     static Matrix3 RotationY(float angle);
     static Matrix3 RotationZ(float angle);
+
+    /// Creates a rotation matrix form yaw, pitch and roll.
+    ///
+    /// \param angles Euler angles: x=pitch, y=yaw, z=roll.
+    /// \return RotYXZ = RotY(yaw) * RotX(pitch) * RotZ(roll).
+    static Matrix3 RotationYXZ(const Vector3 &angles);
 };
 
-/// Multily with scalar on the left.
+/// Multiply with scalar on the left.
 inline Matrix3 operator*(float t, const Matrix3 &m) { return m * t; }
 
 #endif // __MATRIX3_H__

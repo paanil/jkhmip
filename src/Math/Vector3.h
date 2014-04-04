@@ -70,7 +70,7 @@ public:
     Vector3 Cross(const Vector3 &v) const;
 };
 
-/// Multily with scalar on the left.
+/// Multiply with scalar on the left.
 inline Vector3 operator*(float t, const Vector3 &v) { return v * t; }
 
 #endif // __VECTOR3_H__
