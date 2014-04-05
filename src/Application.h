@@ -77,7 +77,7 @@ private:
 
     /* Members for the test app */
     Camera camera;
-    float yaw, pitch, roll;
+    Vector3 cameraAngles;
 };
 
 #endif // __APPLICATION_H__

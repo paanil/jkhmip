@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Window.h"
-#include "Logging.h"
+#include "Logger.h"
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
@@ -56,7 +56,7 @@ bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsy
     window = SDL_CreateWindow(title.c_str(), x, y, w, h, flags);
     if (window == 0)
     {
-        LOG_ERROR("%s", SDL_GetError());
+        LOG_ERROR("%", SDL_GetError());
         return false;
     }
 
@@ -64,7 +64,7 @@ bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsy
     context = SDL_GL_CreateContext(window);
     if (context == 0)
     {
-        LOG_ERROR("%s", SDL_GetError());
+        LOG_ERROR("%", SDL_GetError());
         return false;
     }
 
@@ -75,11 +75,11 @@ bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsy
     GLenum error = glewInit();
     if (error != GLEW_NO_ERROR)
     {
-        LOG_ERROR("%s", glewGetErrorString(error));
+        LOG_ERROR("%", glewGetErrorString(error));
         return false;
     }
 
-    LOG_INFO("GL Version: %s", glGetString(GL_VERSION));
+    LOG_INFO("GL Version: %", glGetString(GL_VERSION));
 
     return true;
 }

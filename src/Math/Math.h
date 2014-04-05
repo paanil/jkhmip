@@ -40,6 +40,11 @@ namespace Math
 
     float Sqrt(float x);
 
+    float Clamp(float x, float minValue, float maxValue);
+
+    /// Wraps angle to range [0, 360).
+    float WrapAngleDegrees(float angle);
+
 } // Math
 
 #endif // __MATH_H__

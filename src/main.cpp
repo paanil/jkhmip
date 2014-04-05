@@ -20,12 +20,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Application.h"
+#include "Logger.h"
+
+#include <iostream>
 
 /// Main function.
 /// Creates an instance of Application,
 /// initializes it and runs it.
 int main(int argc, char **argv)
 {
+    Logger::Info().SetStream(&std::cout);
+    Logger::Info().SetPrefix("INFO     ");
+    Logger::Debug().SetStream(&std::cout);
+    Logger::Debug().SetPrefix("DEBUG    ");
+    Logger::Warning().SetStream(&std::cout);
+    Logger::Warning().SetPrefix("WARNING  ");
+    Logger::Error().SetStream(&std::cout);
+    Logger::Error().SetPrefix("ERROR    ");
+
     Application app;
 
     if (!app.Init("Test Application"))

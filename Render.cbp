@@ -45,7 +45,9 @@
 		<Unit filename="src/Application.h" />
 		<Unit filename="src/Camera.cpp" />
 		<Unit filename="src/Camera.h" />
-		<Unit filename="src/Logging.h" />
+		<Unit filename="src/Format.h" />
+		<Unit filename="src/Logger.cpp" />
+		<Unit filename="src/Logger.h" />
 		<Unit filename="src/Math/Math.cpp" />
 		<Unit filename="src/Math/Math.h" />
 		<Unit filename="src/Math/Matrix3.cpp" />

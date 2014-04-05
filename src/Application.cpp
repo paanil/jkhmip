@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Application.h"
-#include "Logging.h"
+#include "Logger.h"
 #include "Math/Matrix4.h"
+#include "Math/Math.h"
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
@@ -34,7 +35,7 @@ Application::Application()
     // Initialize SDL.
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        LOG_ERROR("%s", SDL_GetError());
+        LOG_ERROR("%", SDL_GetError());
         sdlReady = false; // SDL not ready if SDL_Init fails.
     }
 }
@@ -84,7 +85,7 @@ void Application::Run()
 {
     OnWindowResize(config.screenWidth, config.screenHeight); // Make sure the projection is OK.
     camera.SetPosition(Vector3(0.0f, 1.0f, 0.0f));
-    yaw = pitch = roll = 0.0f;
+    cameraAngles = Vector3(0.0f, 0.0f, 0.0f);
 
     Uint32 lastTicks = 0;
 
@@ -101,7 +102,7 @@ void Application::Run()
 //        // Print fps every second
 //        if (ticks >= lastFPSTicks + 1000)
 //        {
-//            LOG_DEBUG("FPS: %d", frames);
+//            LOG_DEBUG("FPS: %", frames);
 //            lastFPSTicks = ticks;
 //            frames = 0;
 //        }
@@ -202,18 +203,14 @@ void Application::Update(float dt)
     int relMouseX, relMouseY;
     if (SDL_GetRelativeMouseState(&relMouseX, &relMouseY) & SDL_BUTTON(SDL_BUTTON_LEFT))
     {
-        yaw += relMouseX * sensitivity;
-        pitch += relMouseY * sensitivity;
+        cameraAngles.y += relMouseX * sensitivity;
+        cameraAngles.x += relMouseY * sensitivity;
+        cameraAngles.y = Math::WrapAngleDegrees(cameraAngles.y);
+        cameraAngles.x = Math::Clamp(cameraAngles.x, -85.0f, 85.0f);
 
-        if (pitch > 85.0f)
-            pitch = 85.0f;
-        else if (pitch < -85.0f)
-            pitch = -85.0f;
+        Matrix3 rot = Matrix3::RotationYXZ(cameraAngles);
+        camera.SetRotation(rot);
     }
-
-    Matrix3 rot = Matrix3::RotationYXZ(Vector3(pitch, yaw, roll));
-
-    camera.SetRotation(rot);
 }
 
 void Application::Render()

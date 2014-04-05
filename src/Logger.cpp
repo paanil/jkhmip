@@ -19,44 +19,64 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#include "Math.h"
+#include "Logger.h"
 
-#include <cmath>
+/* The static logger instances */
 
-namespace Math
+Logger Logger::info;
+Logger Logger::debug;
+Logger Logger::warning;
+Logger Logger::error;
+
+/* Logger functions */
+
+Logger::Logger() :
+    stream(0),
+    prefix()
 {
+}
 
-    float Sin(float angleRad)
+void Logger::SetStream(std::ostream *stream)
+{
+    this->stream = stream;
+}
+
+void Logger::SetPrefix(const String &prefix)
+{
+    this->prefix = prefix;
+}
+
+void Logger::PrintPrefix()
+{
+    *this << prefix;
+}
+
+void Logger::PrintEndLine()
+{
+    if (stream)
     {
-        return ::sinf(angleRad);
+        *stream << std::endl;
     }
+}
 
-    float Cos(float angleRad)
-    {
-        return ::cosf(angleRad);
-    }
+/* Static getters */
 
-    float Tan(float angleRad)
-    {
-        return ::tanf(angleRad);
-    }
+Logger &Logger::Info()
+{
+    return info;
+}
 
-    float Sqrt(float x)
-    {
-        return ::sqrtf(x);
-    }
+Logger &Logger::Debug()
+{
+    return debug;
+}
 
-    float Clamp(float x, float minValue, float maxValue)
-    {
-        return (x < minValue) ? minValue : ((x > maxValue) ? maxValue : x);
-    }
+Logger &Logger::Warning()
+{
+    return warning;
+}
 
-    float WrapAngleDegrees(float angle)
-    {
-        int n = angle / 360.0f;
-        angle -= n * 360.0f;
-        return (angle >= 360.0f) ? angle - 360.0f :
-            ((angle < 0.0f) ? angle + 360.0f : angle);
-    }
-
-} // Math
+Logger &Logger::Error()
+{
+    return error;
+}
