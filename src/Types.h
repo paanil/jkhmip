@@ -23,10 +23,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __TYPES_H__
 
 #include <string>
+#include <cstdint>
 
 /// Hide the use of std::string so later can be
 /// replaced with own string implementation that is
 /// compatible with std::string.
 typedef std::string String;
+
+typedef uint32_t uint;
 
 #endif // __TYPES_H__

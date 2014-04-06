@@ -165,8 +165,8 @@ void Application::OnWindowResize(int newWidth, int newHeight)
     config.screenWidth = newWidth;
     config.screenHeight = newHeight;
 
-    glViewport(0, 0, config.screenWidth, config.screenHeight);
-    camera.SetPerspectiveProjection(50.0f, float(config.screenWidth)/config.screenHeight, 0.1f, 100.0f);
+    glViewport(0, 0, newWidth, newHeight);
+    camera.SetPerspectiveProjection(50.0f, float(newWidth)/newHeight, 0.1f, 100.0f);
 }
 
 void Application::Update(float dt)

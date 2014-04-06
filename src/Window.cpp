@@ -31,6 +31,11 @@ Window::Window() :
 {
 }
 
+Window::~Window()
+{
+    Destroy();
+}
+
 bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsync)
 {
     // Set GL attributes.
@@ -68,8 +73,7 @@ bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsy
         return false;
     }
 
-    // Set vsync on or off.
-    SDL_GL_SetSwapInterval(vsync ? 1 : 0);
+    SetVSync(vsync);
 
     // Initialize GLEW (after context is created).
     GLenum error = glewInit();
@@ -97,6 +101,40 @@ void Window::Destroy()
         SDL_DestroyWindow(window);
         window = 0;
     }
+}
+
+void Window::SetTitle(const String &title)
+{
+    SDL_SetWindowTitle(window, title.c_str());
+}
+
+void Window::SetSize(int w, int h)
+{
+    SDL_SetWindowSize(window, w, h);
+
+    SDL_Event e;
+    e.type = SDL_WINDOWEVENT;
+    e.window.event = SDL_WINDOWEVENT_RESIZED;
+    e.window.windowID = SDL_GetWindowID(window);
+    e.window.data1 = w;
+    e.window.data2 = h;
+    SDL_PushEvent(&e);
+}
+
+bool Window::SetFullscreen(bool fullscreen)
+{
+    Uint32 flags = fullscreen ? SDL_WINDOW_FULLSCREEN : 0;
+    if (SDL_SetWindowFullscreen(window, flags) != 0)
+    {
+        LOG_ERROR("%", SDL_GetError());
+        return false;
+    }
+    return true;
+}
+
+void Window::SetVSync(bool vsync)
+{
+    SDL_GL_SetSwapInterval(vsync ? 1 : 0);
 }
 
 void Window::SwapBuffers()

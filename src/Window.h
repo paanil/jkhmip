@@ -36,6 +36,9 @@ public:
     /// Constructor sets members to 0.
     Window();
 
+    /// Destructor calls Destroy().
+    ~Window();
+
     /// Creates a window with SDL and initializes GLEW.
     ///
     /// \return false on fail
@@ -44,6 +47,20 @@ public:
     /// Must be called before SDL_Quit() if window has been created.
     /// Safe to call even if window  hasn't been created.
     void Destroy();
+
+    /// Sets window title.
+    void SetTitle(const String &title);
+
+    /// Resizes window.
+    void SetSize(int w, int h);
+
+    /// Sets fullscreen mode on or off.
+    ///
+    /// \return false on fail
+    bool SetFullscreen(bool fullscreen);
+
+    /// Sets vsync on or off.
+    void SetVSync(bool vsync);
 
     /// Updates the screen.
     void SwapBuffers();

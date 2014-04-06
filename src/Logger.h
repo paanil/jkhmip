@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ///
 /// PrintFormatted takes the format string and replaces % -chars
 /// with corresponding arguments. % -char after another % -char
-/// (i.e. "... %% ...") prints only one % -char and not any arguments.
+/// (e.g. "... %% ...") prints only one % -char and not any arguments.
 ///
 /// EXAMPLES:
 ///   info.PrintFormatted("Size: %", 10);                       // Size: 10
