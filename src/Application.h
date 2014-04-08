@@ -25,8 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Window.h"
 #include "Camera.h"
 
-/// Application class.
-/// There should be only one instance at a time.
+/// Application class. There should be only one instance at a time.
+///
 class Application
 {
 public:

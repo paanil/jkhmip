@@ -19,19 +19,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __TYPES_H__
-#define __TYPES_H__
+#include "TextureCache.h"
+#include "Image.h"
+#include "../Render/Texture.h"
+#include "../Logger.h"
 
-#include <string>
-#include <cstdint>
+typedef std::unique_ptr<Image> ImagePtr;
 
-/// Hide the use of std::string so later can be
-/// replaced with own string implementation that is
-/// compatible with std::string.
-typedef std::string String;
+TextureCache::TextureCache() :
+    texDirecotry()
+{
+}
 
-typedef uint8_t  uint8;
-typedef uint16_t uint16;
-typedef uint32_t uint;
+void TextureCache::SetDirectory(const String &dir)
+{
+    texDirecotry = dir;
+}
 
-#endif // __TYPES_H__
+Texture *TextureCache::Get(const String &file)
+{
+    auto it = textures.find(file);
+    if (it != textures.end())
+    {
+        return it->second.get();
+    }
+
+    ImagePtr image(LoadImage(texDirecotry + file));
+
+    if (!image)
+    {
+        LOG_INFO("Using debug texture.");
+        image.reset(MakeImage(16, 16, 3, 128, 128, 255, 0));
+    }
+
+    Texture *texture = new Texture();
+    texture->SetTexImage(image.get());
+    textures[file] = TexturePtr(texture);
+    return texture;
+}

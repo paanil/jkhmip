@@ -33,14 +33,13 @@ typedef void *SDL_GLContext;
 class Window
 {
 public:
-    /// Constructor sets members to 0.
+    /// Sets members to 0.
     Window();
 
-    /// Destructor calls Destroy().
+    /// Calls Destroy().
     ~Window();
 
     /// Creates a window with SDL and initializes GLEW.
-    ///
     /// \return false on fail
     bool Create(const String &title, int w, int h, bool fullscreen, bool vsync);
 
@@ -55,7 +54,6 @@ public:
     void SetSize(int w, int h);
 
     /// Sets fullscreen mode on or off.
-    ///
     /// \return false on fail
     bool SetFullscreen(bool fullscreen);
 
