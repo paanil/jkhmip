@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Texture.h"
-#include "../Resource/Image.h"
 #include "../Logger.h"
 
 #include <GL/glew.h>
@@ -35,10 +34,10 @@ Texture::~Texture()
     glDeleteTextures(1, &texture);
 }
 
-void Texture::SetTexImage(const Image *image)
+void Texture::SetTexImage(int w, int h, int bpp, const void *image)
 {
     GLint format = 0;
-    switch (image->GetBytesPerPixel())
+    switch (bpp)
     {
     case 1:
         format = GL_RED;
@@ -58,11 +57,7 @@ void Texture::SetTexImage(const Image *image)
     }
 
     Bind(0);
-    glTexImage2D(GL_TEXTURE_2D, 0, format,
-                 image->GetWidth(),
-                 image->GetHeight(),
-                 0, format, GL_UNSIGNED_BYTE,
-                 image->GetData());
+    glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format, GL_UNSIGNED_BYTE, image);
 
     SetFilterMode(TF_MIN_NEAREST, TF_MAG_NEAREST);
     SetWrapMode(TW_CLAMP, TW_CLAMP);

@@ -19,34 +19,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#include "TextureCache.h"
-#include "Image.h"
-#include "../Logger.h"
+#ifndef __MODELCACHE_H__
+#define __MODELCACHE_H__
 
-typedef std::unique_ptr<Image> ImagePtr;
+#include "ResourceCache.h"
+#include "ObjLoader.h"
+#include "../Render/Model.h"
 
-Texture *TextureCache::Get(const String &file)
+class ModelCache : public ResourceCache<Model>
 {
-    auto it = resources.find(file);
-    if (it != resources.end())
-    {
-        return it->second.get();
-    }
+public:
+    /// Gets a model identified by the file name.
+    Model *Get(const String &file);
 
-    ImagePtr image(LoadImage(direcotry + file));
+private:
+    /// Makes unit cube model.
+    Model *MakeCube();
 
-    if (!image)
-    {
-        LOG_INFO("Using debug texture.");
-        image.reset(MakeImage(16, 16, 3, 128, 128, 255, 0));
-    }
+private:
+    /// Loader for Wavefron .obj files.
+    ObjLoader loader;
+};
 
-    Texture *texture = new Texture();
-    texture->SetTexImage(image->GetWidth(),
-                         image->GetHeight(),
-                         image->GetBytesPerPixel(),
-                         image->GetData());
-
-    resources[file] = ResourcePtr(texture);
-    return texture;
-}
+#endif // __MODELCACHE_H__

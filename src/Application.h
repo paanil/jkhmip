@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Window.h"
 #include "Camera.h"
+#include "Resource/TextureCache.h"
+#include "Resource/ModelCache.h"
 
 /// Application class. There should be only one instance at a time.
 ///
@@ -78,6 +80,12 @@ private:
     /* Members for the test app */
     Camera camera;
     Vector3 cameraAngles;
+
+    TextureCache textureCache;
+    ModelCache modelCache;
+
+    Texture *ground;
+    Model *house;
 };
 
 #endif // __APPLICATION_H__

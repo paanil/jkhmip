@@ -19,34 +19,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#include "TextureCache.h"
-#include "Image.h"
-#include "../Logger.h"
+#ifndef __MODEL_H__
+#define __MODEL_H__
 
-typedef std::unique_ptr<Image> ImagePtr;
+#include "../Types.h"
 
-Texture *TextureCache::Get(const String &file)
+#include <vector>
+
+class Model
 {
-    auto it = resources.find(file);
-    if (it != resources.end())
-    {
-        return it->second.get();
-    }
+public:
+    void Render();
 
-    ImagePtr image(LoadImage(direcotry + file));
+private:
+    friend class ModelCache;
+    friend class ObjLoader;
 
-    if (!image)
-    {
-        LOG_INFO("Using debug texture.");
-        image.reset(MakeImage(16, 16, 3, 128, 128, 255, 0));
-    }
+    std::vector<float> vertices;
+    std::vector<uint>  indices;
 
-    Texture *texture = new Texture();
-    texture->SetTexImage(image->GetWidth(),
-                         image->GetHeight(),
-                         image->GetBytesPerPixel(),
-                         image->GetData());
+    uint vertSize;
+    bool hasTexcoords;
+    bool hasNormals;
+};
 
-    resources[file] = ResourcePtr(texture);
-    return texture;
-}
+#endif // __MODEL_H__

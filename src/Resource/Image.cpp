@@ -66,7 +66,7 @@ Image *LoadTGA(const String &file)
 
     if (!f.is_open())
     {
-        LOG_ERROR("Loading image '%': Couldn't open file.", file);
+        LOG_ERROR("Couldn't open file.", file);
         return 0;
     }
 
@@ -84,7 +84,7 @@ Image *LoadTGA(const String &file)
          header[16] != 24 &&
          header[16] != 32))
     {
-        LOG_ERROR("Loading image '%': Invalid header.", file);
+        LOG_ERROR("Invalid header.", file);
         return 0;
     }
 
@@ -182,6 +182,8 @@ bool StrIEquals(const String &str1, const String &str2)
 
 Image *LoadImage(const String &file)
 {
+    LOG_INFO("Loading image '%'...", file);
+
     size_t pos = file.find_last_of('.');
 
     if (pos != String::npos)
@@ -194,7 +196,7 @@ Image *LoadImage(const String &file)
         }
     }
 
-    LOG_ERROR("Loading image '%': Unknown format.", file);
+    LOG_ERROR("Unknown image format.");
     return 0;
 }
 
@@ -202,7 +204,7 @@ Image *MakeImage(int w, int h, int bpp, uint8 r, uint8 g, uint8 b, uint8 a)
 {
     if (w < 1 || h < 1 || bpp < 1 || bpp > 4)
     {
-        LOG_ERROR("Cannot make image with w: % h: % bpp: %.", w, h, bpp);
+        LOG_ERROR("Trying to make invalid image: w: % h: % bpp: %.", w, h, bpp);
         return 0;
     }
 

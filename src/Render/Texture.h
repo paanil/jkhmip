@@ -24,9 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../Types.h"
 
-// Forward declare image.
-class Image;
-
 /// Texture minification filter modes.
 enum TexFilterMin
 {
@@ -65,7 +62,7 @@ public:
     ~Texture();
 
     /// Uploads the texture image to the GPU.
-    void SetTexImage(const Image *image);
+    void SetTexImage(int w, int h, int bpp, const void *image);
 
     /// Sets texture filtering modes.
     void SetFilterMode(TexFilterMin minFilter, TexFilterMag magFilter);

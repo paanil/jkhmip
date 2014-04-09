@@ -19,34 +19,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#include "TextureCache.h"
-#include "Image.h"
-#include "../Logger.h"
+#include "Model.h"
+#include <GL/glew.h>
 
-typedef std::unique_ptr<Image> ImagePtr;
-
-Texture *TextureCache::Get(const String &file)
+void Model::Render()
 {
-    auto it = resources.find(file);
-    if (it != resources.end())
+    glBegin(GL_TRIANGLES);
+
+    for (size_t i = 0; i < indices.size(); i++)
     {
-        return it->second.get();
+        size_t index = indices[i] * vertSize;
+        glColor3fv(&vertices[index + 5]);
+        glVertex3fv(&vertices[index + 0]);
     }
 
-    ImagePtr image(LoadImage(direcotry + file));
-
-    if (!image)
-    {
-        LOG_INFO("Using debug texture.");
-        image.reset(MakeImage(16, 16, 3, 128, 128, 255, 0));
-    }
-
-    Texture *texture = new Texture();
-    texture->SetTexImage(image->GetWidth(),
-                         image->GetHeight(),
-                         image->GetBytesPerPixel(),
-                         image->GetData());
-
-    resources[file] = ResourcePtr(texture);
-    return texture;
+    glEnd();
 }

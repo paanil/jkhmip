@@ -83,9 +83,25 @@ bool Application::Init(const String &title)
 
 void Application::Run()
 {
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CW);
+    glCullFace(GL_BACK);
+
     OnWindowResize(config.screenWidth, config.screenHeight); // Make sure the projection is OK.
     camera.SetPosition(Vector3(0.0f, 1.0f, 0.0f));
     cameraAngles = Vector3(0.0f, 0.0f, 0.0f);
+
+    textureCache.SetDirectory("Data/Textures/");
+    modelCache.SetDirectory("Data/Models/");
+
+    ground = textureCache.Get("ground.tga");
+    ground->SetFilterMode(TF_MIN_LINEAR_MIP_LINEAR, TF_MAG_LINEAR);
+    ground->SetWrapMode(TW_REPEAT, TW_REPEAT);
+    ground->GenMipmaps();
+
+    house = modelCache.Get("house.obj");
 
     Uint32 lastTicks = 0;
 
@@ -223,7 +239,7 @@ void Application::Render()
     Matrix4 proj = camera.GetProjection();
     Matrix4 view = camera.GetViewMatrix();
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // deprecated gl begins
     glMatrixMode(GL_PROJECTION);
@@ -231,12 +247,31 @@ void Application::Render()
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixf(view.data);
 
+    glEnable(GL_TEXTURE_2D);
+    ground->Bind(0);
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+    float texScale = 0.1f;
+    float u1 = 0.0f / texScale;
+    float v1 = 1.0f / texScale;
+    float u2 = 0.0f / texScale;
+    float v2 = 0.0f / texScale;
+    float u3 = 1.0f / texScale;
+    float v3 = 0.0f / texScale;
+    float u4 = 1.0f / texScale;
+    float v4 = 1.0f / texScale;
+
     glBegin(GL_QUADS);
-        glColor3f(1.0f, 0.0f, 0.0f); glVertex3f(-5.0f, 0.0f, -5.0f);
-        glColor3f(1.0f, 1.0f, 0.0f); glVertex3f(-5.0f, 0.0f,  5.0f);
-        glColor3f(0.0f, 1.0f, 0.0f); glVertex3f( 5.0f, 0.0f,  5.0f);
-        glColor3f(0.0f, 0.0f, 1.0f); glVertex3f( 5.0f, 0.0f, -5.0f);
+        glTexCoord2f(u1, v1); glVertex3f(-5.0f, 0.0f, -5.0f);
+        glTexCoord2f(u2, v2); glVertex3f(-5.0f, 0.0f,  5.0f);
+        glTexCoord2f(u3, v3); glVertex3f( 5.0f, 0.0f,  5.0f);
+        glTexCoord2f(u4, v4); glVertex3f( 5.0f, 0.0f, -5.0f);
     glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+
+    house->Render();
 
     glMatrixMode(GL_PROJECTION);
     glLoadMatrixf(ortho.data);
