@@ -29,11 +29,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class Image
 {
 public:
-    /// Initializes image with given data.
-    /// Takes ownership of the data pointer.
-    Image(int w, int h, int bpp, char *data);
-    /// Releases the data.
+    /// Initializes data to 0.
+    Image();
+    /// Calls Release().
     ~Image();
+
+    /// Releases the data.
+    void Release();
+
+    /// Releases old data and sets image with given data.
+    /// Takes ownership of the data pointer.
+    void Reset(int w, int h, int bpp, char *data);
+
+    /// Loads an image from file.
+    ///
+    /// Only 8-bit gray scale and 24- or 32-bit true color
+    /// TGA images with no/rle compression are supported.
+    /// \param file Path to the image file.
+    /// \return false on fail
+    bool Load(const String &file);
 
     /// Getters for members.
     int GetWidth() const;
@@ -45,25 +59,5 @@ private:
     int w, h, bpp;
     char *data;
 };
-
-/// Loads an image from file.
-///
-/// Only 8-bit gray scale and 24- or 32-bit true color
-/// TGA images with no/rle compression are supported.
-/// \param file Path to the image file.
-/// \return Pointer to the loaded image. You need to delete it! (or wrap in a smart pointer)
-Image *LoadImage(const String &file);
-
-/// Creates an image filled with given color.
-///
-/// \param w Width of the image
-/// \param h Height of the image
-/// \param bpp BytesPerPixel of the image
-/// \param r Red component of the fill color.
-/// \param g Green component of the fill color.
-/// \param b Blue component of the fill color.
-/// \param a Alpha component of the fill color.
-/// \return Pointer to the created image. You need to delete it! (or wrap in a smart pointer)
-Image *MakeImage(int w, int h, int bpp, uint8 r, uint8 g, uint8 b, uint8 a);
 
 #endif // __IMAGE_H__

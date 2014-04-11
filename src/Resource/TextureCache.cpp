@@ -23,30 +23,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Image.h"
 #include "../Logger.h"
 
-typedef std::unique_ptr<Image> ImagePtr;
-
-Texture *TextureCache::Get(const String &file)
+Texture *TextureCache::Load(const String &filePath)
 {
-    auto it = resources.find(file);
-    if (it != resources.end())
+    static const uint8 debugTexImage[] = { 128, 128, 255 };
+
+    int w = 1, h = 1, bpp = 3;
+    const void *data = debugTexImage;
+
+    Image image;
+
+    if (image.Load(filePath))
     {
-        return it->second.get();
+        w = image.GetWidth();
+        h = image.GetHeight();
+        bpp = image.GetBytesPerPixel();
+        data = image.GetData();
     }
-
-    ImagePtr image(LoadImage(direcotry + file));
-
-    if (!image)
+    else
     {
         LOG_INFO("Using debug texture.");
-        image.reset(MakeImage(16, 16, 3, 128, 128, 255, 0));
     }
 
     Texture *texture = new Texture();
-    texture->SetTexImage(image->GetWidth(),
-                         image->GetHeight(),
-                         image->GetBytesPerPixel(),
-                         image->GetData());
-
-    resources[file] = ResourcePtr(texture);
+    texture->SetTexImage(w, h, bpp, data);
     return texture;
 }

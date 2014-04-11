@@ -20,18 +20,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Model.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "Texture.h"
+
 #include <GL/glew.h>
+
+Model::Model() :
+    vertexBuffer(0),
+    indexBuffer(0)
+{
+}
+
+Model::~Model()
+{
+    delete vertexBuffer;
+    delete indexBuffer;
+}
+
+void Model::SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf)
+{
+    vertexBuffer = vertexBuf;
+    indexBuffer = indexBuf;
+}
+
+void Model::AddSubMesh(uint firstIndex, uint indexCount, Texture *texture)
+{
+    SubMesh submesh;
+    submesh.firstIndex = firstIndex;
+    submesh.indexCount = indexCount;
+    submesh.texture = texture;
+    submeshes.push_back(submesh);
+}
 
 void Model::Render()
 {
-    glBegin(GL_TRIANGLES);
-
-    for (size_t i = 0; i < indices.size(); i++)
+    if (vertexBuffer && indexBuffer)
     {
-        size_t index = indices[i] * vertSize;
-        glColor3fv(&vertices[index + 5]);
-        glVertex3fv(&vertices[index + 0]);
+        vertexBuffer->Bind();
+        indexBuffer->Bind();
+        for (size_t i = 0; i < submeshes.size(); i++)
+        {
+            if (submeshes[i].texture) submeshes[i].texture->Bind(0);
+            indexBuffer->DrawTriangles(submeshes[i].firstIndex, submeshes[i].indexCount);
+        }
     }
-
-    glEnd();
 }

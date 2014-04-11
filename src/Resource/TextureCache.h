@@ -27,9 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class TextureCache : public ResourceCache<Texture>
 {
-public:
-    /// Gets a texture identified by the file name.
-    Texture *Get(const String &file);
+protected:
+    Texture *Load(const String &filePath);
 };
 
 #endif // __TEXTURECACHE_H__

@@ -29,14 +29,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class ModelCache : public ResourceCache<Model>
 {
 public:
-    /// Gets a model identified by the file name.
-    Model *Get(const String &file);
+    ModelCache(TextureCache &texCache);
+
+protected:
+    Model *Load(const String &filePath);
 
 private:
     /// Makes unit cube model.
-    Model *MakeCube();
+    void MakeCube(Model &model);
 
 private:
+    /// For loading model textures.
+    TextureCache &textureCache;
     /// Loader for Wavefron .obj files.
     ObjLoader loader;
 };

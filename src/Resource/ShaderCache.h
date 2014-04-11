@@ -19,39 +19,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __MODEL_H__
-#define __MODEL_H__
+#ifndef __SHADERCACHE_H__
+#define __SHADERCACHE_H__
 
-#include "../Types.h"
+#include "ResourceCache.h"
+#include "../Render/Shader.h"
 
-#include <vector>
-
-class VertexBuffer;
-class IndexBuffer;
-class Texture;
-
-class Model
+class ShaderCache : public ResourceCache<Shader>
 {
-public:
-    Model();
-    ~Model();
-
-    void SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf);
-    void AddSubMesh(uint firstIndex, uint indexCount, Texture *texture);
-
-    void Render();
+protected:
+    Shader *Load(const String &filePath);
 
 private:
-    struct SubMesh
-    {
-        uint firstIndex;
-        uint indexCount;
-        Texture *texture;
-    };
-
-    VertexBuffer *vertexBuffer;
-    IndexBuffer *indexBuffer;
-    std::vector<SubMesh> submeshes;
+    bool LoadSourceFile(const String &file, String &vertSrc, String &fragSrc);
 };
 
-#endif // __MODEL_H__
+#endif // __SHADERCACHE_H__

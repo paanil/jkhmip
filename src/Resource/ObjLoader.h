@@ -29,13 +29,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 class Model;
+class TextureCache;
 
 class ObjLoader
 {
 public:
     ObjLoader();
 
-    Model *Load(const String &file);
+    bool Load(const String &file, Model &model, TextureCache &textureCache);
 
 private:
     struct Index
@@ -64,22 +65,28 @@ private:
     bool ParseIndex(std::stringstream &ss, Index &index, bool verbose = true);
     bool ParseFace(const String &line);
 
-//    void CreateSubMesh(const String &material);
-//
-//    void FinishLastSubMesh();
+    void AddSubMesh(const String &material);
+
+    void FinishLastSubMesh();
 
     void PushVector2(std::vector<float> &verts, const Vector2 &v);
     void PushVector3(std::vector<float> &verts, const Vector3 &v);
 
-    bool BuildMeshData(std::vector<float> &meshVerts, std::vector<uint> &meshIndices);
+    bool BuildModel(Model &model, TextureCache &textureCache);
 
 private:
+    struct SubMesh
+    {
+        uint firstIndex;
+        uint indexCount;
+        String material;
+    };
+
     std::vector<Vector3> positions;
     std::vector<Vector2> texcoords;
     std::vector<Vector3> normals;
     std::vector<Index>   indices;
-
-//    std::vector<SubMesh> submeshes;
+    std::vector<SubMesh> submeshes;
 };
 
 #endif // __OBJLOADER_H__

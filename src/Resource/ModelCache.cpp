@@ -20,33 +20,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ModelCache.h"
+#include "../Render/VertexBuffer.h"#include "../Render/IndexBuffer.h"
 #include "../Logger.h"
 
-Model *ModelCache::Get(const String &file)
+ModelCache::ModelCache(TextureCache &texCache) :
+    textureCache(texCache)
 {
-    auto it = resources.find(file);
-    if (it != resources.end())
-    {
-        return it->second.get();
-    }
+}
 
-    Model *model = loader.Load(direcotry + file);
+Model *ModelCache::Load(const String &filePath)
+{
+    Model *model = new Model();
 
-    if (!model)
+    if (!loader.Load(filePath, *model, textureCache))
     {
         LOG_INFO("Using debug model.");
-        model = MakeCube();
+        MakeCube(*model);
     }
 
-    resources[file] = ResourcePtr(model);
     return model;
 }
 
-Model *ModelCache::MakeCube()
+void ModelCache::MakeCube(Model &model)
 {
-    const float radius = 1.0f;
+    static const float radius = 1.0f;
 
-    const float verts[24][6] =
+    static const float verts[24][6] =
     {
         // LEFT
         {-radius, -radius, -radius, -1.0f, 0.0f, 0.0f},
@@ -80,7 +79,7 @@ Model *ModelCache::MakeCube()
         { radius, -radius,  radius, 0.0f, 0.0f,  1.0f},
     };
 
-    const uint faces[12][3] =
+    static const uint faces[12][3] =
     {
         { 0,  3,  2}, { 2,  1,  0}, // LEFT
         { 4,  5,  6}, { 6,  7,  4}, // RIGHT
@@ -90,33 +89,16 @@ Model *ModelCache::MakeCube()
         {20, 23, 22}, {22, 21, 20}, // FRONT
     };
 
-//    const uint vertSize = 6*sizeof(float);
+    static const uint vertSize = 6*sizeof(float);
 
-    Model *model = new Model();
-    for (int i = 0; i < 24; i++)
-    {
-        model->vertices.push_back(verts[i][0]);
-        model->vertices.push_back(verts[i][1]);
-        model->vertices.push_back(verts[i][2]);
-        model->vertices.push_back(0.0f);
-        model->vertices.push_back(0.0f);
-        model->vertices.push_back(verts[i][3]);
-        model->vertices.push_back(verts[i][4]);
-        model->vertices.push_back(verts[i][5]);
-    }
-    for (int i = 0; i < 12; i++)
-    {
-        model->indices.push_back(faces[i][0]);
-        model->indices.push_back(faces[i][1]);
-        model->indices.push_back(faces[i][2]);
-    }
-    model->vertSize = 8;
-    return model;
+    VertexBuffer *vertexBuf = new VertexBuffer();
+    IndexBuffer *indexBuf = new IndexBuffer();
 
-//    vertexBuf.SetData(24*vertSize, verts);
-//    vertexBuf.SetAttribute(VA_POSITION, vertSize, 0);
-//    vertexBuf.SetAttribute(VA_NORMAL, vertSize, &((float *)0)[3]);
-//    indexBuf.SetData(12*3*sizeof(uint), faces);
-//    indexRange.firstIndex = 0;
-//    indexRange.indexCount = 12*3;
+    vertexBuf->SetData(24*vertSize, verts);
+    vertexBuf->SetAttribute(VA_POSITION, vertSize, 0);
+    vertexBuf->SetAttribute(VA_NORMAL, vertSize, &((float *)0)[3]);
+    indexBuf->SetData(12*3*sizeof(uint), faces);
+
+    model.SetBuffers(vertexBuf, indexBuf);
+    model.AddSubMesh(0, 12*3, 0);
 }

@@ -1,6 +1,9 @@
 
 #include "ObjLoader.h"
+#include "../Render/VertexBuffer.h"
+#include "../Render/IndexBuffer.h"
 #include "../Render/Model.h"
+#include "../Resource/TextureCache.h"
 #include "../Logger.h"
 
 #include <fstream>
@@ -15,8 +18,10 @@ ObjLoader::ObjLoader()
     indices.reserve(3000); // 1000 triangles
 }
 
-Model *ObjLoader::Load(const String &file)
+bool ObjLoader::Load(const String &file, Model &model, TextureCache &textureCache)
 {
+    LOG_INFO("Loading model '%'...", file);
+
     positions.clear();
     texcoords.clear();
     normals.clear();
@@ -24,12 +29,10 @@ Model *ObjLoader::Load(const String &file)
 
     std::ifstream f(file);
 
-    LOG_INFO("Loading model '%'...", file);
-
     if (!f.is_open())
     {
         LOG_ERROR("Couldn't open file.");
-        return 0;
+        return false;
     }
 
     String line;
@@ -54,24 +57,22 @@ Model *ObjLoader::Load(const String &file)
         else if (ident == "f")
             parseStatus = ParseFace(line);
         else if (ident == "usemtl")
-            ; // TODO: create submesh
+            AddSubMesh(line);
 
         if (!parseStatus)
-        {
-            LOG_ERROR("Loading model failed.");
-            return 0;
-        }
+            break;
     }
 
-    Model *model = new Model();
-    if (!BuildMeshData(model->vertices, model->indices))
+    if (submeshes.empty())
+        AddSubMesh("debug");
+    FinishLastSubMesh();
+
+    if (!parseStatus || !BuildModel(model, textureCache))
     {
         LOG_ERROR("Loading model failed.");
-        delete model;
-        return 0;
+        return false;
     }
-    model->vertSize = 8;
-    return model;
+    return true;
 }
 
 String ObjLoader::TakeIdent(const String &line, String &ident)
@@ -206,24 +207,24 @@ bool ObjLoader::ParseFace(const String &line)
     return true;
 }
 
-//void ObjLoader::CreateSubMesh(const String &material)
-//{
-//    if (!submeshes.empty())
-//    {
-//        FinishLastSubMesh();
-//    }
-//
-//    SubMesh submesh;
-//    submesh.texture = materail;
-//    submesh.firstIndex = indices.size();
-//    submeshes.push_back(submesh);
-//}
-//
-//void ObjLoader::FinishLastSubMesh()
-//{
-//    submeshes.back().indexCount =
-//        indices.size() - submeshes.back().firstIndex;
-//}
+void ObjLoader::AddSubMesh(const String &material)
+{
+    if (!submeshes.empty())
+    {
+        FinishLastSubMesh();
+    }
+
+    SubMesh submesh;
+    submesh.firstIndex = indices.size();
+    submesh.material = material;
+    submeshes.push_back(submesh);
+}
+
+void ObjLoader::FinishLastSubMesh()
+{
+    submeshes.back().indexCount =
+        indices.size() - submeshes.back().firstIndex;
+}
 
 void ObjLoader::PushVector2(std::vector<float> &verts, const Vector2 &v)
 {
@@ -238,9 +239,10 @@ void ObjLoader::PushVector3(std::vector<float> &verts, const Vector3 &v)
     verts.push_back(v.z);
 }
 
-bool ObjLoader::BuildMeshData(std::vector<float> &meshVerts, std::vector<uint> &meshIndices)
+bool ObjLoader::BuildModel(Model &model, TextureCache &textureCache)
 {
     std::vector<Index> uniques;
+    std::vector<uint> meshIndices;
     uniques.reserve(indices.size());
     meshIndices.reserve(indices.size());
 
@@ -264,6 +266,7 @@ bool ObjLoader::BuildMeshData(std::vector<float> &meshVerts, std::vector<uint> &
     bool hasNormals = !normals.empty();
     uint vertSize = 3 + (hasTexcoords ? 2 : 0) + (hasNormals ? 3 : 0);
 
+    std::vector<float> meshVerts;
     meshVerts.reserve(uniques.size() * vertSize);
 
     for (size_t i = 0; i < uniques.size(); i++)
@@ -295,6 +298,33 @@ bool ObjLoader::BuildMeshData(std::vector<float> &meshVerts, std::vector<uint> &
             }
             PushVector3(meshVerts, normals[index - 1]);
         }
+    }
+
+    uint stride = vertSize * sizeof(float);
+
+    VertexBuffer *vertBuf = new VertexBuffer();
+    IndexBuffer *indexBuf = new IndexBuffer();
+
+    vertBuf->SetData(meshVerts.size() * sizeof(float), &meshVerts[0]);
+    indexBuf->SetData(meshIndices.size() * sizeof(uint), &meshIndices[0]);
+
+    float *offs = 0;
+    vertBuf->SetAttribute(VA_POSITION, stride, offs); offs += 3;
+    if (hasTexcoords)
+    { vertBuf->SetAttribute(VA_TEXCOORD, stride, offs); offs += 2; }
+    if (hasNormals)
+    { vertBuf->SetAttribute(VA_NORMAL, stride, offs); offs += 3; }
+
+    model.SetBuffers(vertBuf, indexBuf);
+
+    for (size_t i = 0; i < submeshes.size(); i++)
+    {
+        const SubMesh &submesh = submeshes[i];
+        Texture *texture = textureCache.Get(submesh.material);
+        texture->SetFilterMode(TF_MIN_LINEAR_MIP_LINEAR, TF_MAG_LINEAR);
+        texture->SetWrapMode(TW_REPEAT, TW_REPEAT);
+        texture->GenMipmaps();
+        model.AddSubMesh(submesh.firstIndex,submesh.indexCount, texture);
     }
 
     return true;

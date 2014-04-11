@@ -21,21 +21,56 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Image.h"
 #include "../Logger.h"
+#include "../Str.h"
 
 #include <fstream>
 #include <cstring>
-#include <cctype>
 
-/* Image class */
-
-Image::Image(int w, int h, int bpp, char *data) :
-    w(w), h(h), bpp(bpp), data(data)
+Image::Image() :
+    data(0)
 {
 }
 
 Image::~Image()
 {
+    Release();
+}
+
+void Image::Release()
+{
     delete[] data;
+    data = 0;
+}
+
+void Image::Reset(int w, int h, int bpp, char *data)
+{
+    Release();
+    this->w = w;
+    this->h = h;
+    this->bpp = bpp;
+    this->data = data;
+}
+
+bool LoadTGA(const String &file, Image &image);
+
+bool Image::Load(const String &file)
+{
+    LOG_INFO("Loading image '%'...", file);
+
+    size_t pos = file.find_last_of('.');
+
+    if (pos != String::npos)
+    {
+        String ext = file.substr(pos + 1);
+
+        if (StrIEquals(ext, "tga"))
+        {
+            return LoadTGA(file, *this);
+        }
+    }
+
+    LOG_ERROR("Unknown image format.");
+    return false;
 }
 
 int Image::GetWidth() const
@@ -58,16 +93,15 @@ const char *Image::GetData() const
     return data;
 }
 
-/* Free functions */
-
-Image *LoadTGA(const String &file)
+// Loads a tga image from file.
+bool LoadTGA(const String &file, Image &image)
 {
     std::ifstream f(file.c_str(), std::ifstream::binary);
 
     if (!f.is_open())
     {
         LOG_ERROR("Couldn't open file.", file);
-        return 0;
+        return false;
     }
 
     // read header
@@ -85,7 +119,7 @@ Image *LoadTGA(const String &file)
          header[16] != 32))
     {
         LOG_ERROR("Invalid header.", file);
-        return 0;
+        return false;
     }
 
     // skip id
@@ -140,7 +174,7 @@ Image *LoadTGA(const String &file)
         }
     }
 
-    if (!(header[17] & 0x20))
+    if (header[17] & 0x20)
     {
         // flip -> origin to upper left
         int line = w*bpp;
@@ -156,69 +190,7 @@ Image *LoadTGA(const String &file)
         delete[] tmp;
     }
 
-    return new Image(w, h, bpp, data);
-}
+    image.Reset(w, h, bpp, data);
 
-// Tests string case-insensitive equality.
-bool StrIEquals(const String &str1, const String &str2)
-{
-    if (str1.length() != str2.length())
-    {
-        return false;
-    }
-
-    const char *s1 = str1.c_str();
-    const char *s2 = str2.c_str();
-
-    for (; *s1 && *s2; s1++, s2++)
-    {
-        if (tolower(*s1) != tolower(*s2))
-        {
-            return false;
-        }
-    }
     return true;
-}
-
-Image *LoadImage(const String &file)
-{
-    LOG_INFO("Loading image '%'...", file);
-
-    size_t pos = file.find_last_of('.');
-
-    if (pos != String::npos)
-    {
-        String ext = file.substr(pos + 1);
-
-        if (StrIEquals(ext, "tga"))
-        {
-            return LoadTGA(file);
-        }
-    }
-
-    LOG_ERROR("Unknown image format.");
-    return 0;
-}
-
-Image *MakeImage(int w, int h, int bpp, uint8 r, uint8 g, uint8 b, uint8 a)
-{
-    if (w < 1 || h < 1 || bpp < 1 || bpp > 4)
-    {
-        LOG_ERROR("Trying to make invalid image: w: % h: % bpp: %.", w, h, bpp);
-        return 0;
-    }
-
-    uint8 color[4] = { r, g, b, a };
-
-    int size = w*h*bpp;
-    char *data = new char[size];
-
-    char *p = &data[0];
-    char *e = &data[size];
-    for (; p < e; p += bpp)
-    {
-        memcpy(p, color, bpp);
-    }
-
-    return new Image(w, h, bpp, data);
 }

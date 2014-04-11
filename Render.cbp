@@ -41,6 +41,7 @@
 			<Add option="-lSDL2" />
 			<Add directory="libs/lib" />
 		</Linker>
+		<Unit filename="Data/Shaders/default.shader" />
 		<Unit filename="src/Application.cpp" />
 		<Unit filename="src/Application.h" />
 		<Unit filename="src/Camera.cpp" />
@@ -62,10 +63,16 @@
 		<Unit filename="src/Math/Vector3.h" />
 		<Unit filename="src/Math/Vector4.cpp" />
 		<Unit filename="src/Math/Vector4.h" />
+		<Unit filename="src/Render/IndexBuffer.cpp" />
+		<Unit filename="src/Render/IndexBuffer.h" />
 		<Unit filename="src/Render/Model.cpp" />
 		<Unit filename="src/Render/Model.h" />
+		<Unit filename="src/Render/Shader.cpp" />
+		<Unit filename="src/Render/Shader.h" />
 		<Unit filename="src/Render/Texture.cpp" />
 		<Unit filename="src/Render/Texture.h" />
+		<Unit filename="src/Render/VertexBuffer.cpp" />
+		<Unit filename="src/Render/VertexBuffer.h" />
 		<Unit filename="src/Resource/Image.cpp" />
 		<Unit filename="src/Resource/Image.h" />
 		<Unit filename="src/Resource/ModelCache.cpp" />
@@ -73,8 +80,12 @@
 		<Unit filename="src/Resource/ObjLoader.cpp" />
 		<Unit filename="src/Resource/ObjLoader.h" />
 		<Unit filename="src/Resource/ResourceCache.h" />
+		<Unit filename="src/Resource/ShaderCache.cpp" />
+		<Unit filename="src/Resource/ShaderCache.h" />
 		<Unit filename="src/Resource/TextureCache.cpp" />
 		<Unit filename="src/Resource/TextureCache.h" />
+		<Unit filename="src/Str.cpp" />
+		<Unit filename="src/Str.h" />
 		<Unit filename="src/Types.h" />
 		<Unit filename="src/Window.cpp" />
 		<Unit filename="src/Window.h" />

@@ -19,39 +19,48 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __MODEL_H__
-#define __MODEL_H__
+#ifndef __VERTEXBUFFER_H__
+#define __VERTEXBUFFER_H__
 
 #include "../Types.h"
 
-#include <vector>
-
-class VertexBuffer;
-class IndexBuffer;
-class Texture;
-
-class Model
+enum
 {
-public:
-    Model();
-    ~Model();
-
-    void SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf);
-    void AddSubMesh(uint firstIndex, uint indexCount, Texture *texture);
-
-    void Render();
-
-private:
-    struct SubMesh
-    {
-        uint firstIndex;
-        uint indexCount;
-        Texture *texture;
-    };
-
-    VertexBuffer *vertexBuffer;
-    IndexBuffer *indexBuffer;
-    std::vector<SubMesh> submeshes;
+    VA_POSITION = 0,
+    VA_TEXCOORD,
+    VA_NORMAL,
+    VA_COUNT
 };
 
-#endif // __MODEL_H__
+extern const char *VA_NAMES[];
+
+class VertexBuffer
+{
+public:
+    VertexBuffer();
+    ~VertexBuffer();
+
+    void SetData(uint dataSize, const void *data);
+    void SetAttribute(uint index, uint stride, const void *pointer);
+
+    void Bind();
+
+private:
+    void BindAttribute(uint index);
+
+private:
+    uint buffer;
+
+    struct Attribute
+    {
+        int         size;
+        uint        type;
+        uint        normalized;
+        int         stride;
+        const void *pointer;
+    };
+
+    Attribute attributes[VA_COUNT];
+};
+
+#endif // __VERTEXBUFFER_H__

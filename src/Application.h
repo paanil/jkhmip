@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Window.h"
 #include "Camera.h"
+#include "Resource/ShaderCache.h"
 #include "Resource/TextureCache.h"
 #include "Resource/ModelCache.h"
 
@@ -81,10 +82,12 @@ private:
     Camera camera;
     Vector3 cameraAngles;
 
+    ShaderCache shaderCache;
     TextureCache textureCache;
     ModelCache modelCache;
 
-    Texture *ground;
+    Shader *shader;
+    Model *ground;
     Model *house;
 };
 

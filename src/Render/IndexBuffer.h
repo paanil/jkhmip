@@ -19,39 +19,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __MODEL_H__
-#define __MODEL_H__
+#ifndef __INDEXBUFFER_H__
+#define __INDEXBUFFER_H__
 
 #include "../Types.h"
 
-#include <vector>
-
-class VertexBuffer;
-class IndexBuffer;
-class Texture;
-
-class Model
+class IndexBuffer
 {
 public:
-    Model();
-    ~Model();
+    IndexBuffer();
+    ~IndexBuffer();
 
-    void SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf);
-    void AddSubMesh(uint firstIndex, uint indexCount, Texture *texture);
+    void SetData(uint dataSize, const void *data);
 
-    void Render();
+    void Bind();
+
+    void DrawTriangles(uint firstIndex, uint indexCount);
 
 private:
-    struct SubMesh
-    {
-        uint firstIndex;
-        uint indexCount;
-        Texture *texture;
-    };
-
-    VertexBuffer *vertexBuffer;
-    IndexBuffer *indexBuffer;
-    std::vector<SubMesh> submeshes;
+    uint buffer;
 };
 
-#endif // __MODEL_H__
+#endif // __INDEXBUFFER_H__

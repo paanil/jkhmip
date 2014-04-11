@@ -19,39 +19,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __MODEL_H__
-#define __MODEL_H__
+#include "IndexBuffer.h"
 
-#include "../Types.h"
+#include <GL/glew.h>
 
-#include <vector>
-
-class VertexBuffer;
-class IndexBuffer;
-class Texture;
-
-class Model
+IndexBuffer::IndexBuffer()
 {
-public:
-    Model();
-    ~Model();
+    glGenBuffers(1, &buffer);
+}
 
-    void SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf);
-    void AddSubMesh(uint firstIndex, uint indexCount, Texture *texture);
+IndexBuffer::~IndexBuffer()
+{
+    glDeleteBuffers(1, &buffer);
+}
 
-    void Render();
+void IndexBuffer::SetData(uint dataSize, const void *data)
+{
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, dataSize, data, GL_STATIC_DRAW);
+}
 
-private:
-    struct SubMesh
-    {
-        uint firstIndex;
-        uint indexCount;
-        Texture *texture;
-    };
+void IndexBuffer::Bind()
+{
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer);
+}
 
-    VertexBuffer *vertexBuffer;
-    IndexBuffer *indexBuffer;
-    std::vector<SubMesh> submeshes;
-};
-
-#endif // __MODEL_H__
+void IndexBuffer::DrawTriangles(uint firstIndex, uint indexCount)
+{
+    void *offs = reinterpret_cast<void *>(firstIndex * sizeof(uint));
+    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, offs);
+}
