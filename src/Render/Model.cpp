@@ -20,28 +20,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Model.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
 #include "Texture.h"
 
 #include <GL/glew.h>
 
-Model::Model() :
-    vertexBuffer(0),
-    indexBuffer(0)
-{
-}
-
-Model::~Model()
-{
-    delete vertexBuffer;
-    delete indexBuffer;
-}
-
 void Model::SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf)
 {
-    vertexBuffer = vertexBuf;
-    indexBuffer = indexBuf;
+    vertexBuffer.reset(vertexBuf);
+    indexBuffer.reset(indexBuf);
+    submeshes.clear();
 }
 
 void Model::AddSubMesh(uint firstIndex, uint indexCount, Texture *texture)

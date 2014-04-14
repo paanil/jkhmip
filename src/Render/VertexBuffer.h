@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../Types.h"
 
+/// Indices of supported vertex attributes.
 enum
 {
     VA_POSITION = 0,
@@ -32,25 +33,43 @@ enum
     VA_COUNT
 };
 
+/// Vertex attribute names.
+/// Used for binding shader attribute locations.
 extern const char *VA_NAMES[];
 
+/// Vertex buffer class.
+///
 class VertexBuffer
 {
 public:
+    /// Gets a gl buffer resource.
+    /// GL context must be created beforehand.
     VertexBuffer();
+    /// Releases the gl buffer resource.
     ~VertexBuffer();
 
+    /// Sets vertex buffer data and 'clears' attributes.
     void SetData(uint dataSize, const void *data);
+
+    /// Sets vertex attribute info.
+    /// Attribute size depends on the index, type is always float and normalized false.
+    /// \param index The index of the attribute to set (VA_POSITION, VA_TEXCOORD, ...)
+    /// \param stride The stride of the attribute
+    /// \param pointer The pointer offset of the attribute
     void SetAttribute(uint index, uint stride, const void *pointer);
 
+    /// Binds vertex buffer.
     void Bind();
 
 private:
+    /// Binds vertex attribute corresponding the index.
     void BindAttribute(uint index);
 
 private:
+    /// GL buffer id.
     uint buffer;
 
+    /// Vertex attribute info.
     struct Attribute
     {
         int         size;
@@ -60,6 +79,7 @@ private:
         const void *pointer;
     };
 
+    /// Array of vertex attributes.
     Attribute attributes[VA_COUNT];
 };
 

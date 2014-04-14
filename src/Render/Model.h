@@ -22,26 +22,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __MODEL_H__
 #define __MODEL_H__
 
-#include "../Types.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
+#include <memory>
 #include <vector>
 
-class VertexBuffer;
-class IndexBuffer;
 class Texture;
 
+/// Model class.
+///
 class Model
 {
-public:
-    Model();
-    ~Model();
+    typedef std::unique_ptr<VertexBuffer> VertexBufferPtr;
+    typedef std::unique_ptr<IndexBuffer> IndexBufferPtr;
 
+public:
+    /// Sets vertex and index buffers and clears sub meshes.
+    /// Releases old vertex and index buffers and takes ownership of the new ones.
     void SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf);
+    /// Adds sub mesh with given texture.
     void AddSubMesh(uint firstIndex, uint indexCount, Texture *texture);
 
+    /// Renders the model.
     void Render();
 
 private:
+    /// Sub mesh is just a range of indices and a texture.
     struct SubMesh
     {
         uint firstIndex;
@@ -49,8 +56,8 @@ private:
         Texture *texture;
     };
 
-    VertexBuffer *vertexBuffer;
-    IndexBuffer *indexBuffer;
+    VertexBufferPtr vertexBuffer;
+    IndexBufferPtr indexBuffer;
     std::vector<SubMesh> submeshes;
 };
 

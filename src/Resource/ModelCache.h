@@ -26,12 +26,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ObjLoader.h"
 #include "../Render/Model.h"
 
+/// Cache for models.
+///
 class ModelCache : public ResourceCache<Model>
 {
 public:
+    /// Stores a reference to a texture cache for later use.
     ModelCache(TextureCache &texCache);
 
 protected:
+    /// Loads a model from given file.
     Model *Load(const String &filePath);
 
 private:

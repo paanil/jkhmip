@@ -75,7 +75,7 @@ private:
     std::ostream *stream;
     String prefix;
 
-    /* Singleton loggers */
+    /* Static loggers */
 public:
     static Logger &Info();
     static Logger &Debug();

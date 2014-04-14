@@ -1,3 +1,23 @@
+/*
+================================================================================
+
+Copyright (c) 2014 Ilari Paananen
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+================================================================================
+*/
 
 #include "ObjLoader.h"
 #include "../Render/VertexBuffer.h"
@@ -8,6 +28,28 @@
 
 #include <fstream>
 #include <sstream>
+
+// ----------------------------------------
+
+String ParseIdent(const String &line, String &ident);
+bool ParseVector2(const String &line, Vector2 &v);
+bool ParseVector3(const String &line, Vector3 &v);
+bool ParseIndex(std::stringstream &ss, ObjLoader::Index &index, bool verbose = true);
+void PushVector2(std::vector<float> &verts, const Vector2 &v);
+void PushVector3(std::vector<float> &verts, const Vector3 &v);
+
+// ----------------------------------------
+
+bool ObjLoader::Index::operator==(const Index &index) const
+{
+    return ((positionIndex == index.positionIndex) &&
+            (texcoordIndex == index.texcoordIndex) &&
+            (normalIndex == index.normalIndex));
+}
+
+// ----------------------------------------
+
+/* ObjLoader */
 
 ObjLoader::ObjLoader()
 {
@@ -46,7 +88,7 @@ bool ObjLoader::Load(const String &file, Model &model, TextureCache &textureCach
         if (line[0] == '#')
             continue; // skip comments
 
-        line = TakeIdent(line, ident);
+        line = ParseIdent(line, ident);
 
         if (ident == "v")
             parseStatus = ParsePosition(line);
@@ -64,7 +106,10 @@ bool ObjLoader::Load(const String &file, Model &model, TextureCache &textureCach
     }
 
     if (submeshes.empty())
+    {
         AddSubMesh("debug");
+        submeshes.back().firstIndex = 0;
+    }
     FinishLastSubMesh();
 
     if (!parseStatus || !BuildModel(model, textureCache))
@@ -73,30 +118,6 @@ bool ObjLoader::Load(const String &file, Model &model, TextureCache &textureCach
         return false;
     }
     return true;
-}
-
-String ObjLoader::TakeIdent(const String &line, String &ident)
-{
-    ident.clear();
-
-    size_t i = 0;
-    for (; isalpha(line[i]); i++)
-        ident.push_back(line[i]);
-    for (; isspace(line[i]); i++) ; // skip whitespaces
-
-    return line.substr(i); // return the rest of the line
-}
-
-bool ObjLoader::ParseVector2(const String &line, Vector2 &v)
-{
-    std::stringstream ss(line);
-    return ((ss >> v.x) && (ss >> v.y));
-}
-
-bool ObjLoader::ParseVector3(const String &line, Vector3 &v)
-{
-    std::stringstream ss(line);
-    return ((ss >> v.x) && (ss >> v.y) && (ss >> v.z));
 }
 
 bool ObjLoader::ParsePosition(const String &line)
@@ -135,38 +156,6 @@ bool ObjLoader::ParseNormal(const String &line)
     normal.x *= -1.0f;
     normal.y *= -1.0f;
     normals.push_back(normal);
-    return true;
-}
-
-bool ObjLoader::ParseIndex(std::stringstream &ss, Index &index, bool verbose)
-{
-    index.positionIndex = 0;
-    index.texcoordIndex = 0;
-    index.normalIndex = 0;
-
-    if (!(ss >> index.positionIndex))
-    {
-        if (verbose)
-            LOG_ERROR("Invalid face definition: Vertex position required.");
-        return false;
-    }
-
-    if (ss.get() == '/')
-    {
-        if (!(ss >> index.texcoordIndex))
-            index.texcoordIndex = 0;
-
-        if (ss.get() == '/')
-        {
-            if (!(ss >> index.normalIndex))
-            {
-                LOG_ERROR("Invalid face definition: Vertex normal expected.");
-                index.normalIndex = 0;
-                return false;
-            }
-        }
-    }
-
     return true;
 }
 
@@ -224,19 +213,6 @@ void ObjLoader::FinishLastSubMesh()
 {
     submeshes.back().indexCount =
         indices.size() - submeshes.back().firstIndex;
-}
-
-void ObjLoader::PushVector2(std::vector<float> &verts, const Vector2 &v)
-{
-    verts.push_back(v.x);
-    verts.push_back(v.y);
-}
-
-void ObjLoader::PushVector3(std::vector<float> &verts, const Vector3 &v)
-{
-    verts.push_back(v.x);
-    verts.push_back(v.y);
-    verts.push_back(v.z);
 }
 
 bool ObjLoader::BuildModel(Model &model, TextureCache &textureCache)
@@ -310,10 +286,8 @@ bool ObjLoader::BuildModel(Model &model, TextureCache &textureCache)
 
     float *offs = 0;
     vertBuf->SetAttribute(VA_POSITION, stride, offs); offs += 3;
-    if (hasTexcoords)
-    { vertBuf->SetAttribute(VA_TEXCOORD, stride, offs); offs += 2; }
-    if (hasNormals)
-    { vertBuf->SetAttribute(VA_NORMAL, stride, offs); offs += 3; }
+    if (hasTexcoords) { vertBuf->SetAttribute(VA_TEXCOORD, stride, offs); offs += 2; }
+    if (hasNormals)   { vertBuf->SetAttribute(VA_NORMAL, stride, offs); offs += 3; }
 
     model.SetBuffers(vertBuf, indexBuf);
 
@@ -324,8 +298,83 @@ bool ObjLoader::BuildModel(Model &model, TextureCache &textureCache)
         texture->SetFilterMode(TF_MIN_LINEAR_MIP_LINEAR, TF_MAG_LINEAR);
         texture->SetWrapMode(TW_REPEAT, TW_REPEAT);
         texture->GenMipmaps();
-        model.AddSubMesh(submesh.firstIndex,submesh.indexCount, texture);
+        model.AddSubMesh(submesh.firstIndex, submesh.indexCount, texture);
     }
 
     return true;
 }
+
+// ----------------------------------------
+
+/* Free functions */
+
+String ParseIdent(const String &line, String &ident)
+{
+    ident.clear();
+
+    size_t i = 0;
+    for (; isalpha(line[i]); i++)
+        ident.push_back(line[i]);
+    for (; isspace(line[i]); i++) ; // skip whitespaces
+
+    return line.substr(i); // return the rest of the line
+}
+
+bool ParseVector2(const String &line, Vector2 &v)
+{
+    std::stringstream ss(line);
+    return ((ss >> v.x) && (ss >> v.y));
+}
+
+bool ParseVector3(const String &line, Vector3 &v)
+{
+    std::stringstream ss(line);
+    return ((ss >> v.x) && (ss >> v.y) && (ss >> v.z));
+}
+
+bool ParseIndex(std::stringstream &ss, ObjLoader::Index &index, bool verbose)
+{
+    index.positionIndex = 0;
+    index.texcoordIndex = 0;
+    index.normalIndex = 0;
+
+    if (!(ss >> index.positionIndex))
+    {
+        if (verbose)
+            LOG_ERROR("Invalid face definition: Vertex position required.");
+        return false;
+    }
+
+    if (ss.get() == '/')
+    {
+        if (!(ss >> index.texcoordIndex))
+            index.texcoordIndex = 0;
+
+        if (ss.get() == '/')
+        {
+            if (!(ss >> index.normalIndex))
+            {
+                LOG_ERROR("Invalid face definition: Vertex normal expected.");
+                index.normalIndex = 0;
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+void PushVector2(std::vector<float> &verts, const Vector2 &v)
+{
+    verts.push_back(v.x);
+    verts.push_back(v.y);
+}
+
+void PushVector3(std::vector<float> &verts, const Vector3 &v)
+{
+    verts.push_back(v.x);
+    verts.push_back(v.y);
+    verts.push_back(v.z);
+}
+
+// ----------------------------------------

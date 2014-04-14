@@ -25,12 +25,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ResourceCache.h"
 #include "../Render/Shader.h"
 
+/// Cache for shaders.
+///
 class ShaderCache : public ResourceCache<Shader>
 {
 protected:
+    /// Loads a shader from given file.
     Shader *Load(const String &filePath);
 
 private:
+    /// Loads vertex and fragment shader sources from single file.
+    /// The file must contain line ":vert" stating where begins the vertex shader
+    /// and line ":frag" stating where begins the fragment shader.
     bool LoadSourceFile(const String &file, String &vertSrc, String &fragSrc);
 };
 

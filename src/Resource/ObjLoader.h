@@ -31,50 +31,61 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class Model;
 class TextureCache;
 
+/// Loader for Wavefront .obj files.
+///
 class ObjLoader
 {
 public:
-    ObjLoader();
-
-    bool Load(const String &file, Model &model, TextureCache &textureCache);
-
-private:
+    /// Obj vertex index.
     struct Index
     {
         uint positionIndex;
         uint texcoordIndex;
         uint normalIndex;
 
-        bool operator==(const Index &index) const
-        {
-            return ((positionIndex == index.positionIndex) &&
-                    (texcoordIndex == index.texcoordIndex) &&
-                    (normalIndex == index.normalIndex));
-        }
+        /// Tests equality of two indices.
+        bool operator==(const Index &index) const;
     };
 
-    String TakeIdent(const String &line, String &ident);
+public:
+    /// Reserves some memory so less allocations when loading.
+    ObjLoader();
 
-    bool ParseVector2(const String &line, Vector2 &v);
-    bool ParseVector3(const String &line, Vector3 &v);
+    /// Loads .obj file into model. TextureCache is needed to get the
+    /// textures for the model. Returns false on fail.
+    bool Load(const String &file, Model &model, TextureCache &textureCache);
 
+private:
+    /// Parses vertex position (Vector3) from line.
+    /// Returns false on fail.
     bool ParsePosition(const String &line);
+    /// Parses texture coordinate (Vector2) from line.
+    /// Returns false on fail.
     bool ParseTexCoord(const String &line);
+    /// Parses vertex normal (Vector3) from line.
+    /// Returns false on fail.
     bool ParseNormal(const String &line);
 
-    bool ParseIndex(std::stringstream &ss, Index &index, bool verbose = true);
+    /// Parses face indices from line.
+    /// Line must contain at least 3 indices meaning a triangle.
+    /// Faces with 4 indices (quad) are split into two triangles.
+    /// Faces containing more than 4 indices are not supported.
+    /// Returns false on fail.
     bool ParseFace(const String &line);
 
+    /// Finishes last sub mesh and adds a new sub mesh with given material.
+    /// Following faces belong to this sub mesh until new sub mesh is added.
     void AddSubMesh(const String &material);
-
+    /// Finishes last sub mesh.
     void FinishLastSubMesh();
 
-    void PushVector2(std::vector<float> &verts, const Vector2 &v);
-    void PushVector3(std::vector<float> &verts, const Vector3 &v);
-
+    /// Builds model from loaded data:
+    /// creates proper vertex/index buffers and
+    /// adds submeshes with loaded textures.
     bool BuildModel(Model &model, TextureCache &textureCache);
 
 private:
+    /// Sub mesh.
     struct SubMesh
     {
         uint firstIndex;

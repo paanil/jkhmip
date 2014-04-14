@@ -25,9 +25,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ResourceCache.h"
 #include "../Render/Texture.h"
 
+/// Cache for textures.
+///
 class TextureCache : public ResourceCache<Texture>
 {
 protected:
+    /// Loads a texture from given file.
     Texture *Load(const String &filePath);
 };
 
