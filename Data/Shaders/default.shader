@@ -20,10 +20,13 @@ out vec3 light;
 
 void main()
 {
+    mat3 NormalMatrix = mat3(Model);
+
     texcoord = TexCoord;
-    normal = Normal;
+    normal = NormalMatrix * Normal;
     float ang = Time * 0.5;
     light = vec3(cos(ang), sin(ang), 0.0);
+
     gl_Position = Projection * View * Model * vec4(Position, 1.0);
 }
 

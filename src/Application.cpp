@@ -106,7 +106,14 @@ void Application::Run()
 
     SceneObject *house = scene.CreateObject();
     house->SetModel(modelCache.Get("house.obj"));
+    house->SetPosition(Vector3(-3.0f, -0.75f, 3.0f));
     house->SetRotation(Matrix3::RotationY(-15.0f));
+
+    SceneObject *sword = scene.CreateObject();
+    sword->SetModel(modelCache.Get("sword.obj"));
+    sword->SetParent(scene.GetCamera());
+    sword->SetPosition(Vector3(0.3f, -0.3f, 0.6f));
+    sword->SetRotation(Matrix3::RotationX(25.0f) * Matrix3::RotationY(-17.5f));
 
     Uint32 lastTicks = 0;
 
@@ -194,7 +201,7 @@ void Application::Update(float dt)
 {
     const Uint8 *keys = SDL_GetKeyboardState(0);
 
-    const float speed = 3.0f;
+    const float speed = 6.0f;
     const float sensitivity = 0.25f;
 
     // Camera movement
