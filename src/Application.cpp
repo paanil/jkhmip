@@ -20,9 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Application.h"
-#include "Logger.h"
-#include "Math/Matrix4.h"
 #include "Math/Math.h"
+#include "Logger.h"
 
 #include "Resource/ShaderCache.h"
 
@@ -93,7 +92,7 @@ void Application::Run()
     glCullFace(GL_BACK);
 
     OnWindowResize(config.screenWidth, config.screenHeight); // Make sure the projection is OK.
-    camera.SetPosition(Vector3(0.0f, 1.0f, 0.0f));
+    scene.GetCamera()->SetPosition(Vector3(0.0f, 1.0f, 0.0f));
     cameraAngles = Vector3(0.0f, 0.0f, 0.0f);
 
     shaderCache.SetDirectory("Data/Shaders/");
@@ -101,8 +100,13 @@ void Application::Run()
     modelCache.SetDirectory("Data/Models/");
 
     shader = shaderCache.Get("default.shader");
-    ground = modelCache.Get("ground.obj");
-    house = modelCache.Get("house.obj");
+
+    SceneObject *ground = scene.CreateObject();
+    ground->SetModel(modelCache.Get("ground.obj"));
+
+    SceneObject *house = scene.CreateObject();
+    house->SetModel(modelCache.Get("house.obj"));
+    house->SetRotation(Matrix3::RotationY(-15.0f));
 
     Uint32 lastTicks = 0;
 
@@ -183,7 +187,7 @@ void Application::OnWindowResize(int newWidth, int newHeight)
     config.screenHeight = newHeight;
 
     glViewport(0, 0, newWidth, newHeight);
-    camera.SetPerspectiveProjection(50.0f, float(newWidth)/newHeight, 0.1f, 100.0f);
+    scene.GetCamera()->SetPerspectiveProjection(50.0f, float(newWidth)/newHeight, 0.1f, 100.0f);
 }
 
 void Application::Update(float dt)
@@ -194,10 +198,11 @@ void Application::Update(float dt)
     const float sensitivity = 0.25f;
 
     // Camera movement
+    SceneCamera *camera = scene.GetCamera();
 
-    Vector3 pos = camera.GetPosition();
+    Vector3 pos = camera->GetPosition();
     Vector3 right, up, look;
-    camera.GetRotationAxes(right, up, look);
+    camera->GetBasisVectors(right, up, look);
 
     Vector3 dir(0.0f, 0.0f, 0.0f);
 
@@ -213,20 +218,26 @@ void Application::Update(float dt)
     dir.SafeNormalize();
     pos += dir * (speed * dt);
 
-    camera.SetPosition(pos);
+    camera->SetPosition(pos);
 
     // Camera rotation
 
     int relMouseX, relMouseY;
     if (SDL_GetRelativeMouseState(&relMouseX, &relMouseY) & SDL_BUTTON(SDL_BUTTON_LEFT))
     {
+        SDL_SetRelativeMouseMode(SDL_TRUE);
+
         cameraAngles.y += relMouseX * sensitivity;
         cameraAngles.x += relMouseY * sensitivity;
         cameraAngles.y = Math::WrapAngleDegrees(cameraAngles.y);
         cameraAngles.x = Math::Clamp(cameraAngles.x, -85.0f, 85.0f);
 
         Matrix3 rot = Matrix3::RotationYXZ(cameraAngles);
-        camera.SetRotation(rot);
+        camera->SetRotation(rot);
+    }
+    else
+    {
+        SDL_SetRelativeMouseMode(SDL_FALSE);
     }
 }
 
@@ -235,25 +246,13 @@ void Application::Render()
     // Code that renders the test app scene.
     // Not any proper rendering code!
 
-    Matrix4 proj = camera.GetProjection();
-    Matrix4 view = camera.GetViewMatrix();
-    Matrix4 model = Matrix4::Identity();
-
     glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shader->Use();
-    shader->SetProjMatrix(proj);
-    shader->SetViewMatrix(view);
-    shader->SetModelMatrix(model);
     shader->SetTime(SDL_GetTicks() / 1000.0f);
 
-    ground->Render();
-
-    model = Matrix4::Rotation(0.0f, 1.0f, 0.0f, -15.0f);
-    shader->SetModelMatrix(model);
-
-    house->Render();
+    scene.Render(shader);
 
     window.SwapBuffers();
     SDL_Delay(10); //TODO: remove
