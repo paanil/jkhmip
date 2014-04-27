@@ -32,10 +32,13 @@ class Shader;
 class SceneObject : public SceneNode
 {
 public:
+    /// Sets model to 0.
     SceneObject();
 
+    /// Sets model.
     void SetModel(Model *mdl);
 
+    /// Renders model with given shader.
     void Render(Shader *shader);
 
 private:

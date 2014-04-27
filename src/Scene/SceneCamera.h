@@ -29,11 +29,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class SceneCamera : public SceneNode
 {
 public:
+    /// Initializes identity projection.
     SceneCamera();
 
+    /// Sets orthographic projection.
     void SetOrthoProjection(float left, float right, float bottom, float top, float zNear, float zFar);
+    /// Sets perspective projection.
     void SetPerspectiveProjection(float fov, float aspect, float zNear, float zFar);
 
+    /// Returns the projection matrix.
     Matrix4 GetProjection() const;
 
 private:
