@@ -100,7 +100,7 @@ bool LoadTGA(const String &file, Image &image)
 
     if (!f.is_open())
     {
-        LOG_ERROR("Couldn't open file.", file);
+        LOG_ERROR("Couldn't open file.");
         return false;
     }
 
@@ -118,7 +118,7 @@ bool LoadTGA(const String &file, Image &image)
          header[16] != 24 &&
          header[16] != 32))
     {
-        LOG_ERROR("Invalid header.", file);
+        LOG_ERROR("Invalid header.");
         return false;
     }
 

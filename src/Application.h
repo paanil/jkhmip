@@ -23,10 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __APPLICATION_H__
 
 #include "Window.h"
-#include "Scene/Scene.h"
 #include "Resource/ShaderCache.h"
 #include "Resource/TextureCache.h"
 #include "Resource/ModelCache.h"
+#include "Resource/FontCache.h"
+#include "Scene/Scene.h"
 
 /// Application class. There should be only one instance at a time.
 ///
@@ -79,9 +80,10 @@ private:
     bool running;
 
     /* Members for the test app */
-    ShaderCache shaderCache;
+    ShaderCache  shaderCache;
     TextureCache textureCache;
-    ModelCache modelCache;
+    ModelCache   modelCache;
+    FontCache    fontCache;
 
     Shader *shader;
 

@@ -30,8 +30,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /// compatible with std::string.
 typedef std::string String;
 
+typedef int8_t   int8;
+typedef int16_t  int16;
+typedef int32_t  int32;
+
 typedef uint8_t  uint8;
 typedef uint16_t uint16;
+typedef uint32_t uint32;
+
 typedef uint32_t uint;
 
 #endif // __TYPES_H__
