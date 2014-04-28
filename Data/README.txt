@@ -4,7 +4,7 @@ is not part of the Program covered by the GPL.
 
 ------------------------------------------------------------
 
-The Liberation Sans font is Licensed under
+The Liberation Sans font is licensed under
 the SIL Open Font License, Version 1.1.
 
 Official website: https://fedorahosted.org/liberation-fonts/
