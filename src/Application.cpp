@@ -28,9 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 
-Application::Application() :
-    running(false),
-    modelCache(textureCache)
+Application::Application()
 {
     sdlReady = true;
 
@@ -40,6 +38,8 @@ Application::Application() :
         LOG_ERROR("%", SDL_GetError());
         sdlReady = false; // SDL not ready if SDL_Init fails.
     }
+
+    running = false;
 }
 
 Application::~Application()
@@ -98,6 +98,11 @@ void Application::Run()
     shaderCache.SetDirectory("Data/Shaders/");
     textureCache.SetDirectory("Data/Textures/");
     modelCache.SetDirectory("Data/Models/");
+    modelCache.SetTextureCache(textureCache);
+    fontCache.SetDirectory("Data/Fonts/");
+    fontCache.SetTextureCache(textureCache);
+
+    fontCache.Get("LiberationSans_16.fnt");
 
     shader = shaderCache.Get("default.shader");
 

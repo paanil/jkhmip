@@ -53,7 +53,7 @@ public:
 
     /// Loads .obj file into model. TextureCache is needed to get the
     /// textures for the model. Returns false on fail.
-    bool Load(const String &file, Model &model, TextureCache &textureCache);
+    bool Load(const String &file, Model &model, TextureCache *textureCache);
 
 private:
     /// Parses vertex position (Vector3) from line.
@@ -82,7 +82,7 @@ private:
     /// Builds model from loaded data:
     /// creates proper vertex/index buffers and
     /// adds submeshes with loaded textures.
-    bool BuildModel(Model &model, TextureCache &textureCache);
+    bool BuildModel(Model &model, TextureCache *textureCache);
 
 private:
     /// Sub mesh.

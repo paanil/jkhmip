@@ -58,6 +58,7 @@ vec4 colorGamma(vec3 color)
 void main()
 {
     vec3 n = normalize(normal);
+//    gl_FragColor = vec4(n, 1.0);
     vec3 l = normalize(light);
     float ndotl = max(dot(n, l), 0.0);
     vec3 up = vec3(0.0, 1.0, 0.0);
@@ -68,5 +69,4 @@ void main()
     vec3 suncolor = vec3(1.0, 0.8, 0.5);
     vec3 diffuse = texLinear(Diffuse, texcoord);
     gl_FragColor = colorGamma(diffuse * mix(ambient1 * ambf, ambient2 + suncolor * ndotl, f));
-//    gl_FragColor = vec4(n, 1.0);
 }

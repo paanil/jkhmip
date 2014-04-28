@@ -60,7 +60,7 @@ ObjLoader::ObjLoader()
     indices.reserve(3000); // 1000 triangles
 }
 
-bool ObjLoader::Load(const String &file, Model &model, TextureCache &textureCache)
+bool ObjLoader::Load(const String &file, Model &model, TextureCache *textureCache)
 {
     LOG_INFO("Loading model '%'...", file);
 
@@ -215,7 +215,7 @@ void ObjLoader::FinishLastSubMesh()
         indices.size() - submeshes.back().firstIndex;
 }
 
-bool ObjLoader::BuildModel(Model &model, TextureCache &textureCache)
+bool ObjLoader::BuildModel(Model &model, TextureCache *textureCache)
 {
     std::vector<Index> uniques;
     std::vector<uint> meshIndices;
@@ -294,7 +294,7 @@ bool ObjLoader::BuildModel(Model &model, TextureCache &textureCache)
     for (size_t i = 0; i < submeshes.size(); i++)
     {
         const SubMesh &submesh = submeshes[i];
-        Texture *texture = textureCache.Get(submesh.material);
+        Texture *texture = textureCache->Get(submesh.material);
         texture->SetFilterMode(TF_MIN_LINEAR_MIP_LINEAR, TF_MAG_LINEAR);
         texture->SetWrapMode(TW_REPEAT, TW_REPEAT);
         texture->GenMipmaps();

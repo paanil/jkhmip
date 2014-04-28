@@ -31,8 +31,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class ModelCache : public ResourceCache<Model>
 {
 public:
-    /// Stores a reference to a texture cache for later use.
-    ModelCache(TextureCache &texCache);
+    /// Sets textureCache to 0.
+    ModelCache();
+    /// Takes a pointer to a texture cache for later use.
+    void SetTextureCache(TextureCache &textureCache);
 
 protected:
     /// Loads a model from given file.
@@ -44,7 +46,7 @@ private:
 
 private:
     /// For loading model textures.
-    TextureCache &textureCache;
+    TextureCache *textureCache;
     /// Loader for Wavefron .obj files.
     ObjLoader loader;
 };

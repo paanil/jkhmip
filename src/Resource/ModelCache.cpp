@@ -20,12 +20,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ModelCache.h"
-#include "../Render/VertexBuffer.h"#include "../Render/IndexBuffer.h"
+#include "../Render/VertexBuffer.h"
+#include "../Render/IndexBuffer.h"
 #include "../Logger.h"
 
-ModelCache::ModelCache(TextureCache &texCache) :
-    textureCache(texCache)
+ModelCache::ModelCache() :
+    textureCache(0)
 {
+}
+
+void ModelCache::SetTextureCache(TextureCache &textureCache)
+{
+    this->textureCache = &textureCache;
 }
 
 Model *ModelCache::Load(const String &filePath)

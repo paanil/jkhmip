@@ -44,8 +44,6 @@
 		<Unit filename="Data/Shaders/default.shader" />
 		<Unit filename="src/Application.cpp" />
 		<Unit filename="src/Application.h" />
-		<Unit filename="src/Camera.cpp" />
-		<Unit filename="src/Camera.h" />
 		<Unit filename="src/Format.h" />
 		<Unit filename="src/Logger.cpp" />
 		<Unit filename="src/Logger.h" />
@@ -73,6 +71,9 @@
 		<Unit filename="src/Render/Texture.h" />
 		<Unit filename="src/Render/VertexBuffer.cpp" />
 		<Unit filename="src/Render/VertexBuffer.h" />
+		<Unit filename="src/Resource/Font.h" />
+		<Unit filename="src/Resource/FontCache.cpp" />
+		<Unit filename="src/Resource/FontCache.h" />
 		<Unit filename="src/Resource/Image.cpp" />
 		<Unit filename="src/Resource/Image.h" />
 		<Unit filename="src/Resource/ModelCache.cpp" />
@@ -84,6 +85,14 @@
 		<Unit filename="src/Resource/ShaderCache.h" />
 		<Unit filename="src/Resource/TextureCache.cpp" />
 		<Unit filename="src/Resource/TextureCache.h" />
+		<Unit filename="src/Scene/Scene.cpp" />
+		<Unit filename="src/Scene/Scene.h" />
+		<Unit filename="src/Scene/SceneCamera.cpp" />
+		<Unit filename="src/Scene/SceneCamera.h" />
+		<Unit filename="src/Scene/SceneNode.cpp" />
+		<Unit filename="src/Scene/SceneNode.h" />
+		<Unit filename="src/Scene/SceneObject.cpp" />
+		<Unit filename="src/Scene/SceneObject.h" />
 		<Unit filename="src/Str.cpp" />
 		<Unit filename="src/Str.h" />
 		<Unit filename="src/Types.h" />
