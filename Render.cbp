@@ -13,6 +13,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-DRE_DEBUG" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -42,6 +43,7 @@
 			<Add directory="libs/lib" />
 		</Linker>
 		<Unit filename="Data/Shaders/default.shader" />
+		<Unit filename="Data/Shaders/text.shader" />
 		<Unit filename="src/Application.cpp" />
 		<Unit filename="src/Application.h" />
 		<Unit filename="src/Format.h" />

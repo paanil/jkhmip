@@ -48,8 +48,9 @@ void Model::Render()
         indexBuffer->Bind();
         for (size_t i = 0; i < submeshes.size(); i++)
         {
-            if (submeshes[i].texture) submeshes[i].texture->Bind(0);
-            indexBuffer->DrawTriangles(submeshes[i].firstIndex, submeshes[i].indexCount);
+            SubMesh &submesh = submeshes[i];
+            if (submesh.texture) submesh.texture->Bind(0);
+            indexBuffer->DrawTriangles(submesh.firstIndex, submesh.indexCount);
         }
     }
 }

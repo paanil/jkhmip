@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../Types.h"
 
 class Matrix4;
+class Vector4;
 
 /// Shader class.
 ///
@@ -51,6 +52,8 @@ public:
     void SetModelMatrix(const Matrix4 &model);
     /// Sets time uniform.
     void SetTime(float t);
+    /// Sets color uniform.
+    void SetColor(const Vector4 &color);
 
 private:
     /// GL ids.

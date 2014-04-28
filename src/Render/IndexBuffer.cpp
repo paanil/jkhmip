@@ -46,6 +46,7 @@ void IndexBuffer::Bind()
 
 void IndexBuffer::DrawTriangles(uint firstIndex, uint indexCount)
 {
+//    uint *offs = 0; offs += firstIndex;
     void *offs = reinterpret_cast<void *>(firstIndex * sizeof(uint));
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, offs);
 }

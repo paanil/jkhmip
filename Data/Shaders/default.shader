@@ -24,7 +24,7 @@ void main()
 
     texcoord = TexCoord;
     normal = NormalMatrix * Normal;
-    float ang = Time * 0.5;
+    float ang = Time * 0.25;
     light = vec3(cos(ang), sin(ang), 0.0);
 
     gl_Position = Projection * View * Model * vec4(Position, 1.0);

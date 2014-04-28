@@ -93,6 +93,12 @@ void Shader::SetTime(float t)
     glUniform1f(loc, t);
 }
 
+void Shader::SetColor(const Vector4 &color)
+{
+    GLint loc = glGetUniformLocation(prog, "Color");
+    glUniform4fv(loc, 1, &color.x);
+}
+
 /* Free functions */
 
 GLint GetShaderiv(GLuint shader, GLenum pname)

@@ -30,6 +30,7 @@ enum
     VA_POSITION = 0,
     VA_TEXCOORD,
     VA_NORMAL,
+    VA_COLOR,
     VA_COUNT
 };
 

@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <fstream>
 #include <sstream>
+#include <cassert>
 
 // ----------------------------------------
 
@@ -68,6 +69,7 @@ bool ObjLoader::Load(const String &file, Model &model, TextureCache *textureCach
     texcoords.clear();
     normals.clear();
     indices.clear();
+    submeshes.clear();
 
     std::ifstream f(file);
 
@@ -284,10 +286,9 @@ bool ObjLoader::BuildModel(Model &model, TextureCache *textureCache)
     vertBuf->SetData(meshVerts.size() * sizeof(float), &meshVerts[0]);
     indexBuf->SetData(meshIndices.size() * sizeof(uint), &meshIndices[0]);
 
-    float *offs = 0;
-    vertBuf->SetAttribute(VA_POSITION, stride, offs); offs += 3;
-    if (hasTexcoords) { vertBuf->SetAttribute(VA_TEXCOORD, stride, offs); offs += 2; }
-    if (hasNormals)   { vertBuf->SetAttribute(VA_NORMAL, stride, offs); offs += 3; }
+    float *offs = 0; vertBuf->SetAttribute(VA_POSITION, stride, offs);
+    if (hasTexcoords) { offs += 3; vertBuf->SetAttribute(VA_TEXCOORD, stride, offs); }
+    if (hasNormals)   { offs += 2; vertBuf->SetAttribute(VA_NORMAL, stride, offs); }
 
     model.SetBuffers(vertBuf, indexBuf);
 
@@ -298,6 +299,8 @@ bool ObjLoader::BuildModel(Model &model, TextureCache *textureCache)
         texture->SetFilterMode(TF_MIN_LINEAR_MIP_LINEAR, TF_MAG_LINEAR);
         texture->SetWrapMode(TW_REPEAT, TW_REPEAT);
         texture->GenMipmaps();
+        assert(int32(submesh.firstIndex) >= 0);
+        assert(int32(submesh.indexCount) >= 0);
         model.AddSubMesh(submesh.firstIndex, submesh.indexCount, texture);
     }
 

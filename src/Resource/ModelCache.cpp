@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ModelCache.h"
+#include "TextureCache.h"
 #include "../Render/VertexBuffer.h"
 #include "../Render/IndexBuffer.h"
 #include "../Logger.h"
@@ -96,15 +97,16 @@ void ModelCache::MakeCube(Model &model)
     };
 
     static const uint vertSize = 6*sizeof(float);
+    static const uint faceSize = 3*sizeof(uint);
 
     VertexBuffer *vertexBuf = new VertexBuffer();
-    IndexBuffer *indexBuf = new IndexBuffer();
-
     vertexBuf->SetData(24*vertSize, verts);
-    vertexBuf->SetAttribute(VA_POSITION, vertSize, 0);
-    vertexBuf->SetAttribute(VA_NORMAL, vertSize, &((float *)0)[3]);
-    indexBuf->SetData(12*3*sizeof(uint), faces);
+    float *offs = 0; vertexBuf->SetAttribute(VA_POSITION, vertSize, offs);
+    offs = offs + 3; vertexBuf->SetAttribute(VA_NORMAL, vertSize, offs);
+
+    IndexBuffer *indexBuf = new IndexBuffer();
+    indexBuf->SetData(12*faceSize, faces);
 
     model.SetBuffers(vertexBuf, indexBuf);
-    model.AddSubMesh(0, 12*3, 0);
+    model.AddSubMesh(0, 12*3, textureCache->Get("debug"));
 }

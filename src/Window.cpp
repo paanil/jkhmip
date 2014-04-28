@@ -25,6 +25,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 
+/* Debug message callback for gl. */
+void __attribute__((__stdcall__))
+gl_debug_message(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam)
+{
+    LOG_DEBUG("%", message);
+}
+
+
 Window::Window() :
     window(0),
     context(0)
@@ -47,6 +55,11 @@ bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsy
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+//    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+#ifdef RE_DEBUG
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+#endif // RE_DEBUG
 
     int x = SDL_WINDOWPOS_UNDEFINED;
     int y = SDL_WINDOWPOS_UNDEFINED;
@@ -75,6 +88,9 @@ bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsy
 
     SetVSync(vsync);
 
+    // Get experimental extensions too(?)
+    glewExperimental = GL_TRUE;
+
     // Initialize GLEW (after context is created).
     GLenum error = glewInit();
     if (error != GLEW_NO_ERROR)
@@ -82,6 +98,14 @@ bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsy
         LOG_ERROR("%", glewGetErrorString(error));
         return false;
     }
+
+#ifdef RE_DEBUG
+    if (GLEW_ARB_debug_output)
+    {
+        glDebugMessageCallback(&gl_debug_message, 0);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    }
+#endif // RE_DEBUG
 
     LOG_INFO("GL Version: %", glGetString(GL_VERSION));
 
