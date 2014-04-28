@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Matrix4;
 class Vector4;
+class Vector3;
 
 /// Shader class.
 ///
@@ -52,6 +53,8 @@ public:
     void SetModelMatrix(const Matrix4 &model);
     /// Sets time uniform.
     void SetTime(float t);
+    /// Sets translation uniform.
+    void SetTranslation(const Vector3 &t);
     /// Sets color uniform.
     void SetColor(const Vector4 &color);
 

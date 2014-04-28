@@ -93,6 +93,12 @@ void Shader::SetTime(float t)
     glUniform1f(loc, t);
 }
 
+void Shader::SetTranslation(const Vector3 &t)
+{
+    GLint loc = glGetUniformLocation(prog, "Translation");
+    glUniform3fv(loc, 1, &t.x);
+}
+
 void Shader::SetColor(const Vector4 &color)
 {
     GLint loc = glGetUniformLocation(prog, "Color");

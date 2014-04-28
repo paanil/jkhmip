@@ -4,8 +4,7 @@
 #version 140
 
 uniform mat4 Projection;
-uniform mat4 View;
-uniform mat4 Model;
+uniform vec3 Translation;
 
 in vec3 Position;
 in vec2 TexCoord;
@@ -14,8 +13,8 @@ out vec2 texcoord;
 
 void main()
 {
-    texcoord = TexCoord;
-    gl_Position = Projection * View * Model * vec4(Position, 1.0);
+    texcoord = vec2(TexCoord.x, 1.0 - TexCoord.y);
+    gl_Position = Projection * vec4(Position + Translation, 1.0);
 }
 
 :Frag

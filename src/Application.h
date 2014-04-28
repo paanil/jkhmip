@@ -51,7 +51,7 @@ private:
     void HandleEvents();
 
     /// Event handler for window resize.
-    void OnWindowResize(int newWidth, int newHeight);
+    void OnWindowResize(int w, int h);
 
     /// Updates the "simulation".
     void Update(float dt);
@@ -85,11 +85,11 @@ private:
     ModelCache   modelCache;
     FontCache    fontCache;
 
-    Shader *shader;
-
     Scene scene;
-
     Vector3 cameraAngles;
+
+    Matrix4 proj2d;
+    Model text;
 };
 
 #endif // __APPLICATION_H__

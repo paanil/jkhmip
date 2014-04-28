@@ -73,6 +73,7 @@
 		<Unit filename="src/Render/Texture.h" />
 		<Unit filename="src/Render/VertexBuffer.cpp" />
 		<Unit filename="src/Render/VertexBuffer.h" />
+		<Unit filename="src/Resource/Font.cpp" />
 		<Unit filename="src/Resource/Font.h" />
 		<Unit filename="src/Resource/FontCache.cpp" />
 		<Unit filename="src/Resource/FontCache.h" />

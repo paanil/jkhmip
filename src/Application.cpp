@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
+#include <sstream>
 
 Application::Application()
 {
@@ -102,10 +103,6 @@ void Application::Run()
     fontCache.SetDirectory("Data/Fonts/");
     fontCache.SetTextureCache(textureCache);
 
-    fontCache.Get("LiberationSans_16.fnt");
-
-    shader = shaderCache.Get("default.shader");
-
     SceneObject *ground = scene.CreateObject();
     ground->SetModel(modelCache.Get("ground.obj"));
 
@@ -120,11 +117,14 @@ void Application::Run()
     sword->SetPosition(Vector3(0.3f, -0.3f, 0.6f));
     sword->SetRotation(Matrix3::RotationX(25.0f) * Matrix3::RotationY(-17.5f));
 
+    Font *font = fontCache.Get("LiberationSans_24.fnt");
+    font->BuildTextGeometry("FPS:", text);
+
     Uint32 lastTicks = 0;
 
-//    // Variables for fps printing
-//    Uint32 lastFPSTicks = 0;
-//    Uint32 frames = 0;
+    // Variables for fps counter
+    Uint32 lastFPSTicks = 0;
+    Uint32 frames = 0;
 
     while (running)
     {
@@ -132,14 +132,17 @@ void Application::Run()
         Uint32 delta = ticks - lastTicks;
         lastTicks = ticks;
 
-//        // Print fps every second
-//        if (ticks >= lastFPSTicks + 1000)
-//        {
+        // Update fps every second
+        if (ticks >= lastFPSTicks + 1000)
+        {
 //            LOG_DEBUG("FPS: %", frames);
-//            lastFPSTicks = ticks;
-//            frames = 0;
-//        }
-//        frames++;
+            std::stringstream ss;
+            ss << "FPS: " << frames;
+            font->BuildTextGeometry(ss.str(), text);
+            lastFPSTicks = ticks;
+            frames = 0;
+        }
+        frames++;
 
         HandleEvents();
         Update(delta / 1000.0f);
@@ -193,13 +196,14 @@ void Application::HandleEvents()
     }
 }
 
-void Application::OnWindowResize(int newWidth, int newHeight)
+void Application::OnWindowResize(int w, int h)
 {
-    config.screenWidth = newWidth;
-    config.screenHeight = newHeight;
+    config.screenWidth = w;
+    config.screenHeight = h;
 
-    glViewport(0, 0, newWidth, newHeight);
-    scene.GetCamera()->SetPerspectiveProjection(50.0f, float(newWidth)/newHeight, 0.1f, 100.0f);
+    glViewport(0, 0, w, h);
+    scene.GetCamera()->SetPerspectiveProjection(50.0f, float(w)/h, 0.1f, 100.0f);
+    proj2d = Matrix4::Ortho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
 }
 
 void Application::Update(float dt)
@@ -242,7 +246,7 @@ void Application::Update(float dt)
         cameraAngles.y += relMouseX * sensitivity;
         cameraAngles.x += relMouseY * sensitivity;
         cameraAngles.y = Math::WrapAngleDegrees(cameraAngles.y);
-        cameraAngles.x = Math::Clamp(cameraAngles.x, -85.0f, 85.0f);
+        cameraAngles.x = Math::Clamp(cameraAngles.x, -90.0f, 90.0f);
 
         Matrix3 rot = Matrix3::RotationYXZ(cameraAngles);
         camera->SetRotation(rot);
@@ -261,11 +265,32 @@ void Application::Render()
     glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // Render scene
+    Shader *shader = shaderCache.Get("default.shader");
+
     shader->Use();
     shader->SetTime(SDL_GetTicks() / 1000.0f);
 
     scene.Render(shader);
 
+    // Render fps
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    shader = shaderCache.Get("text.shader");
+
+    shader->Use();
+    shader->SetProjMatrix(proj2d);
+    shader->SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
+    shader->SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    text.Render();
+
+    glDisable(GL_BLEND);
+
+    // Draw screen
     window.SwapBuffers();
-    SDL_Delay(10); //TODO: remove
+//    SDL_Delay(10); //TODO: remove
 }
