@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Resource/FontCache.h"
 #include "Render/SceneRenderer.h"
 #include "Scene/Scene.h"
+#include "Render/TextGeometry.h"
 
 /// Application class. There should be only one instance at a time.
 ///
@@ -95,7 +96,7 @@ private:
     Vector3 cameraAngles;
 
     Matrix4 proj2d;
-    Model text;
+    TextGeometry text;
 };
 
 #endif // __APPLICATION_H__

@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../Types.h"
 
+#include <memory>
+
 /// Indices of supported vertex attributes.
 enum
 {
@@ -83,5 +85,7 @@ private:
     /// Array of vertex attributes.
     Attribute attributes[VA_COUNT];
 };
+
+typedef std::unique_ptr<VertexBuffer> VertexBufferPtr;
 
 #endif // __VERTEXBUFFER_H__

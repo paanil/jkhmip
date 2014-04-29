@@ -28,8 +28,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <vector>
 
+#define MAX_TEXT_LENGTH 1024
+
+class TextGeometry;
+class IndexBuffer;
 class Texture;
-class Model;
 
 /// Font class
 ///
@@ -40,7 +43,7 @@ public:
     Font();
 
     /// Builds model from given text.
-    void BuildTextGeometry(const String &text, Model &model);
+    void BuildTextGeometry(const String &text, TextGeometry &textGeom);
 
 private:
     /// Vertex struct for text geometry.
@@ -49,10 +52,6 @@ private:
         Vector3 position;
         Vector2 texcoord;
     };
-
-    /// Memory for building text geometry.
-    std::vector<Vert> vertices;
-    std::vector<uint> indices;
 
     /// One char's data.
     struct Char
@@ -68,6 +67,9 @@ private:
         {
         }
     };
+
+    std::vector<Vert> vertices;
+    IndexBuffer *indexBuffer;
 
     /// Font data.
     int lineH, base;

@@ -20,32 +20,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Font.h"
-#include "../Render/Model.h"
+#include "../Render/TextGeometry.h"
 #include "../Logger.h"
 
-#define MAX_TEXT_LENGTH 512
-
-Font::Font()
+Font::Font() :
+    vertices(MAX_TEXT_LENGTH * 4),
+    indexBuffer(0)
 {
-    vertices.resize(MAX_TEXT_LENGTH * 4);
-    indices.resize(MAX_TEXT_LENGTH * 6);
-
-    for (uint i = 0; i < MAX_TEXT_LENGTH; i++)
-    {
-        uint index = i * 4;
-
-        uint j = i * 6;
-
-        indices[j + 0] = index + 0;
-        indices[j + 1] = index + 1;
-        indices[j + 2] = index + 2;
-        indices[j + 3] = index + 0;
-        indices[j + 4] = index + 2;
-        indices[j + 5] = index + 3;
-    }
 }
 
-void Font::BuildTextGeometry(const String &text, Model &model)
+void Font::BuildTextGeometry(const String &text, TextGeometry &textGeom)
 {
     uint len = text.length();
     if (len > MAX_TEXT_LENGTH)
@@ -94,14 +78,12 @@ void Font::BuildTextGeometry(const String &text, Model &model)
 
     float *offs = 0;
 
-    VertexBuffer *vertBuf = new VertexBuffer();
-    vertBuf->SetData(numChars * 4 * sizeof(Vert), vertices.data());
-    vertBuf->SetAttribute(VA_POSITION, sizeof(Vert), offs + 0);
-    vertBuf->SetAttribute(VA_TEXCOORD, sizeof(Vert), offs + 3);
-
-    IndexBuffer *indexBuf = new IndexBuffer();
-    indexBuf->SetData(numChars * 6 * sizeof(uint), indices.data());
-
-    model.SetBuffers(vertBuf, indexBuf);
-//    model.AddSubMesh(0, numChars * 6, texture);
+    textGeom.fontTexture = texture;
+    if (!textGeom.vertexBuffer)
+        textGeom.vertexBuffer.reset(new VertexBuffer());
+    textGeom.vertexBuffer->SetData(numChars * 4 * sizeof(Vert), vertices.data());
+    textGeom.vertexBuffer->SetAttribute(VA_POSITION, sizeof(Vert), offs + 0);
+    textGeom.vertexBuffer->SetAttribute(VA_TEXCOORD, sizeof(Vert), offs + 3);
+    textGeom.indexBuffer = indexBuffer;
+    textGeom.indexCount = numChars * 6;
 }

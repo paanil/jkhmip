@@ -79,6 +79,8 @@
 		<Unit filename="src/Render/SceneRenderer.h" />
 		<Unit filename="src/Render/Shader.cpp" />
 		<Unit filename="src/Render/Shader.h" />
+		<Unit filename="src/Render/TextGeometry.cpp" />
+		<Unit filename="src/Render/TextGeometry.h" />
 		<Unit filename="src/Render/Texture.cpp" />
 		<Unit filename="src/Render/Texture.h" />
 		<Unit filename="src/Render/VertexBuffer.cpp" />

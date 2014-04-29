@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ResourceCache.h"
 #include "Font.h"
+#include "../Render/IndexBuffer.h"
 
 class TextureCache;
 
@@ -36,6 +37,8 @@ public:
     FontCache();
     /// Takes a pointer to a texture cache for later use.
     void SetTextureCache(TextureCache &textureCache);
+    /// Initializes index buffer.
+    void InitIndexBuffer();
 
 protected:
     /// Loads a font from given file.
@@ -44,6 +47,8 @@ protected:
 private:
     /// For loading font textures.
     TextureCache *textureCache;
+    /// Index buffer shared by all text geometry.
+    IndexBufferPtr indexBuffer;
 };
 
 #endif // __FONTCACHE_H__

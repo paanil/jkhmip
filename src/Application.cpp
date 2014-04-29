@@ -71,6 +71,7 @@ bool Application::Init(const String &title)
     config.screenHeight = 600;
     config.fullscreen = false;
     config.vsync = true;
+//    config.vsync = false;
 
     // Try creating the window.
     if (!window.Create(title, config.screenWidth, config.screenHeight, config.fullscreen, config.vsync))
@@ -98,6 +99,7 @@ void Application::Run()
 
     fontCache.SetDirectory("Data/Fonts/");
     fontCache.SetTextureCache(textureCache);
+    fontCache.InitIndexBuffer();
 
 
     camera = scene.CreateCamera();
@@ -218,6 +220,7 @@ void Application::Update(float dt)
     const float sensitivity = 0.25f;
 
     // Camera movement
+
     Vector3 pos = camera->GetPosition();
     Vector3 right, up, look;
     camera->GetBasisVectors(right, up, look);
@@ -263,22 +266,21 @@ void Application::Render()
 {
     renderer.Render(scene, camera);
 
-//    // Render fps
-//    glClear(GL_DEPTH_BUFFER_BIT);
-//
-//    shader = shaderCache.Get("text.shader");
-//
-//    shader->Use();
-//    shader->SetProjMatrix(proj2d);
-//    shader->SetTranslation(Vector3(10.0f, 10.0f, 0.0f));
-//    shader->SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
-//
-//    glEnable(GL_BLEND);
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//
-//    text.Render();
-//
-//    glDisable(GL_BLEND);
+    // Render fps
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    Shader *shader = shaderCache.Get("text.shader");
+    shader->Use();
+    shader->SetProjMatrix(proj2d);
+    shader->SetTranslation(Vector3(10.0f, 10.0f, 0.0f));
+    shader->SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    text.Render();
+
+    glDisable(GL_BLEND);
 
     // Draw screen
     window.SwapBuffers();

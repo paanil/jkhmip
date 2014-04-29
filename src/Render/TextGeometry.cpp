@@ -19,39 +19,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __INDEXBUFFER_H__
-#define __INDEXBUFFER_H__
+#include "TextGeometry.h"
+#include "Texture.h"
+#include "IndexBuffer.h"
 
-#include "../Types.h"
-
-#include <memory>
-
-/// Index buffer class.
-///
-class IndexBuffer
+void TextGeometry::Render()
 {
-public:
-    /// Gets a gl buffer resource.
-    /// GL context must be created beforehand.
-    IndexBuffer();
-    /// Releases the gl buffer resource.
-    ~IndexBuffer();
-
-    /// Sets element array buffer (=index buffer) data.
-    void SetData(uint dataSize, const void *data);
-
-    /// Binds index buffer.
-    void Bind();
-
-    /// Draws triangles in range [firstIndex, firstIndex + indexCount).
-    /// TODO: This should probably be somewhere else.
-    void DrawTriangles(uint firstIndex, uint indexCount);
-
-private:
-    /// GL buffer id.
-    uint buffer;
-};
-
-typedef std::unique_ptr<IndexBuffer> IndexBufferPtr;
-
-#endif // __INDEXBUFFER_H__
+    if (vertexBuffer)
+    {
+        fontTexture->Bind(0);
+        vertexBuffer->Bind();
+        indexBuffer->Bind();
+        indexBuffer->DrawTriangles(0, indexCount);
+    }
+}

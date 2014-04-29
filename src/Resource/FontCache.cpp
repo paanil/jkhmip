@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "TextureCache.h"
 #include "../Logger.h"
 
+#include <vector>
 #include <fstream>
 
 #define TEST(file) if (!file.good()) { LOG_ERROR("File not good."); return 0; }
@@ -35,6 +36,28 @@ FontCache::FontCache() :
 void FontCache::SetTextureCache(TextureCache &textureCache)
 {
     this->textureCache = &textureCache;
+}
+
+void FontCache::InitIndexBuffer()
+{
+    std::vector<uint> indices(MAX_TEXT_LENGTH * 6);
+
+    for (uint i = 0; i < MAX_TEXT_LENGTH; i++)
+    {
+        uint index = i * 4;
+
+        uint j = i * 6;
+
+        indices[j + 0] = index + 0;
+        indices[j + 1] = index + 1;
+        indices[j + 2] = index + 2;
+        indices[j + 3] = index + 0;
+        indices[j + 4] = index + 2;
+        indices[j + 5] = index + 3;
+    }
+
+    indexBuffer.reset(new IndexBuffer());
+    indexBuffer->SetData(indices.size() * sizeof(uint), indices.data());
 }
 
 Font *FontCache::Load(const String &filePath)
@@ -119,6 +142,8 @@ Font *FontCache::Load(const String &filePath)
 
         TEST(f)
     }
+
+    font.indexBuffer = indexBuffer.get();
 
     return new Font(font);
 }

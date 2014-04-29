@@ -62,6 +62,5 @@ void SceneRenderer::Render(Scene &scene, SceneCamera *camera)
         command.vbo->Bind();
         command.ibo->Bind();
         command.ibo->DrawTriangles(command.firstIndex, command.indexCount);
-        break;
     }
 }

@@ -19,45 +19,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __MODEL_H__
-#define __MODEL_H__
+#ifndef __TEXTGEOMETRY_H__
+#define __TEXTGEOMETRY_H__
 
 #include "VertexBuffer.h"
-#include "IndexBuffer.h"
 
 #include <memory>
-#include <vector>
 
-class Material;
-class RenderCommandList;
+class Texture;
+class IndexBuffer;
 
-/// Model class.
-///
-class Model
+class TextGeometry
 {
 public:
-    /// Sets vertex and index buffers and clears sub meshes.
-    /// Releases old vertex and index buffers and takes ownership of the new ones.
-    void SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf);
-
-    /// Adds sub mesh with given material.
-    void AddSubMesh(uint firstIndex, uint indexCount, Material *material);
-
-    /// Adds submeshes to the list of render commands.
-    void GetRenderCommands(RenderCommandList &commands);
+    void Render();
 
 private:
-    /// Sub mesh is just a range of indices and a material.
-    struct SubMesh
-    {
-        uint firstIndex;
-        uint indexCount;
-        Material *material;
-    };
-
+    Texture *fontTexture;
     VertexBufferPtr vertexBuffer;
-    IndexBufferPtr indexBuffer;
-    std::vector<SubMesh> submeshes;
+    IndexBuffer *indexBuffer;
+    uint indexCount;
+
+    friend class Font;
 };
 
-#endif // __MODEL_H__
+#endif // __TEXTGEOMETRY_H__
