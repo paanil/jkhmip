@@ -88,10 +88,17 @@ void Application::Run()
 {
     shaderCache.SetDirectory("Data/Shaders/");
     textureCache.SetDirectory("Data/Textures/");
+
+    materialCache.SetDirectory("Data/Materials/");
+    materialCache.SetShaderCache(shaderCache);
+    materialCache.SetTextureCache(textureCache);
+
     modelCache.SetDirectory("Data/Models/");
-    modelCache.SetTextureCache(textureCache);
+    modelCache.SetMaterialCache(materialCache);
+
     fontCache.SetDirectory("Data/Fonts/");
     fontCache.SetTextureCache(textureCache);
+
 
     camera = scene.CreateCamera();
     camera->SetPosition(Vector3(0.0f, 1.0f, 0.0f));
@@ -276,24 +283,24 @@ void Application::Render()
     shader->Use();
     shader->SetTime(t);
 
-    scene.Render(camera, shader);
+    scene.Render(camera);
 
-    // Render fps
-    glClear(GL_DEPTH_BUFFER_BIT);
-
-    shader = shaderCache.Get("text.shader");
-
-    shader->Use();
-    shader->SetProjMatrix(proj2d);
-    shader->SetTranslation(Vector3(10.0f, 10.0f, 0.0f));
-    shader->SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    text.Render();
-
-    glDisable(GL_BLEND);
+//    // Render fps
+//    glClear(GL_DEPTH_BUFFER_BIT);
+//
+//    shader = shaderCache.Get("text.shader");
+//
+//    shader->Use();
+//    shader->SetProjMatrix(proj2d);
+//    shader->SetTranslation(Vector3(10.0f, 10.0f, 0.0f));
+//    shader->SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+//
+//    glEnable(GL_BLEND);
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//
+//    text.Render();
+//
+//    glDisable(GL_BLEND);
 
     // Draw screen
     window.SwapBuffers();

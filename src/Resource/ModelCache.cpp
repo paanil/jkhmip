@@ -20,26 +20,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ModelCache.h"
-#include "TextureCache.h"
+#include "MaterialCache.h"
 #include "../Render/VertexBuffer.h"
 #include "../Render/IndexBuffer.h"
 #include "../Logger.h"
 
 ModelCache::ModelCache() :
-    textureCache(0)
+    materialCache(0)
 {
 }
 
-void ModelCache::SetTextureCache(TextureCache &textureCache)
+void ModelCache::SetMaterialCache(MaterialCache &materialCache)
 {
-    this->textureCache = &textureCache;
+    this->materialCache = &materialCache;
 }
 
 Model *ModelCache::Load(const String &filePath)
 {
     Model *model = new Model();
 
-    if (!loader.Load(filePath, *model, textureCache))
+    if (!loader.Load(filePath, *model, materialCache))
     {
         LOG_INFO("Using debug model.");
         MakeCube(*model);
@@ -108,5 +108,5 @@ void ModelCache::MakeCube(Model &model)
     indexBuf->SetData(12*faceSize, faces);
 
     model.SetBuffers(vertexBuf, indexBuf);
-    model.AddSubMesh(0, 12*3, textureCache->Get("debug"));
+    model.AddSubMesh(0, 12*3, materialCache->Get("debug"));
 }

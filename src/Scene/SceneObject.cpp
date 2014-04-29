@@ -33,11 +33,10 @@ void SceneObject::SetModel(Model *mdl)
     model = mdl;
 }
 
-void SceneObject::Render(Shader *shader)
+void SceneObject::Render(SceneCamera *camera)
 {
     if (model)
     {
-        shader->SetModelMatrix(GetWorldTransform());
-        model->Render();
+        model->Render(this, camera);
     }
 }

@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 class Model;
-class TextureCache;
+class MaterialCache;
 
 /// Loader for Wavefront .obj files.
 ///
@@ -51,9 +51,9 @@ public:
     /// Reserves some memory so less allocations when loading.
     ObjLoader();
 
-    /// Loads .obj file into model. TextureCache is needed to get the
-    /// textures for the model. Returns false on fail.
-    bool Load(const String &file, Model &model, TextureCache *textureCache);
+    /// Loads .obj file into model. MaterialCache is needed to get the
+    /// materials for the model. Returns false on fail.
+    bool Load(const String &file, Model &model, MaterialCache *materialCache);
 
 private:
     /// Parses vertex position (Vector3) from line.
@@ -82,7 +82,7 @@ private:
     /// Builds model from loaded data:
     /// creates proper vertex/index buffers and
     /// adds submeshes with loaded textures.
-    bool BuildModel(Model &model, TextureCache *textureCache);
+    bool BuildModel(Model &model, MaterialCache *materialCache);
 
 private:
     /// Sub mesh.

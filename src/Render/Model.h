@@ -28,7 +28,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <memory>
 #include <vector>
 
-class Texture;
+class Material;
+
+class SceneNode;
+class SceneCamera;
 
 /// Model class.
 ///
@@ -41,19 +44,19 @@ public:
     /// Sets vertex and index buffers and clears sub meshes.
     /// Releases old vertex and index buffers and takes ownership of the new ones.
     void SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf);
-    /// Adds sub mesh with given texture.
-    void AddSubMesh(uint firstIndex, uint indexCount, Texture *texture);
+    /// Adds sub mesh with given material.
+    void AddSubMesh(uint firstIndex, uint indexCount, Material *material);
 
     /// Renders the model.
-    void Render();
+    void Render(SceneNode *node, SceneCamera *camera);
 
 private:
-    /// Sub mesh is just a range of indices and a texture.
+    /// Sub mesh is just a range of indices and a material.
     struct SubMesh
     {
         uint firstIndex;
         uint indexCount;
-        Texture *texture;
+        Material *material;
     };
 
     VertexBufferPtr vertexBuffer;

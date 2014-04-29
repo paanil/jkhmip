@@ -38,15 +38,10 @@ SceneObject *Scene::CreateObject()
     return object;
 }
 
-void Scene::Render(SceneCamera *camera, Shader *shader)
+void Scene::Render(SceneCamera *camera)
 {
-    shader->SetProjMatrix(camera->GetProjection());
-    shader->SetViewMatrix(camera->GetInverseWorldTransform());
-
     for (SceneObject *object : objects)
-    {
-        object->Render(shader);
-    }
+        object->Render(camera);
 }
 
 void Scene::AddNode(SceneNode *node)

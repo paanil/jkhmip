@@ -20,10 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ObjLoader.h"
+#include "MaterialCache.h"
 #include "../Render/VertexBuffer.h"
 #include "../Render/IndexBuffer.h"
 #include "../Render/Model.h"
-#include "../Resource/TextureCache.h"
+#include "../Render/Texture.h"
 #include "../Logger.h"
 
 #include <fstream>
@@ -61,7 +62,7 @@ ObjLoader::ObjLoader()
     indices.reserve(3000); // 1000 triangles
 }
 
-bool ObjLoader::Load(const String &file, Model &model, TextureCache *textureCache)
+bool ObjLoader::Load(const String &file, Model &model, MaterialCache *materialCache)
 {
     LOG_INFO("Loading model '%'...", file);
 
@@ -120,7 +121,7 @@ bool ObjLoader::Load(const String &file, Model &model, TextureCache *textureCach
 
     FinishLastSubMesh();
 
-    if (!BuildModel(model, textureCache))
+    if (!BuildModel(model, materialCache))
     {
         LOG_ERROR("Building model failed.");
         return false;
@@ -223,7 +224,7 @@ void ObjLoader::FinishLastSubMesh()
         indices.size() - submeshes.back().firstIndex;
 }
 
-bool ObjLoader::BuildModel(Model &model, TextureCache *textureCache)
+bool ObjLoader::BuildModel(Model &model, MaterialCache *materialCache)
 {
     std::vector<Index> uniques;
     std::vector<uint> meshIndices;
@@ -301,13 +302,12 @@ bool ObjLoader::BuildModel(Model &model, TextureCache *textureCache)
     for (size_t i = 0; i < submeshes.size(); i++)
     {
         const SubMesh &submesh = submeshes[i];
-        Texture *texture = textureCache->Get(submesh.material);
+        Material *material = materialCache->Get(submesh.material);
+        Texture *texture = material->GetTexture();
         texture->SetFilterMode(TF_MIN_LINEAR_MIP_LINEAR, TF_MAG_LINEAR);
         texture->SetWrapMode(TW_REPEAT, TW_REPEAT);
         texture->GenMipmaps();
-        assert(int32(submesh.firstIndex) >= 0);
-        assert(int32(submesh.indexCount) >= 0);
-        model.AddSubMesh(submesh.firstIndex, submesh.indexCount, texture);
+        model.AddSubMesh(submesh.firstIndex, submesh.indexCount, material);
     }
 
     return true;

@@ -26,6 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ObjLoader.h"
 #include "../Render/Model.h"
 
+class MaterialCache;
+
 /// Cache for models.
 ///
 class ModelCache : public ResourceCache<Model>
@@ -33,8 +35,8 @@ class ModelCache : public ResourceCache<Model>
 public:
     /// Sets textureCache to 0.
     ModelCache();
-    /// Takes a pointer to a texture cache for later use.
-    void SetTextureCache(TextureCache &textureCache);
+    /// Takes a pointer to a material cache for later use.
+    void SetMaterialCache(MaterialCache &materialCache);
 
 protected:
     /// Loads a model from given file.
@@ -45,8 +47,8 @@ private:
     void MakeCube(Model &model);
 
 private:
-    /// For loading model textures.
-    TextureCache *textureCache;
+    /// For loading model materials.
+    MaterialCache *materialCache;
     /// Loader for Wavefron .obj files.
     ObjLoader loader;
 };

@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Window.h"
 #include "Resource/ShaderCache.h"
 #include "Resource/TextureCache.h"
+#include "Resource/MaterialCache.h"
 #include "Resource/ModelCache.h"
 #include "Resource/FontCache.h"
 #include "Scene/Scene.h"
@@ -80,10 +81,11 @@ private:
     bool running;
 
     /* Members for the test app */
-    ShaderCache  shaderCache;
-    TextureCache textureCache;
-    ModelCache   modelCache;
-    FontCache    fontCache;
+    ShaderCache     shaderCache;
+    TextureCache    textureCache;
+    MaterialCache   materialCache;
+    ModelCache      modelCache;
+    FontCache       fontCache;
 
     Scene scene;
     SceneCamera *camera;

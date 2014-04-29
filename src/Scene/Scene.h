@@ -47,7 +47,7 @@ public:
     SceneObject *CreateObject();
 
     /// Renders the scene with given shader.
-    void Render(SceneCamera *camera, Shader *shader);
+    void Render(SceneCamera *camera);
 
 private:
     /// Adds a scene node to the node list.

@@ -103,5 +103,5 @@ void Font::BuildTextGeometry(const String &text, Model &model)
     indexBuf->SetData(numChars * 6 * sizeof(uint), indices.data());
 
     model.SetBuffers(vertBuf, indexBuf);
-    model.AddSubMesh(0, numChars * 6, texture);
+//    model.AddSubMesh(0, numChars * 6, texture);
 }
