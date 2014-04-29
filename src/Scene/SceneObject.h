@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SceneNode.h"
 
 class Model;
-class SceneCamera;
+class RenderCommandList;
 
 /// Renderable object node.
 ///
@@ -38,8 +38,8 @@ public:
     /// Sets model.
     void SetModel(Model *mdl);
 
-    /// Renders model from given camera.
-    void Render(SceneCamera *camera);
+    /// Adds model to the list of render commands.
+    void GetRenderCommands(RenderCommandList &commands);
 
 private:
     Model *model;

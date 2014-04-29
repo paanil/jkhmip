@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Resource/MaterialCache.h"
 #include "Resource/ModelCache.h"
 #include "Resource/FontCache.h"
+#include "Render/SceneRenderer.h"
 #include "Scene/Scene.h"
 
 /// Application class. There should be only one instance at a time.
@@ -86,6 +87,8 @@ private:
     MaterialCache   materialCache;
     ModelCache      modelCache;
     FontCache       fontCache;
+
+    SceneRenderer renderer;
 
     Scene scene;
     SceneCamera *camera;

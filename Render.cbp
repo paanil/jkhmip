@@ -42,6 +42,11 @@
 			<Add option="-lSDL2" />
 			<Add directory="libs/lib" />
 		</Linker>
+		<Unit filename="Data/Materials/ground.material" />
+		<Unit filename="Data/Materials/house_roof.material" />
+		<Unit filename="Data/Materials/house_wall.material" />
+		<Unit filename="Data/Materials/house_wood_parts.material" />
+		<Unit filename="Data/Materials/sword.material" />
 		<Unit filename="Data/Shaders/default.shader" />
 		<Unit filename="Data/Shaders/text.shader" />
 		<Unit filename="src/Application.cpp" />
@@ -65,8 +70,13 @@
 		<Unit filename="src/Math/Vector4.h" />
 		<Unit filename="src/Render/IndexBuffer.cpp" />
 		<Unit filename="src/Render/IndexBuffer.h" />
+		<Unit filename="src/Render/Material.cpp" />
+		<Unit filename="src/Render/Material.h" />
 		<Unit filename="src/Render/Model.cpp" />
 		<Unit filename="src/Render/Model.h" />
+		<Unit filename="src/Render/RenderCommand.h" />
+		<Unit filename="src/Render/SceneRenderer.cpp" />
+		<Unit filename="src/Render/SceneRenderer.h" />
 		<Unit filename="src/Render/Shader.cpp" />
 		<Unit filename="src/Render/Shader.h" />
 		<Unit filename="src/Render/Texture.cpp" />
@@ -79,6 +89,8 @@
 		<Unit filename="src/Resource/FontCache.h" />
 		<Unit filename="src/Resource/Image.cpp" />
 		<Unit filename="src/Resource/Image.h" />
+		<Unit filename="src/Resource/MaterialCache.cpp" />
+		<Unit filename="src/Resource/MaterialCache.h" />
 		<Unit filename="src/Resource/ModelCache.cpp" />
 		<Unit filename="src/Resource/ModelCache.h" />
 		<Unit filename="src/Resource/ObjLoader.cpp" />

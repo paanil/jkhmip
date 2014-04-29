@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SceneObject.h"
 #include "../Render/Model.h"
-#include "../Render/Shader.h"
+#include "../Render/RenderCommand.h"
 
 SceneObject::SceneObject() :
     model(0)
@@ -33,10 +33,8 @@ void SceneObject::SetModel(Model *mdl)
     model = mdl;
 }
 
-void SceneObject::Render(SceneCamera *camera)
+void SceneObject::GetRenderCommands(RenderCommandList &commands)
 {
-    if (model)
-    {
-        model->Render(this, camera);
-    }
+    commands.SetTransform(GetWorldTransform());
+    model->GetRenderCommands(commands);
 }

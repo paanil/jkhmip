@@ -119,8 +119,10 @@ void Application::Run()
     sword->SetPosition(Vector3(0.3f, -0.3f, 0.6f));
     sword->SetRotation(Matrix3::RotationX(25.0f) * Matrix3::RotationY(-17.5f));
 
+
     Font *font = fontCache.Get("LiberationSans_24_Bold.fnt");
     font->BuildTextGeometry("FPS:", text);
+
 
     Uint32 lastTicks = 0;
 
@@ -259,31 +261,7 @@ void Application::Update(float dt)
 
 void Application::Render()
 {
-    // Code that renders the test app scene.
-    // Not any proper rendering code!
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CW);
-    glCullFace(GL_BACK);
-
-    float t = SDL_GetTicks() / 1000.0f;
-    float f = Math::Clamp(Math::Sin(t * 0.25) + 0.2f, 0.0f, 1.0f);
-
-    Vector3 skyColor = Vector3(0.6f, 0.6f, 1.0f) * f + Vector3(0.05f, 0.05f, 0.1f) * (1.0f - f);
-
-//    glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
-    glClearColor(skyColor.x, skyColor.y, skyColor.z, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // Render scene
-    Shader *shader = shaderCache.Get("default.shader");
-
-    shader->Use();
-    shader->SetTime(t);
-
-    scene.Render(camera);
+    renderer.Render(scene, camera);
 
 //    // Render fps
 //    glClear(GL_DEPTH_BUFFER_BIT);

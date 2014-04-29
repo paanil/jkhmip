@@ -19,30 +19,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#include "Material.h"
+#ifndef __SCENERENDERER_H__
+#define __SCENERENDERER_H__
 
-Material::Material() :
-    shader(0),
-    texture(0)
-{
-}
+#include "RenderCommand.h"
 
-void Material::SetShader(Shader *shader)
-{
-    this->shader = shader;
-}
+class Scene;
+class SceneCamera;
 
-Shader *Material::GetShader()
+class SceneRenderer
 {
-    return shader;
-}
+public:
+    void Render(Scene &scene, SceneCamera *camera);
 
-void Material::SetTexture(Texture *texture)
-{
-    this->texture = texture;
-}
+private:
+    RenderCommandList commands;
+};
 
-Texture *Material::GetTexture()
-{
-    return texture;
-}
+#endif // __SCENERENDERER_H__

@@ -20,10 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Model.h"
-#include "Material.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "../Scene/SceneCamera.h"
+#include "RenderCommand.h"
 
 #include <GL/glew.h>
 
@@ -43,25 +40,14 @@ void Model::AddSubMesh(uint firstIndex, uint indexCount, Material *material)
     submeshes.push_back(submesh);
 }
 
-void Model::Render(SceneNode *node, SceneCamera *camera)
+void Model::GetRenderCommands(RenderCommandList &commands)
 {
-    if (vertexBuffer && indexBuffer)
+    commands.SetVertexBuffer(vertexBuffer.get());
+    commands.SetIndexBuffer(indexBuffer.get());
+
+    for (SubMesh &submesh : submeshes)
     {
-        vertexBuffer->Bind();
-        indexBuffer->Bind();
-        for (size_t i = 0; i < submeshes.size(); i++)
-        {
-            SubMesh &submesh = submeshes[i];
-            Material *material = submesh.material;
-            Shader *shader = material->GetShader();
-
-            shader->Use();
-            shader->SetProjMatrix(camera->GetProjection());
-            shader->SetViewMatrix(camera->GetInverseWorldTransform());
-            shader->SetModelMatrix(node->GetWorldTransform());
-            material->GetTexture()->Bind(0);
-
-            indexBuffer->DrawTriangles(submesh.firstIndex, submesh.indexCount);
-        }
+        commands.SetMaterial(submesh.material);
+        commands.AddRenderCommand(submesh.firstIndex, submesh.indexCount);
     }
 }

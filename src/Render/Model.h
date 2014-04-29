@@ -29,9 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 class Material;
-
-class SceneNode;
-class SceneCamera;
+class RenderCommandList;
 
 /// Model class.
 ///
@@ -44,11 +42,12 @@ public:
     /// Sets vertex and index buffers and clears sub meshes.
     /// Releases old vertex and index buffers and takes ownership of the new ones.
     void SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf);
+
     /// Adds sub mesh with given material.
     void AddSubMesh(uint firstIndex, uint indexCount, Material *material);
 
-    /// Renders the model.
-    void Render(SceneNode *node, SceneCamera *camera);
+    /// Adds submeshes to the list of render commands.
+    void GetRenderCommands(RenderCommandList &commands);
 
 private:
     /// Sub mesh is just a range of indices and a material.

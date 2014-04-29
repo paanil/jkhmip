@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Scene.h"
-#include "../Render/Shader.h"
+#include "../Render/RenderCommand.h"
 
 SceneCamera *Scene::CreateCamera()
 {
@@ -38,10 +38,10 @@ SceneObject *Scene::CreateObject()
     return object;
 }
 
-void Scene::Render(SceneCamera *camera)
+void Scene::GetRenderCommands(RenderCommandList &commands)
 {
     for (SceneObject *object : objects)
-        object->Render(camera);
+        object->GetRenderCommands(commands);
 }
 
 void Scene::AddNode(SceneNode *node)

@@ -28,8 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <memory>
 
-class Model;
-class Shader;
+class RenderCommandList;
 
 /// Scene class that holds the scene nodes.
 ///
@@ -46,8 +45,8 @@ public:
     /// Creates a renderable scene object node.
     SceneObject *CreateObject();
 
-    /// Renders the scene with given shader.
-    void Render(SceneCamera *camera);
+    /// Adds all scene objects to the list of render commands.
+    void GetRenderCommands(RenderCommandList &commands);
 
 private:
     /// Adds a scene node to the node list.
