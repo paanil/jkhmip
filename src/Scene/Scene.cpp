@@ -22,14 +22,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Scene.h"
 #include "../Render/Shader.h"
 
-Scene::Scene()
+SceneCamera *Scene::CreateCamera()
 {
-    camera = new SceneCamera();
+    SceneCamera *camera = new SceneCamera();
+//    cameras.push_back(camera);
     AddNode(camera);
-}
-
-SceneCamera *Scene::GetCamera()
-{
     return camera;
 }
 
@@ -41,7 +38,7 @@ SceneObject *Scene::CreateObject()
     return object;
 }
 
-void Scene::Render(Shader *shader)
+void Scene::Render(SceneCamera *camera, Shader *shader)
 {
     shader->SetProjMatrix(camera->GetProjection());
     shader->SetViewMatrix(camera->GetInverseWorldTransform());

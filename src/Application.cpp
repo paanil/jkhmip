@@ -86,22 +86,17 @@ bool Application::Init(const String &title)
 
 void Application::Run()
 {
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CW);
-    glCullFace(GL_BACK);
-
-    OnWindowResize(config.screenWidth, config.screenHeight); // Make sure the projection is OK.
-    scene.GetCamera()->SetPosition(Vector3(0.0f, 1.0f, 0.0f));
-    cameraAngles = Vector3(0.0f, 0.0f, 0.0f);
-
     shaderCache.SetDirectory("Data/Shaders/");
     textureCache.SetDirectory("Data/Textures/");
     modelCache.SetDirectory("Data/Models/");
     modelCache.SetTextureCache(textureCache);
     fontCache.SetDirectory("Data/Fonts/");
     fontCache.SetTextureCache(textureCache);
+
+    camera = scene.CreateCamera();
+    camera->SetPosition(Vector3(0.0f, 1.0f, 0.0f));
+    cameraAngles = Vector3(0.0f, 0.0f, 0.0f);
+    OnWindowResize(config.screenWidth, config.screenHeight); // Make sure the projection is OK.
 
     SceneObject *ground = scene.CreateObject();
     ground->SetModel(modelCache.Get("ground.obj"));
@@ -113,11 +108,11 @@ void Application::Run()
 
     SceneObject *sword = scene.CreateObject();
     sword->SetModel(modelCache.Get("sword.obj"));
-    sword->SetParent(scene.GetCamera());
+    sword->SetParent(camera);
     sword->SetPosition(Vector3(0.3f, -0.3f, 0.6f));
     sword->SetRotation(Matrix3::RotationX(25.0f) * Matrix3::RotationY(-17.5f));
 
-    Font *font = fontCache.Get("LiberationSans_24.fnt");
+    Font *font = fontCache.Get("LiberationSans_24_Bold.fnt");
     font->BuildTextGeometry("FPS:", text);
 
     Uint32 lastTicks = 0;
@@ -202,7 +197,7 @@ void Application::OnWindowResize(int w, int h)
     config.screenHeight = h;
 
     glViewport(0, 0, w, h);
-    scene.GetCamera()->SetPerspectiveProjection(50.0f, float(w)/h, 0.1f, 100.0f);
+    camera->SetPerspectiveProjection(50.0f, float(w)/h, 0.1f, 100.0f);
     proj2d = Matrix4::Ortho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
 }
 
@@ -214,8 +209,6 @@ void Application::Update(float dt)
     const float sensitivity = 0.25f;
 
     // Camera movement
-    SceneCamera *camera = scene.GetCamera();
-
     Vector3 pos = camera->GetPosition();
     Vector3 right, up, look;
     camera->GetBasisVectors(right, up, look);
@@ -262,16 +255,28 @@ void Application::Render()
     // Code that renders the test app scene.
     // Not any proper rendering code!
 
-    glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CW);
+    glCullFace(GL_BACK);
+
+    float t = SDL_GetTicks() / 1000.0f;
+    float f = Math::Clamp(Math::Sin(t * 0.25) + 0.2f, 0.0f, 1.0f);
+
+    Vector3 skyColor = Vector3(0.6f, 0.6f, 1.0f) * f + Vector3(0.05f, 0.05f, 0.1f) * (1.0f - f);
+
+//    glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
+    glClearColor(skyColor.x, skyColor.y, skyColor.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render scene
     Shader *shader = shaderCache.Get("default.shader");
 
     shader->Use();
-    shader->SetTime(SDL_GetTicks() / 1000.0f);
+    shader->SetTime(t);
 
-    scene.Render(shader);
+    scene.Render(camera, shader);
 
     // Render fps
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -280,7 +285,7 @@ void Application::Render()
 
     shader->Use();
     shader->SetProjMatrix(proj2d);
-    shader->SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
+    shader->SetTranslation(Vector3(10.0f, 10.0f, 0.0f));
     shader->SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 
     glEnable(GL_BLEND);

@@ -1,6 +1,4 @@
 
-// This is just a test shader.
-
 :Vert
 
 #version 140

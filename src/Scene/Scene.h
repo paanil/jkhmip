@@ -37,19 +37,17 @@ class Scene
 {
     typedef std::unique_ptr<SceneNode> SceneNodePtr;
     typedef std::vector<SceneNodePtr> NodeList;
+//    typedef std::vector<SceneCamera *> CameraList;
     typedef std::vector<SceneObject *> ObjectList;
 
 public:
-    /// Creates the camera.
-    Scene();
-
-    /// Returns the camera.
-    SceneCamera *GetCamera();
+    /// Creates a camera node.
+    SceneCamera *CreateCamera();
     /// Creates a renderable scene object node.
     SceneObject *CreateObject();
 
     /// Renders the scene with given shader.
-    void Render(Shader *shader);
+    void Render(SceneCamera *camera, Shader *shader);
 
 private:
     /// Adds a scene node to the node list.
@@ -57,7 +55,7 @@ private:
 
 private:
     NodeList nodes;
-    SceneCamera *camera;
+//    CameraList cameras;
     ObjectList objects;
 };
 

@@ -86,6 +86,7 @@ private:
     FontCache    fontCache;
 
     Scene scene;
+    SceneCamera *camera;
     Vector3 cameraAngles;
 
     Matrix4 proj2d;

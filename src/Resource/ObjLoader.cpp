@@ -81,7 +81,6 @@ bool ObjLoader::Load(const String &file, Model &model, TextureCache *textureCach
 
     String line;
     String ident;
-    bool parseStatus = true;
 
     while (std::getline(f, line))
     {
@@ -92,31 +91,38 @@ bool ObjLoader::Load(const String &file, Model &model, TextureCache *textureCach
 
         line = ParseIdent(line, ident);
 
+        bool status = true;
+
         if (ident == "v")
-            parseStatus = ParsePosition(line);
+            status = ParsePosition(line);
         else if (ident == "vt")
-            parseStatus = ParseTexCoord(line);
+            status = ParseTexCoord(line);
         else if (ident == "vn")
-            parseStatus = ParseNormal(line);
+            status = ParseNormal(line);
         else if (ident == "f")
-            parseStatus = ParseFace(line);
+            status = ParseFace(line);
         else if (ident == "usemtl")
             AddSubMesh(line);
 
-        if (!parseStatus)
-            break;
+        if (!status)
+        {
+            LOG_ERROR("Loading model failed.");
+            return false;
+        }
     }
 
     if (submeshes.empty())
     {
-        AddSubMesh("debug");
-        submeshes.back().firstIndex = 0;
+        LOG_ERROR("At least one material expected.");
+        LOG_ERROR("Loading model failed.");
+        return false;
     }
+
     FinishLastSubMesh();
 
-    if (!parseStatus || !BuildModel(model, textureCache))
+    if (!BuildModel(model, textureCache))
     {
-        LOG_ERROR("Loading model failed.");
+        LOG_ERROR("Building model failed.");
         return false;
     }
     return true;
