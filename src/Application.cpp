@@ -131,6 +131,7 @@ void Application::Run()
     // Variables for fps counter
     Uint32 lastFPSTicks = 0;
     Uint32 frames = 0;
+    String fps;
 
     while (running)
     {
@@ -142,9 +143,8 @@ void Application::Run()
         if (ticks >= lastFPSTicks + 1000)
         {
 //            LOG_DEBUG("FPS: %", frames);
-            std::stringstream ss;
-            ss << "FPS: " << frames;
-            font->BuildTextGeometry(ss.str(), text);
+            Format(fps, "FPS: %", frames);
+            font->BuildTextGeometry(fps, text);
             lastFPSTicks = ticks;
             frames = 0;
         }

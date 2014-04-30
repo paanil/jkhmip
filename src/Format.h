@@ -23,6 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __FORMAT_H__
 
 #include <ostream>
+#include <string>
+#include <sstream>
 
 inline void Format(std::ostream &out, const char *fmt)
 {
@@ -62,6 +64,15 @@ void Format(std::ostream &out, const char *fmt, const T &value, Args... args)
 
     // There are more args than % -chars!!!
     //TODO: warning/error/assert
+}
+
+template <class... Args>
+void Format(std::string &str, const char *fmt, Args... args)
+{
+    std::ostringstream out;
+    Format(out, fmt, args...);
+
+    str = out.str();
 }
 
 #endif // __FORMAT_H__
