@@ -28,9 +28,9 @@ SceneObject::SceneObject() :
 {
 }
 
-void SceneObject::SetModel(Model *mdl)
+void SceneObject::SetModel(Model *model)
 {
-    model = mdl;
+    this->model = model;
 }
 
 void SceneObject::GetRenderCommands(RenderCommandList &commands)

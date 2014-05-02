@@ -57,6 +57,12 @@ public:
     /// Gets local rotation.
     Matrix3 GetRotation() const;
 
+    /// Sets local scale.
+    /// Assumes mat[i] is i'th column.
+    void SetScale(const Vector3 &scale);
+    /// Gets local scale.
+    Vector3 GetScale()const;
+
     /// Gets the local rotation basis vectors.
     void GetBasisVectors(Vector3 &right, Vector3 &up, Vector3 &look) const;
 
@@ -81,6 +87,8 @@ private:
     Matrix4 localTransform;
     Matrix4 worldTransform;
     bool worldDirty;
+
+    friend class SceneLoader;
 };
 
 #endif // __SCENENODE_H__

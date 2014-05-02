@@ -45,16 +45,16 @@ public:
     {
     }
 
-    /// Sets the 'direcotry' where the resources are expected
+    /// Sets the 'directory' where the resources are expected
     /// to be found. The string needs to end with '/' -char.
     void SetDirectory(const String &dir)
     {
-        direcotry = dir;
+        directory = dir;
     }
 
     /// Gets a resource identified by the file name.
     /// The resource is loaded if it's not in the cache.
-    /// The file name is expected to be relative to the 'direcotry'.
+    /// The file name is expected to be relative to the 'directory'.
     T *Get(const String &file)
     {
         auto it = resources.find(file);
@@ -63,7 +63,7 @@ public:
             return it->second.get();
         }
 
-        T *resource = Load(direcotry + file);
+        T *resource = Load(directory + file);
         resources[file] = ResourcePtr(resource);
         return resource;
     }
@@ -75,7 +75,7 @@ protected:
 
 private:
     /// Directory where the resources are loaded from.
-    String direcotry;
+    String directory;
     /// Map containing the cached resources.
     ResourceMap resources;
 };

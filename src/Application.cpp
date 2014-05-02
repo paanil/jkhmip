@@ -101,19 +101,16 @@ void Application::Run()
     fontCache.SetTextureCache(textureCache);
     fontCache.InitIndexBuffer();
 
+    sceneLoader.SetDirectory("Data/Scenes/");
+    sceneLoader.SetModelCache(modelCache);
+
+
+    sceneLoader.LoadScene(scene, "test.scene");
 
     camera = scene.CreateCamera();
     camera->SetPosition(Vector3(0.0f, 1.0f, 0.0f));
     cameraAngles = Vector3(0.0f, 0.0f, 0.0f);
     OnWindowResize(config.screenWidth, config.screenHeight); // Make sure the projection is OK.
-
-    SceneObject *ground = scene.CreateObject();
-    ground->SetModel(modelCache.Get("ground.obj"));
-
-    SceneObject *house = scene.CreateObject();
-    house->SetModel(modelCache.Get("house.obj"));
-    house->SetPosition(Vector3(-3.0f, -0.75f, 3.0f));
-    house->SetRotation(Matrix3::RotationY(-15.0f));
 
     SceneObject *sword = scene.CreateObject();
     sword->SetModel(modelCache.Get("sword.obj"));
@@ -122,8 +119,10 @@ void Application::Run()
     sword->SetRotation(Matrix3::RotationX(25.0f) * Matrix3::RotationY(-17.5f));
 
 
-    Font *font = fontCache.Get("LiberationSans_24_Bold.fnt");
-    font->BuildTextGeometry("FPS:", text);
+    text.SetRelativePosition(Vector2(10.0f, 10.0f));
+    text.SetFont(fontCache.Get("LiberationSans_24_Bold.fnt"));
+    text.SetText("FPS: ");
+    text.SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 
 
     Uint32 lastTicks = 0;
@@ -144,7 +143,7 @@ void Application::Run()
         {
 //            LOG_DEBUG("FPS: %", frames);
             Format(fps, "FPS: %", frames);
-            font->BuildTextGeometry(fps, text);
+            text.SetText(fps);
             lastFPSTicks = ticks;
             frames = 0;
         }
@@ -272,13 +271,13 @@ void Application::Render()
     Shader *shader = shaderCache.Get("text.shader");
     shader->Use();
     shader->SetProjMatrix(proj2d);
-    shader->SetTranslation(Vector3(10.0f, 10.0f, 0.0f));
-    shader->SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+//    shader->SetTranslation(Vector3(10.0f, 10.0f, 0.0f));
+//    shader->SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    text.Render();
+    text.Render(shader);
 
     glDisable(GL_BLEND);
 

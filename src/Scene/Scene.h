@@ -40,6 +40,8 @@ class Scene
     typedef std::vector<SceneObject *> ObjectList;
 
 public:
+    /// Creates a dummy node.
+    SceneNode *CreateDummy();
     /// Creates a camera node.
     SceneCamera *CreateCamera();
     /// Creates a renderable scene object node.

@@ -98,6 +98,8 @@
 		<Unit filename="src/Resource/ObjLoader.cpp" />
 		<Unit filename="src/Resource/ObjLoader.h" />
 		<Unit filename="src/Resource/ResourceCache.h" />
+		<Unit filename="src/Resource/SceneLoader.cpp" />
+		<Unit filename="src/Resource/SceneLoader.h" />
 		<Unit filename="src/Resource/ShaderCache.cpp" />
 		<Unit filename="src/Resource/ShaderCache.h" />
 		<Unit filename="src/Resource/TextureCache.cpp" />
@@ -113,6 +115,10 @@
 		<Unit filename="src/Str.cpp" />
 		<Unit filename="src/Str.h" />
 		<Unit filename="src/Types.h" />
+		<Unit filename="src/UI/Element.cpp" />
+		<Unit filename="src/UI/Element.h" />
+		<Unit filename="src/UI/Text.cpp" />
+		<Unit filename="src/UI/Text.h" />
 		<Unit filename="src/Window.cpp" />
 		<Unit filename="src/Window.h" />
 		<Unit filename="src/main.cpp" />

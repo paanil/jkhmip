@@ -162,8 +162,9 @@ bool ObjLoader::ParseNormal(const String &line)
         LOG_ERROR("Invalid vertex normal.");
         return false;
     }
-    normal.x *= -1.0f;
-    normal.y *= -1.0f;
+//    normal.x *= -1.0f;
+//    normal.y *= -1.0f;
+    normal.z *= -1.0f;
     normals.push_back(normal);
     return true;
 }
@@ -183,17 +184,17 @@ bool ObjLoader::ParseFace(const String &line)
         return false;
 
     // add a triangle
-    indices.push_back(index1);
-    indices.push_back(index2);
     indices.push_back(index3);
+    indices.push_back(index2);
+    indices.push_back(index1);
 
     if (ParseIndex(ss, index4, false))
     {
         // apparently a quad face
         // lets add another trianle
-        indices.push_back(index1);
-        indices.push_back(index3);
         indices.push_back(index4);
+        indices.push_back(index3);
+        indices.push_back(index1);
 
         if (ParseIndex(ss, index1, false))
         {
@@ -302,7 +303,7 @@ bool ObjLoader::BuildModel(Model &model, MaterialCache *materialCache)
     for (size_t i = 0; i < submeshes.size(); i++)
     {
         const SubMesh &submesh = submeshes[i];
-        Material *material = materialCache->Get(submesh.material);
+        Material *material = materialCache->Get(submesh.material + ".material");
         Texture *texture = material->GetTexture();
         texture->SetFilterMode(TF_MIN_LINEAR_MIP_LINEAR, TF_MAG_LINEAR);
         texture->SetWrapMode(TW_REPEAT, TW_REPEAT);

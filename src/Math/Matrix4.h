@@ -102,8 +102,9 @@ public:
     /// Returns transpose of the matrix.
     Matrix4 Transposed() const;
 
-    /// Returns inverse of Translation * Rotation.
-    Matrix4 InverseTR() const;
+    /// Returns inverse of Translation * Rotation * Scale.
+    /// Assumes mat[i] is i'th column.
+    Matrix4 InverseTRS() const;
 
     /* Static functions */
 

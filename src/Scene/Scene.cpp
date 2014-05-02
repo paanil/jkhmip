@@ -22,6 +22,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Scene.h"
 #include "../Render/RenderCommand.h"
 
+SceneNode *Scene::CreateDummy()
+{
+    SceneNode *node = new SceneNode();
+    AddNode(node);
+    return node;
+}
+
 SceneCamera *Scene::CreateCamera()
 {
     SceneCamera *camera = new SceneCamera();

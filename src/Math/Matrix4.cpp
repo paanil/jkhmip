@@ -152,15 +152,22 @@ Matrix4 Matrix4::Transposed() const
     return result;
 }
 
-Matrix4 Matrix4::InverseTR() const
+Matrix4 Matrix4::InverseTRS() const
 {
     Matrix4 result = Zero();
+
+    float invScale[3] =
+    {
+        1.0f / Vector3(m11, m21, m31).Length(),
+        1.0f / Vector3(m12, m22, m32).Length(),
+        1.0f / Vector3(m13, m23, m33).Length()
+    };
 
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
         {
-            result.mat[i][j] = mat[j][i];
+            result.mat[i][j] = invScale[i] * mat[j][i];
         }
     }
 

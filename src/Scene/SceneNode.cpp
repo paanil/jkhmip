@@ -45,6 +45,8 @@ void SceneNode::SetParent(SceneNode *node)
 
     if (parent)
         parent->AddChild(this);
+
+    SetDirty();
 }
 
 SceneNode *SceneNode::GetParent() const
@@ -105,6 +107,26 @@ Matrix3 SceneNode::GetRotation() const
     return rot;
 }
 
+void SceneNode::SetScale(const Vector3 &scale)
+{
+    for (int i = 0; i < 3; i++)
+    {
+        localTransform.mat[0][i] *= scale.x;
+        localTransform.mat[1][i] *= scale.y;
+        localTransform.mat[2][i] *= scale.z;
+    }
+
+    SetDirty();
+}
+
+Vector3 SceneNode::GetScale() const
+{
+    const Matrix4 &tm = localTransform;
+    return Vector3(Vector3(tm.m11, tm.m21, tm.m31).Length(),
+                   Vector3(tm.m12, tm.m22, tm.m32).Length(),
+                   Vector3(tm.m13, tm.m23, tm.m33).Length());
+}
+
 void SceneNode::GetBasisVectors(Vector3 &right, Vector3 &up, Vector3 &look) const
 {
     const Matrix4 &tm = localTransform;
@@ -135,7 +157,7 @@ const Matrix4 &SceneNode::GetWorldTransform()
 
 Matrix4 SceneNode::GetInverseWorldTransform()
 {
-    return GetWorldTransform().InverseTR();
+    return GetWorldTransform().InverseTRS();
 }
 
 void SceneNode::SetDirty()

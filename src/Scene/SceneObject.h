@@ -36,7 +36,7 @@ public:
     SceneObject();
 
     /// Sets model.
-    void SetModel(Model *mdl);
+    void SetModel(Model *model);
 
     /// Adds model to the list of render commands.
     void GetRenderCommands(RenderCommandList &commands);
