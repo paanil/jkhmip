@@ -64,17 +64,6 @@ private:
     void Render();
 
 private:
-    /// Structure for application settings.
-    struct Config
-    {
-        int screenWidth;
-        int screenHeight;
-        bool fullscreen;
-        bool vsync;
-    };
-
-    /// Application settings.
-    Config config;
     /// Application window.
     Window window;
     /// True if SDL_Init succeeds.

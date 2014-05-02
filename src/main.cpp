@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Application.h"
 #include "Logger.h"
+#include "Conf.h"
 
 #include <iostream>
 
@@ -37,6 +38,7 @@ int main(int argc, char **argv)
     Logger::Warning().SetPrefix("WARNING  ");
     Logger::Error().SetStream(&std::cout);
     Logger::Error().SetPrefix("ERROR    ");
+    Config::defaultSettings();
 
     Application app;
 

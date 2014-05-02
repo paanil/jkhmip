@@ -22,8 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Application.h"
 #include "Math/Math.h"
 #include "Logger.h"
-
-#include "Resource/ShaderCache.h"
+#include "Conf.h"
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
@@ -65,16 +64,12 @@ bool Application::Init(const String &title)
         return false;
     }
 
-    // Set default settings.
-    // TODO: read config from file.
-    config.screenWidth = 800;
-    config.screenHeight = 600;
-    config.fullscreen = false;
-    config.vsync = true;
-//    config.vsync = false;
-
     // Try creating the window.
-    if (!window.Create(title, config.screenWidth, config.screenHeight, config.fullscreen, config.vsync))
+    if (!window.Create(title,
+                       Config::getInt("mainScreen_Width"),
+                       Config::getInt("mainScreen_Height"),
+                       Config::getBool("mainScreen_FullScreen"),
+                       Config::getBool("mainScreen_vsync")))
     {
         return false;
     }
@@ -87,21 +82,21 @@ bool Application::Init(const String &title)
 
 void Application::Run()
 {
-    shaderCache.SetDirectory("Data/Shaders/");
-    textureCache.SetDirectory("Data/Textures/");
+    shaderCache.SetDirectory(Config::getString("Shader_location"));
+    textureCache.SetDirectory(Config::getString("Texture_location"));
 
-    materialCache.SetDirectory("Data/Materials/");
+    materialCache.SetDirectory(Config::getString("Material_location"));
     materialCache.SetShaderCache(shaderCache);
     materialCache.SetTextureCache(textureCache);
 
-    modelCache.SetDirectory("Data/Models/");
+    modelCache.SetDirectory(Config::getString("Model_location"));
     modelCache.SetMaterialCache(materialCache);
 
-    fontCache.SetDirectory("Data/Fonts/");
+    fontCache.SetDirectory(Config::getString("Font_location"));
     fontCache.SetTextureCache(textureCache);
     fontCache.InitIndexBuffer();
 
-    sceneLoader.SetDirectory("Data/Scenes/");
+    sceneLoader.SetDirectory(Config::getString("Scene_location"));
     sceneLoader.SetModelCache(modelCache);
 
 
@@ -110,7 +105,7 @@ void Application::Run()
     camera = scene.CreateCamera();
     camera->SetPosition(Vector3(0.0f, 1.0f, 0.0f));
     cameraAngles = Vector3(0.0f, 0.0f, 0.0f);
-    OnWindowResize(config.screenWidth, config.screenHeight); // Make sure the projection is OK.
+    OnWindowResize(Config::getInt("mainScreen_Width"), Config::getInt("mainScreen_Height")); // Make sure the projection is OK.
 
     SceneObject *sword = scene.CreateObject();
     sword->SetModel(modelCache.Get("sword.obj"));
@@ -203,8 +198,8 @@ void Application::HandleEvents()
 
 void Application::OnWindowResize(int w, int h)
 {
-    config.screenWidth = w;
-    config.screenHeight = h;
+    Config::setInt("mainScreen_Width",w);
+    Config::setInt("mainScreen_Heigth",h);
 
     glViewport(0, 0, w, h);
     camera->SetPerspectiveProjection(50.0f, float(w)/h, 0.1f, 100.0f);
@@ -271,8 +266,6 @@ void Application::Render()
     Shader *shader = shaderCache.Get("text.shader");
     shader->Use();
     shader->SetProjMatrix(proj2d);
-//    shader->SetTranslation(Vector3(10.0f, 10.0f, 0.0f));
-//    shader->SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

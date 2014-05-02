@@ -51,6 +51,8 @@
 		<Unit filename="Data/Shaders/text.shader" />
 		<Unit filename="src/Application.cpp" />
 		<Unit filename="src/Application.h" />
+		<Unit filename="src/Conf.cpp" />
+		<Unit filename="src/Conf.h" />
 		<Unit filename="src/Format.h" />
 		<Unit filename="src/Logger.cpp" />
 		<Unit filename="src/Logger.h" />
@@ -68,6 +70,8 @@
 		<Unit filename="src/Math/Vector3.h" />
 		<Unit filename="src/Math/Vector4.cpp" />
 		<Unit filename="src/Math/Vector4.h" />
+		<Unit filename="src/Options.cpp" />
+		<Unit filename="src/Options.h" />
 		<Unit filename="src/Render/IndexBuffer.cpp" />
 		<Unit filename="src/Render/IndexBuffer.h" />
 		<Unit filename="src/Render/Material.cpp" />
