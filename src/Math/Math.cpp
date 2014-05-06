@@ -46,6 +46,16 @@ namespace Math
         return ::sqrtf(x);
     }
 
+    float Min(float a, float b)
+    {
+        return a < b ? a : b;
+    }
+
+    float Max(float a, float b)
+    {
+        return a > b ? a : b;
+    }
+
     float Clamp(float x, float minValue, float maxValue)
     {
         return (x < minValue) ? minValue : ((x > maxValue) ? maxValue : x);

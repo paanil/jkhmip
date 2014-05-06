@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Resource/SceneLoader.h"
 #include "Render/SceneRenderer.h"
 #include "Scene/Scene.h"
+#include "CameraController.h"
 #include "UI/Text.h"
 
 /// Application class. There should be only one instance at a time.
@@ -84,7 +85,8 @@ private:
 
     Scene scene;
     SceneCamera *camera;
-    Vector3 cameraAngles;
+
+    CameraController cam;
 
     Matrix4 proj2d;
     UI::Text text;

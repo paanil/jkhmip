@@ -19,35 +19,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __MATH_H__
-#define __MATH_H__
+#ifndef __AABB_H__
+#define __AABB_H__
 
-/// Namespace for math operations and constants.
-///
-namespace Math
+#include "Vector3.h"
+
+class AABB
 {
+public:
+    Vector3 min, max;
 
-    const float PI = 3.1415926535897932384626433832795;
+    AABB();
 
-    const float DEG_TO_RAD = PI / 180.0f;
-    const float RAD_TO_DEG = 180.0f / PI;
+    void Update(const Vector3 &v);
+};
 
-    const float EPSILON = 0.0000001f;
-
-    float Sin(float angleRad);
-    float Cos(float angleRad);
-    float Tan(float angleRad);
-
-    float Sqrt(float x);
-
-    float Min(float a, float b);
-    float Max(float a, float b);
-
-    float Clamp(float x, float minValue, float maxValue);
-
-    /// Wraps angle to range [0, 360).
-    float WrapAngleDegrees(float angle);
-
-} // Math
-
-#endif // __MATH_H__
+#endif // __AABB_H__

@@ -19,35 +19,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __MATH_H__
-#define __MATH_H__
+#include "AABB.h"
+#include "Math.h"
 
-/// Namespace for math operations and constants.
-///
-namespace Math
+AABB::AABB() :
+    min(0.0f, 0.0f, 0.0f),
+    max(0.0f, 0.0f, 0.0f)
 {
+}
 
-    const float PI = 3.1415926535897932384626433832795;
-
-    const float DEG_TO_RAD = PI / 180.0f;
-    const float RAD_TO_DEG = 180.0f / PI;
-
-    const float EPSILON = 0.0000001f;
-
-    float Sin(float angleRad);
-    float Cos(float angleRad);
-    float Tan(float angleRad);
-
-    float Sqrt(float x);
-
-    float Min(float a, float b);
-    float Max(float a, float b);
-
-    float Clamp(float x, float minValue, float maxValue);
-
-    /// Wraps angle to range [0, 360).
-    float WrapAngleDegrees(float angle);
-
-} // Math
-
-#endif // __MATH_H__
+void AABB::Update(const Vector3 &v)
+{
+    min.x = Math::Min(min.x, v.x);
+    min.y = Math::Min(min.y, v.y);
+    min.z = Math::Min(min.z, v.z);
+    max.x = Math::Max(max.x, v.x);
+    max.y = Math::Max(max.y, v.y);
+    max.z = Math::Max(max.z, v.z);
+}
