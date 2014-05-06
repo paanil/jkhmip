@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "../Math/AABB.h"
 
 #include <memory>
 #include <vector>
@@ -36,6 +37,8 @@ class RenderCommandList;
 class Model
 {
 public:
+    void SetAABB(const AABB &aabb);
+
     /// Sets vertex and index buffers and clears sub meshes.
     /// Releases old vertex and index buffers and takes ownership of the new ones.
     void SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf);
@@ -54,6 +57,8 @@ private:
         uint indexCount;
         Material *material;
     };
+
+    AABB aabb;
 
     VertexBufferPtr vertexBuffer;
     IndexBufferPtr indexBuffer;

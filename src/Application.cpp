@@ -20,13 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Application.h"
-#include "Math/Math.h"
 #include "Logger.h"
 #include "Conf.h"
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
-#include <sstream>
 
 Application::Application()
 {
@@ -59,10 +57,7 @@ Application::~Application()
 bool Application::Init(const String &title)
 {
     if (!sdlReady)
-    {
-        LOG_DEBUG("SDL_Init has failed.");
         return false;
-    }
 
     // Try creating the window.
     if (!window.Create(title,
@@ -104,7 +99,6 @@ void Application::Run()
 
     camera = scene.CreateCamera();
     camera->SetPosition(Vector3(0.0f, 1.0f, 0.0f));
-    cameraAngles = Vector3(0.0f, 0.0f, 0.0f);
     OnWindowResize(Config::getInt("mainScreen_Width"), Config::getInt("mainScreen_Height")); // Make sure the projection is OK.
 
     SceneObject *sword = scene.CreateObject();
@@ -112,6 +106,8 @@ void Application::Run()
     sword->SetParent(camera);
     sword->SetPosition(Vector3(0.3f, -0.3f, 0.6f));
     sword->SetRotation(Matrix3::RotationX(25.0f) * Matrix3::RotationY(-17.5f));
+
+    cam.SetCamera(camera);
 
 
     text.SetRelativePosition(Vector2(10.0f, 10.0f));
@@ -208,52 +204,7 @@ void Application::OnWindowResize(int w, int h)
 
 void Application::Update(float dt)
 {
-    const Uint8 *keys = SDL_GetKeyboardState(0);
-
-    const float speed = 6.0f;
-    const float sensitivity = 0.25f;
-
-    // Camera movement
-
-    Vector3 pos = camera->GetPosition();
-    Vector3 right, up, look;
-    camera->GetBasisVectors(right, up, look);
-
-    Vector3 dir(0.0f, 0.0f, 0.0f);
-
-    if (keys[SDL_SCANCODE_W])
-        dir += look;
-    if (keys[SDL_SCANCODE_S])
-        dir -= look;
-    if (keys[SDL_SCANCODE_A])
-        dir -= right;
-    if (keys[SDL_SCANCODE_D])
-        dir += right;
-
-    dir.SafeNormalize();
-    pos += dir * (speed * dt);
-
-    camera->SetPosition(pos);
-
-    // Camera rotation
-
-    int relMouseX, relMouseY;
-    if (SDL_GetRelativeMouseState(&relMouseX, &relMouseY) & SDL_BUTTON(SDL_BUTTON_LEFT))
-    {
-        SDL_SetRelativeMouseMode(SDL_TRUE);
-
-        cameraAngles.y += relMouseX * sensitivity;
-        cameraAngles.x += relMouseY * sensitivity;
-        cameraAngles.y = Math::WrapAngleDegrees(cameraAngles.y);
-        cameraAngles.x = Math::Clamp(cameraAngles.x, -90.0f, 90.0f);
-
-        Matrix3 rot = Matrix3::RotationYXZ(cameraAngles);
-        camera->SetRotation(rot);
-    }
-    else
-    {
-        SDL_SetRelativeMouseMode(SDL_FALSE);
-    }
+    cam.Update(dt);
 }
 
 void Application::Render()

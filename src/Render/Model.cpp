@@ -24,6 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <GL/glew.h>
 
+void Model::SetAABB(const AABB &aabb)
+{
+    this->aabb = aabb;
+}
+
 void Model::SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf)
 {
     vertexBuffer.reset(vertexBuf);

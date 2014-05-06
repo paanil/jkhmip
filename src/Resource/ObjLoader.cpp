@@ -252,6 +252,8 @@ bool ObjLoader::BuildModel(Model &model, MaterialCache *materialCache)
     bool hasNormals = !normals.empty();
     uint vertSize = 3 + (hasTexcoords ? 2 : 0) + (hasNormals ? 3 : 0);
 
+    AABB aabb;
+
     std::vector<float> meshVerts;
     meshVerts.reserve(uniques.size() * vertSize);
 
@@ -263,7 +265,9 @@ bool ObjLoader::BuildModel(Model &model, MaterialCache *materialCache)
             LOG_ERROR("Invalid vertex position index.");
             return false;
         }
+        aabb.Update(positions[index - 1]);
         PushVector3(meshVerts, positions[index - 1]);
+
         if (hasTexcoords)
         {
             index = uniques[i].texcoordIndex;
@@ -274,6 +278,7 @@ bool ObjLoader::BuildModel(Model &model, MaterialCache *materialCache)
             }
             PushVector2(meshVerts, texcoords[index - 1]);
         }
+
         if (hasNormals)
         {
             index = uniques[i].normalIndex;
@@ -285,6 +290,8 @@ bool ObjLoader::BuildModel(Model &model, MaterialCache *materialCache)
             PushVector3(meshVerts, normals[index - 1]);
         }
     }
+
+    model.SetAABB(aabb);
 
     uint stride = vertSize * sizeof(float);
 

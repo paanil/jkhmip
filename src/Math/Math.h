@@ -40,6 +40,9 @@ namespace Math
 
     float Sqrt(float x);
 
+    float Min(float a, float b);
+    float Max(float a, float b);
+
     float Clamp(float x, float minValue, float maxValue);
 
     /// Wraps angle to range [0, 360).
