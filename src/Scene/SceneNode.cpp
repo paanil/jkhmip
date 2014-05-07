@@ -115,6 +115,10 @@ void SceneNode::GetBasisVectors(Vector3 &right, Vector3 &up, Vector3 &look) cons
 Matrix4 SceneNode::GetLocalTransform() const
 {
     Matrix4 M;
+    M.m14 = position.x;
+    M.m24 = position.y;
+    M.m34 = position.z;
+    M.m44 = 1.0f;
     for (int i = 0; i < 3; i++)
     {
         M.mat[0][i] = rotation.mat[0][i] * scale.x;
@@ -122,10 +126,6 @@ Matrix4 SceneNode::GetLocalTransform() const
         M.mat[2][i] = rotation.mat[2][i] * scale.z;
         M.mat[i][3] = 0.0f;
     }
-    M.m14 = position.x;
-    M.m24 = position.y;
-    M.m34 = position.z;
-    M.m44 = 1.0f;
     return M;
 }
 

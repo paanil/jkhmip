@@ -63,8 +63,12 @@ void CameraController::Update(float dt)
     if (keys[SDL_SCANCODE_D])
         dir += right;
 
+    float speedup = 1.0f;
+    if (keys[SDL_SCANCODE_LSHIFT])
+        speedup = 2.0f;
+
     dir.SafeNormalize();
-    pos += dir * (speed * dt);
+    pos += dir * (speed * speedup * dt);
 
     camera->SetPosition(pos);
 
