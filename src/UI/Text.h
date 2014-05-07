@@ -26,7 +26,7 @@ namespace UI
         void SetColor(const Vector4 &color);
         Vector4 GetColor() const;
 
-        void Render(Shader *shader);
+        const TextGeometry &GetGeometry() const;
 
     private:
         void UpdateGeometry();

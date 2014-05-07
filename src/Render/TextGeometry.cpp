@@ -20,16 +20,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "TextGeometry.h"
-#include "Texture.h"
-#include "IndexBuffer.h"
 
-void TextGeometry::Render()
+Texture *TextGeometry::GetFontTexture() const
 {
-    if (vertexBuffer)
-    {
-        fontTexture->Bind(0);
-        vertexBuffer->Bind();
-        indexBuffer->Bind();
-        indexBuffer->DrawTriangles(0, indexCount);
-    }
+    return fontTexture;
+}
+
+VertexBuffer *TextGeometry::GetVertexBuffer() const
+{
+    return vertexBuffer.get();
+}
+
+IndexBuffer *TextGeometry::GetIndexBuffer() const
+{
+    return indexBuffer;
+}
+
+uint TextGeometry::GetIndexCount() const
+{
+    return indexCount;
 }

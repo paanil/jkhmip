@@ -32,7 +32,10 @@ class IndexBuffer;
 class TextGeometry
 {
 public:
-    void Render();
+    Texture *GetFontTexture() const;
+    VertexBuffer *GetVertexBuffer() const;
+    IndexBuffer *GetIndexBuffer() const;
+    uint GetIndexCount() const;
 
 private:
     Texture *fontTexture;

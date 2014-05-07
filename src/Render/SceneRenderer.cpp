@@ -22,10 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SceneRenderer.h"
 #include "Material.h"
 #include "Shader.h"
-#include "Texture.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
 #include "../Scene/Scene.h"
+#include "Graphics.h"
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
@@ -39,7 +37,7 @@ void SceneRenderer::Render(Scene::Scene &scene, Scene::Camera *camera)
     glCullFace(GL_BACK);
 
     glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    Graphics::Clear(CLEAR_COLOR_AND_DEPTH);
 
     Matrix4 proj = camera->GetProjection();
     Matrix4 view = camera->GetInverseWorldTransform();
@@ -49,17 +47,20 @@ void SceneRenderer::Render(Scene::Scene &scene, Scene::Camera *camera)
 
     for (RenderCommand &command : commands)
     {
+        Graphics::ResetState();
+
+        Graphics::SetTexture(command.material->GetTexture(), 0);
+
         Shader *shader = command.material->GetShader();
-        shader->Use();
+        Graphics::SetShader(shader);
         shader->SetProjMatrix(proj);
         shader->SetViewMatrix(view);
         shader->SetModelMatrix(command.transform);
         shader->SetTime(SDL_GetTicks() / 1000.0f);
 
-        command.material->GetTexture()->Bind(0);
+        Graphics::SetVertexBuffer(command.vbo);
+        Graphics::SetIndexBuffer(command.ibo);
 
-        command.vbo->Bind();
-        command.ibo->Bind();
-        command.ibo->DrawTriangles(command.firstIndex, command.indexCount);
+        Graphics::DrawTriangles(command.firstIndex, command.indexCount);
     }
 }
