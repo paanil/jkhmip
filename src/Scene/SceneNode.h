@@ -55,7 +55,7 @@ public:
     /// Sets local rotation.
     void SetRotation(const Matrix3 &rot);
     /// Gets local rotation.
-    Matrix3 GetRotation() const;
+    const Matrix3 &GetRotation() const;
 
     /// Sets local scale.
     /// Assumes mat[i] is i'th column.
@@ -67,7 +67,7 @@ public:
     void GetBasisVectors(Vector3 &right, Vector3 &up, Vector3 &look) const;
 
     /// Gets local transform matrix.
-    const Matrix4 &GetLocalTransform() const;
+    Matrix4 GetLocalTransform() const;
     /// Gets world transform matrix.
     const Matrix4 &GetWorldTransform();
     /// Gets the inverse world transform matrix.
@@ -84,7 +84,10 @@ private:
     SceneNode *parent;
     NodeList children;
 
-    Matrix4 localTransform;
+    Vector3 position;
+    Matrix3 rotation;
+    Vector3 scale;
+
     Matrix4 worldTransform;
     bool worldDirty;
 

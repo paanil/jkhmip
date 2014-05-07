@@ -38,28 +38,31 @@ bool SceneLoader::LoadScene(Scene &scene, const String &file)
 
     std::map<uint, SceneNode *> node_by_id;
 
+    const uint node_size = 64;
+    const uint name_size = 32;
+
     struct Node
     {
         uint type;
         uint id;
         uint parent;
         uint padd;
-        float mat[4][4];
+        float mat[3][4];
     };
 
-    assert(sizeof(Node) == 80);
+    assert(sizeof(Node) == node_size);
 
     union
     {
-        char as_char[80];
+        char as_char[node_size];
         Node as_node;
     };
 
-    char mesh_name[32];
+    char mesh_name[name_size];
 
     while (f.good())
     {
-        f.read(as_char, 80);
+        f.read(as_char, node_size);
 
         SceneNode *node = 0;
 
@@ -67,7 +70,7 @@ bool SceneLoader::LoadScene(Scene &scene, const String &file)
             node = scene.CreateDummy();
         else if (as_node.type == 1)
         {
-            f.read(mesh_name, 32);
+            f.read(mesh_name, name_size);
             String model_name(mesh_name);
             SceneObject *ob = scene.CreateObject();
             ob->SetModel(modelCache->Get(model_name + ".obj"));
@@ -78,13 +81,19 @@ bool SceneLoader::LoadScene(Scene &scene, const String &file)
         if (as_node.parent)
             node->SetParent(node_by_id[as_node.parent]);
 
-        for (int i = 0; i < 4; i++)
+        float (*m)[4] = as_node.mat;
+        Matrix3 rot;
+        for (int i = 0; i < 3; i++)
         {
-            for (int j = 0; j < 4; j++)
-                node->localTransform.mat[i][j] = as_node.mat[j][i];
+            for (int j = 0; j < 3; j++)
+                rot.mat[i][j] = m[j][i];
         }
-
-        node->worldDirty = true;
+        float scale_x = Vector3(m[0][0], m[1][0], m[2][0]).Length();
+        float scale_y = Vector3(m[0][1], m[1][1], m[2][1]).Length();
+        float scale_z = Vector3(m[0][2], m[1][2], m[2][2]).Length();
+        node->SetPosition(Vector3(m[0][3], m[1][3], m[2][3]));
+        node->SetRotation(rot);
+        node->SetScale(Vector3(scale_x, scale_y, scale_z));
     }
 
     return true;

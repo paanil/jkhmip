@@ -24,12 +24,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 
-SceneNode::SceneNode()
+SceneNode::SceneNode() :
+    parent(0),
+    position(0.0f, 0.0f, 0.0f),
+    scale(1.0f, 1.0f, 1.0f),
+    worldDirty(false)
 {
-    parent = 0;
-    localTransform = Matrix4::Identity();
+    rotation = Matrix3::Identity();
     worldTransform = Matrix4::Identity();
-    worldDirty = false;
 }
 
 SceneNode::~SceneNode()
@@ -72,72 +74,59 @@ void SceneNode::RemoveChild(SceneNode *node)
 
 void SceneNode::SetPosition(const Vector3 &pos)
 {
-    localTransform.m14 = pos.x;
-    localTransform.m24 = pos.y;
-    localTransform.m34 = pos.z;
-
+    position = pos;
     SetDirty();
 }
 
 Vector3 SceneNode::GetPosition() const
 {
-    const Matrix4 &tm = localTransform;
-    return Vector3(tm.m14, tm.m24, tm.m34);
+    return position;
 }
 
 void SceneNode::SetRotation(const Matrix3 &rot)
 {
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 3; j++)
-            localTransform.mat[i][j] = rot.mat[i][j];
-    }
-
+    rotation = rot;
     SetDirty();
 }
 
-Matrix3 SceneNode::GetRotation() const
+const Matrix3 &SceneNode::GetRotation() const
 {
-    Matrix3 rot;
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 3; j++)
-            rot.mat[i][j] = localTransform.mat[i][j];
-    }
-    return rot;
+    return rotation;
 }
 
 void SceneNode::SetScale(const Vector3 &scale)
 {
-    for (int i = 0; i < 3; i++)
-    {
-        localTransform.mat[0][i] *= scale.x;
-        localTransform.mat[1][i] *= scale.y;
-        localTransform.mat[2][i] *= scale.z;
-    }
-
+    this->scale = scale;
     SetDirty();
 }
 
 Vector3 SceneNode::GetScale() const
 {
-    const Matrix4 &tm = localTransform;
-    return Vector3(Vector3(tm.m11, tm.m21, tm.m31).Length(),
-                   Vector3(tm.m12, tm.m22, tm.m32).Length(),
-                   Vector3(tm.m13, tm.m23, tm.m33).Length());
+    return scale;
 }
 
 void SceneNode::GetBasisVectors(Vector3 &right, Vector3 &up, Vector3 &look) const
 {
-    const Matrix4 &tm = localTransform;
-    right = Vector3(tm.m11, tm.m21, tm.m31);
-    up    = Vector3(tm.m12, tm.m22, tm.m32);
-    look  = Vector3(tm.m13, tm.m23, tm.m33);
+    right = Vector3(rotation.m11, rotation.m21, rotation.m31);
+    up    = Vector3(rotation.m12, rotation.m22, rotation.m32);
+    look  = Vector3(rotation.m13, rotation.m23, rotation.m33);
 }
 
-const Matrix4 &SceneNode::GetLocalTransform() const
+Matrix4 SceneNode::GetLocalTransform() const
 {
-    return localTransform;
+    Matrix4 M;
+    for (int i = 0; i < 3; i++)
+    {
+        M.mat[0][i] = rotation.mat[0][i] * scale.x;
+        M.mat[1][i] = rotation.mat[1][i] * scale.y;
+        M.mat[2][i] = rotation.mat[2][i] * scale.z;
+        M.mat[i][3] = 0.0f;
+    }
+    M.m14 = position.x;
+    M.m24 = position.y;
+    M.m34 = position.z;
+    M.m44 = 1.0f;
+    return M;
 }
 
 const Matrix4 &SceneNode::GetWorldTransform()
