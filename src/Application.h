@@ -23,12 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __APPLICATION_H__
 
 #include "Window.h"
-#include "Resource/ShaderCache.h"
-#include "Resource/TextureCache.h"
-#include "Resource/MaterialCache.h"
-#include "Resource/ModelCache.h"
-#include "Resource/FontCache.h"
-#include "Resource/SceneLoader.h"
+#include "Resource/ResourceManager.h"
 #include "Render/SceneRenderer.h"
 #include "Scene/Scene.h"
 #include "CameraController.h"
@@ -74,12 +69,7 @@ private:
     bool running;
 
     /* Members for the test app */
-    ShaderCache     shaderCache;
-    TextureCache    textureCache;
-    MaterialCache   materialCache;
-    ModelCache      modelCache;
-    FontCache       fontCache;
-    SceneLoader     sceneLoader;
+    ResourceManager resources;
 
     SceneRenderer renderer;
 

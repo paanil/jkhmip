@@ -69,6 +69,9 @@ bool Application::Init(const String &title)
         return false;
     }
 
+    // Initialize resource manager.
+    resources.Init();
+
     // All good, we can allow running of the app.
     running = true;
 
@@ -77,32 +80,14 @@ bool Application::Init(const String &title)
 
 void Application::Run()
 {
-    shaderCache.SetDirectory(Config::getString("Shader_location"));
-    textureCache.SetDirectory(Config::getString("Texture_location"));
-
-    materialCache.SetDirectory(Config::getString("Material_location"));
-    materialCache.SetShaderCache(shaderCache);
-    materialCache.SetTextureCache(textureCache);
-
-    modelCache.SetDirectory(Config::getString("Model_location"));
-    modelCache.SetMaterialCache(materialCache);
-
-    fontCache.SetDirectory(Config::getString("Font_location"));
-    fontCache.SetTextureCache(textureCache);
-    fontCache.InitIndexBuffer();
-
-    sceneLoader.SetDirectory(Config::getString("Scene_location"));
-    sceneLoader.SetModelCache(modelCache);
-
-
-    sceneLoader.Load(scene, "test.scene");
+    resources.LoadScene(scene, "test.scene");
 
     camera = scene.CreateCamera();
     camera->SetPosition(Vector3(0.0f, 1.0f, 0.0f));
     OnWindowResize(Config::getInt("mainScreen_Width"), Config::getInt("mainScreen_Height")); // Make sure the projection is OK.
 
     Scene::Object *sword = scene.CreateObject();
-    sword->SetModel(modelCache.Get("sword.obj"));
+    sword->SetModel(resources.GetModel("sword.obj"));
     sword->SetParent(camera);
     sword->SetPosition(Vector3(0.3f, -0.3f, 0.6f));
     sword->SetRotation(Matrix3::RotationX(25.0f) * Matrix3::RotationY(-17.5f));
@@ -111,7 +96,7 @@ void Application::Run()
 
 
     text.SetRelativePosition(Vector2(10.0f, 10.0f));
-    text.SetFont(fontCache.Get("LiberationSans_24_Bold.fnt"));
+    text.SetFont(resources.GetFont("LiberationSans_24_Bold.fnt"));
     text.SetText("FPS: ");
     text.SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 
@@ -214,7 +199,7 @@ void Application::Render()
     // Render fps
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    Shader *shader = shaderCache.Get("text.shader");
+    Shader *shader = resources.GetShader("text.shader");
     shader->Use();
     shader->SetProjMatrix(proj2d);
 
