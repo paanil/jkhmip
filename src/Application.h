@@ -83,8 +83,8 @@ private:
 
     SceneRenderer renderer;
 
-    Scene scene;
-    SceneCamera *camera;
+    Scene::Scene scene;
+    Scene::Camera *camera;
 
     CameraController cam;
 

@@ -19,29 +19,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __SCENECAMERA_H__
-#define __SCENECAMERA_H__
+#ifndef __SCENEOBJECT_H__
+#define __SCENEOBJECT_H__
 
-#include "SceneNode.h"
+#include "Node.h"
 
-/// Camera node.
-///
-class SceneCamera : public SceneNode
+class Model;
+class RenderCommandList;
+
+namespace Scene
 {
-public:
-    /// Initializes identity projection.
-    SceneCamera();
 
-    /// Sets orthographic projection.
-    void SetOrthoProjection(float left, float right, float bottom, float top, float zNear, float zFar);
-    /// Sets perspective projection.
-    void SetPerspectiveProjection(float fov, float aspect, float zNear, float zFar);
+    /// Renderable object node.
+    ///
+    class Object : public Node
+    {
+    public:
+        /// Sets model to 0.
+        Object();
 
-    /// Returns the projection matrix.
-    Matrix4 GetProjection() const;
+        /// Sets model.
+        void SetModel(Model *model);
 
-private:
-    Matrix4 projection;
-};
+        /// Adds model to the list of render commands.
+        void GetRenderCommands(RenderCommandList &commands);
 
-#endif // __SCENECAMERA_H__
+    private:
+        Model *model;
+    };
+
+} // Scene
+
+#endif // __SCENEOBJECT_H__

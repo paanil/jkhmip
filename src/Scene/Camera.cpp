@@ -19,24 +19,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#include "SceneCamera.h"
+#include "Camera.h"
 
-SceneCamera::SceneCamera()
+namespace Scene
+{
+
+Camera::Camera()
 {
     projection = Matrix4::Identity();
 }
 
-void SceneCamera::SetOrthoProjection(float left, float right, float bottom, float top, float zNear, float zFar)
+void Camera::SetOrthoProjection(float left, float right, float bottom, float top, float zNear, float zFar)
 {
     projection = Matrix4::Ortho(left, right, bottom, top, zNear, zFar);
 }
 
-void SceneCamera::SetPerspectiveProjection(float fov, float aspect, float zNear, float zFar)
+void Camera::SetPerspectiveProjection(float fov, float aspect, float zNear, float zFar)
 {
     projection = Matrix4::Perspective(fov, aspect, zNear, zFar);
 }
 
-Matrix4 SceneCamera::GetProjection() const
+Matrix4 Camera::GetProjection() const
 {
     return projection;
 }
+
+} // Scene

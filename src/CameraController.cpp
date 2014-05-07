@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "CameraController.h"
-#include "Scene/SceneCamera.h"
+#include "Scene/Camera.h"
 #include "Math/Math.h"
 
 #include <SDL2/SDL.h>
@@ -31,7 +31,7 @@ CameraController::CameraController() :
 {
 }
 
-void CameraController::SetCamera(SceneCamera *camera)
+void CameraController::SetCamera(Scene::Camera *camera)
 {
     this->camera = camera;
 }

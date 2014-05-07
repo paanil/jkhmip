@@ -95,13 +95,13 @@ void Application::Run()
     sceneLoader.SetModelCache(modelCache);
 
 
-    sceneLoader.LoadScene(scene, "test.scene");
+    sceneLoader.Load(scene, "test.scene");
 
     camera = scene.CreateCamera();
     camera->SetPosition(Vector3(0.0f, 1.0f, 0.0f));
     OnWindowResize(Config::getInt("mainScreen_Width"), Config::getInt("mainScreen_Height")); // Make sure the projection is OK.
 
-    SceneObject *sword = scene.CreateObject();
+    Scene::Object *sword = scene.CreateObject();
     sword->SetModel(modelCache.Get("sword.obj"));
     sword->SetParent(camera);
     sword->SetPosition(Vector3(0.3f, -0.3f, 0.6f));

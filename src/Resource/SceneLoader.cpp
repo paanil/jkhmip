@@ -23,7 +23,7 @@ void SceneLoader::SetModelCache(ModelCache &modelCache)
     this->modelCache = &modelCache;
 }
 
-bool SceneLoader::LoadScene(Scene &scene, const String &file)
+bool SceneLoader::Load(Scene::Scene &scene, const String &file)
 {
     String filePath = directory + file;
     LOG_INFO("Loading scene '%'...", filePath);
@@ -36,7 +36,7 @@ bool SceneLoader::LoadScene(Scene &scene, const String &file)
         return false;
     }
 
-    std::map<uint, SceneNode *> node_by_id;
+    std::map<uint, Scene::Node *> node_by_id;
 
     const uint node_size = 64;
     const uint name_size = 32;
@@ -64,7 +64,7 @@ bool SceneLoader::LoadScene(Scene &scene, const String &file)
     {
         f.read(as_char, node_size);
 
-        SceneNode *node = 0;
+        Scene::Node *node = 0;
 
         if (as_node.type == 0)
             node = scene.CreateDummy();
@@ -72,7 +72,7 @@ bool SceneLoader::LoadScene(Scene &scene, const String &file)
         {
             f.read(mesh_name, name_size);
             String model_name(mesh_name);
-            SceneObject *ob = scene.CreateObject();
+            Scene::Object *ob = scene.CreateObject();
             ob->SetModel(modelCache->Get(model_name + ".obj"));
             node = ob;
         }

@@ -24,19 +24,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Math/Vector3.h"
 
-class SceneCamera;
+namespace Scene
+{
+    class Camera;
+}
 
 class CameraController
 {
 public:
     CameraController();
 
-    void SetCamera(SceneCamera *camera);
+    void SetCamera(Scene::Camera *camera);
 
     void Update(float dt);
 
 private:
-    SceneCamera *camera;
+    Scene::Camera *camera;
     Vector3 cameraAngles;
 };
 

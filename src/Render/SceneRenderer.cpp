@@ -26,12 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "../Scene/Scene.h"
-#include "../Scene/SceneCamera.h"
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 
-void SceneRenderer::Render(Scene &scene, SceneCamera *camera)
+void SceneRenderer::Render(Scene::Scene &scene, Scene::Camera *camera)
 {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);

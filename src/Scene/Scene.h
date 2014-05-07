@@ -22,42 +22,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __SCENE_H__
 #define __SCENE_H__
 
-#include "SceneCamera.h"
-#include "SceneObject.h"
+#include "Camera.h"
+#include "Object.h"
 
 #include <vector>
 #include <memory>
 
 class RenderCommandList;
 
-/// Scene class that holds the scene nodes.
-///
-class Scene
+namespace Scene
 {
-    typedef std::unique_ptr<SceneNode> SceneNodePtr;
-    typedef std::vector<SceneNodePtr> NodeList;
-//    typedef std::vector<SceneCamera *> CameraList;
-    typedef std::vector<SceneObject *> ObjectList;
 
-public:
-    /// Creates a dummy node.
-    SceneNode *CreateDummy();
-    /// Creates a camera node.
-    SceneCamera *CreateCamera();
-    /// Creates a renderable scene object node.
-    SceneObject *CreateObject();
+    /// Scene class that holds the scene nodes.
+    ///
+    class Scene
+    {
+        typedef std::unique_ptr<Node> NodePtr;
+        typedef std::vector<NodePtr> NodeList;
+//        typedef std::vector<Camera *> CameraList;
+        typedef std::vector<Object *> ObjectList;
 
-    /// Adds all scene objects to the list of render commands.
-    void GetRenderCommands(RenderCommandList &commands);
+    public:
+        /// Creates a dummy node.
+        Node *CreateDummy();
+        /// Creates a camera node.
+        Camera *CreateCamera();
+        /// Creates a renderable scene object node.
+        Object *CreateObject();
 
-private:
-    /// Adds a scene node to the node list.
-    void AddNode(SceneNode *node);
+        /// Adds all scene objects to the list of render commands.
+        void GetRenderCommands(RenderCommandList &commands);
 
-private:
-    NodeList nodes;
-//    CameraList cameras;
-    ObjectList objects;
-};
+    private:
+        /// Adds a scene node to the node list.
+        void AddNode(Node *node);
+
+    private:
+        NodeList nodes;
+//        CameraList cameras;
+        ObjectList objects;
+    };
+
+} // Scene
 
 #endif // __SCENE_H__

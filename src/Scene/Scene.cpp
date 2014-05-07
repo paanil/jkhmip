@@ -22,24 +22,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Scene.h"
 #include "../Render/RenderCommand.h"
 
-SceneNode *Scene::CreateDummy()
+namespace Scene
 {
-    SceneNode *node = new SceneNode();
+
+Node *Scene::CreateDummy()
+{
+    Node *node = new Node();
     AddNode(node);
     return node;
 }
 
-SceneCamera *Scene::CreateCamera()
+Camera *Scene::CreateCamera()
 {
-    SceneCamera *camera = new SceneCamera();
+    Camera *camera = new Camera();
 //    cameras.push_back(camera);
     AddNode(camera);
     return camera;
 }
 
-SceneObject *Scene::CreateObject()
+Object *Scene::CreateObject()
 {
-    SceneObject *object = new SceneObject();
+    Object *object = new Object();
     objects.push_back(object);
     AddNode(object);
     return object;
@@ -47,11 +50,13 @@ SceneObject *Scene::CreateObject()
 
 void Scene::GetRenderCommands(RenderCommandList &commands)
 {
-    for (SceneObject *object : objects)
+    for (Object *object : objects)
         object->GetRenderCommands(commands);
 }
 
-void Scene::AddNode(SceneNode *node)
+void Scene::AddNode(Node *node)
 {
-    nodes.push_back(SceneNodePtr(node));
+    nodes.push_back(NodePtr(node));
 }
+
+} // Scene

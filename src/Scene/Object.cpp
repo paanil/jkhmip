@@ -19,22 +19,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#include "SceneObject.h"
+#include "Object.h"
 #include "../Render/Model.h"
 #include "../Render/RenderCommand.h"
 
-SceneObject::SceneObject() :
+namespace Scene
+{
+
+Object::Object() :
     model(0)
 {
 }
 
-void SceneObject::SetModel(Model *model)
+void Object::SetModel(Model *model)
 {
     this->model = model;
 }
 
-void SceneObject::GetRenderCommands(RenderCommandList &commands)
+void Object::GetRenderCommands(RenderCommandList &commands)
 {
     commands.SetTransform(GetWorldTransform());
     model->GetRenderCommands(commands);
 }
+
+} // Scene

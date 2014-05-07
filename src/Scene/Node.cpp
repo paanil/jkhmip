@@ -19,12 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#include "SceneNode.h"
+#include "Node.h"
 #include "../Logger.h"
 
 #include <algorithm>
 
-SceneNode::SceneNode() :
+namespace Scene
+{
+
+Node::Node() :
     parent(0),
     position(0.0f, 0.0f, 0.0f),
     scale(1.0f, 1.0f, 1.0f),
@@ -34,11 +37,11 @@ SceneNode::SceneNode() :
     worldTransform = Matrix4::Identity();
 }
 
-SceneNode::~SceneNode()
+Node::~Node()
 {
 }
 
-void SceneNode::SetParent(SceneNode *node)
+void Node::SetParent(Node *node)
 {
     if (parent)
         parent->RemoveChild(this);
@@ -51,68 +54,68 @@ void SceneNode::SetParent(SceneNode *node)
     SetDirty();
 }
 
-SceneNode *SceneNode::GetParent() const
+Node *Node::GetParent() const
 {
     return parent;
 }
 
-void SceneNode::AddChild(SceneNode *node)
+void Node::AddChild(Node *node)
 {
     children.push_back(node);
 }
 
-void SceneNode::RemoveChild(SceneNode *node)
+void Node::RemoveChild(Node *node)
 {
     auto it = std::find(children.begin(), children.end(), node);
     if (it == children.end())
     {
-        LOG_WARNING("SceneNode: Trying to remove child not in children.");
+        LOG_WARNING("Scene::Node: Trying to remove child not in children.");
         return;
     }
     children.erase(it);
 }
 
-void SceneNode::SetPosition(const Vector3 &pos)
+void Node::SetPosition(const Vector3 &pos)
 {
     position = pos;
     SetDirty();
 }
 
-Vector3 SceneNode::GetPosition() const
+Vector3 Node::GetPosition() const
 {
     return position;
 }
 
-void SceneNode::SetRotation(const Matrix3 &rot)
+void Node::SetRotation(const Matrix3 &rot)
 {
     rotation = rot;
     SetDirty();
 }
 
-const Matrix3 &SceneNode::GetRotation() const
+const Matrix3 &Node::GetRotation() const
 {
     return rotation;
 }
 
-void SceneNode::SetScale(const Vector3 &scale)
+void Node::SetScale(const Vector3 &scale)
 {
     this->scale = scale;
     SetDirty();
 }
 
-Vector3 SceneNode::GetScale() const
+Vector3 Node::GetScale() const
 {
     return scale;
 }
 
-void SceneNode::GetBasisVectors(Vector3 &right, Vector3 &up, Vector3 &look) const
+void Node::GetBasisVectors(Vector3 &right, Vector3 &up, Vector3 &look) const
 {
     right = Vector3(rotation.m11, rotation.m21, rotation.m31);
     up    = Vector3(rotation.m12, rotation.m22, rotation.m32);
     look  = Vector3(rotation.m13, rotation.m23, rotation.m33);
 }
 
-Matrix4 SceneNode::GetLocalTransform() const
+Matrix4 Node::GetLocalTransform() const
 {
     Matrix4 M;
     M.m14 = position.x;
@@ -129,7 +132,7 @@ Matrix4 SceneNode::GetLocalTransform() const
     return M;
 }
 
-const Matrix4 &SceneNode::GetWorldTransform()
+const Matrix4 &Node::GetWorldTransform()
 {
     if (worldDirty)
     {
@@ -144,19 +147,21 @@ const Matrix4 &SceneNode::GetWorldTransform()
     return worldTransform;
 }
 
-Matrix4 SceneNode::GetInverseWorldTransform()
+Matrix4 Node::GetInverseWorldTransform()
 {
     return GetWorldTransform().InverseTRS();
 }
 
-void SceneNode::SetDirty()
+void Node::SetDirty()
 {
     if (!worldDirty)
     {
         worldDirty = true;
-        for (SceneNode *n : children)
+        for (Node *n : children)
         {
             n->SetDirty();
         }
     }
 }
+
+} // Scene

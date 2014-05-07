@@ -24,13 +24,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "RenderCommand.h"
 
-class Scene;
-class SceneCamera;
+namespace Scene
+{
+    class Scene;
+    class Camera;
+}
 
 class SceneRenderer
 {
 public:
-    void Render(Scene &scene, SceneCamera *camera);
+    void Render(Scene::Scene &scene, Scene::Camera *camera);
 
 private:
     RenderCommandList commands;

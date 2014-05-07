@@ -4,7 +4,11 @@
 
 #include "../Types.h"
 
-class Scene;
+namespace Scene
+{
+    class Scene;
+}
+
 class ModelCache;
 
 class SceneLoader
@@ -16,7 +20,7 @@ public:
 
     void SetModelCache(ModelCache &modelCache);
 
-    bool LoadScene(Scene &scene, const String &file);
+    bool Load(Scene::Scene &scene, const String &file);
 
 private:
     String directory;
