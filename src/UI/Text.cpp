@@ -1,10 +1,6 @@
 
 #include "Text.h"
-#include "../Render/Shader.h"
-#include "../Render/TextGeometry.h"
 #include "../Resource/Font.h"
-#include "../Math/Vector3.h"
-#include "../Math/Vector4.h"
 
 namespace UI
 {
@@ -47,12 +43,9 @@ Vector4 Text::GetColor() const
     return color;
 }
 
-void Text::Render(Shader *shader)
+const TextGeometry &Text::GetGeometry() const
 {
-    Vector2 pos = GetAbsolutePosition();
-    shader->SetTranslation(Vector3(pos.x, pos.y, 0.0f));
-    shader->SetColor(color);
-    geometry.Render();
+    return geometry;
 }
 
 void Text::UpdateGeometry()

@@ -76,6 +76,8 @@
 		<Unit filename="src/Math/Vector4.h" />
 		<Unit filename="src/Options.cpp" />
 		<Unit filename="src/Options.h" />
+		<Unit filename="src/Render/Graphics.cpp" />
+		<Unit filename="src/Render/Graphics.h" />
 		<Unit filename="src/Render/IndexBuffer.cpp" />
 		<Unit filename="src/Render/IndexBuffer.h" />
 		<Unit filename="src/Render/Material.cpp" />

@@ -20,11 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Application.h"
+#include "Render/Graphics.h"
 #include "Logger.h"
 #include "Conf.h"
 
 #include <SDL2/SDL.h>
-#include <GL/glew.h>
 
 Application::Application()
 {
@@ -68,6 +68,9 @@ bool Application::Init(const String &title)
     {
         return false;
     }
+
+    // Initialize graphics state.
+    Graphics::InitState();
 
     // Initialize resource manager.
     resources.Init();
@@ -182,7 +185,7 @@ void Application::OnWindowResize(int w, int h)
     Config::setInt("mainScreen_Width",w);
     Config::setInt("mainScreen_Heigth",h);
 
-    glViewport(0, 0, w, h);
+    Graphics::SetViewport(0, 0, w, h);
     camera->SetPerspectiveProjection(50.0f, float(w)/h, 0.1f, 100.0f);
     proj2d = Matrix4::Ortho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
 }
@@ -197,18 +200,21 @@ void Application::Render()
     renderer.Render(scene, camera);
 
     // Render fps
-    glClear(GL_DEPTH_BUFFER_BIT);
-
+    const TextGeometry &geometry = text.GetGeometry();
+    Vector2 pos = text.GetAbsolutePosition();
     Shader *shader = resources.GetShader("text.shader");
-    shader->Use();
+
+    Graphics::Clear(CLEAR_DEPTH);
+    Graphics::ResetState();
+    Graphics::SetBlendMode(BM_MIX);
+    Graphics::SetTexture(geometry.GetFontTexture(), 0);
+    Graphics::SetShader(shader);
     shader->SetProjMatrix(proj2d);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    text.Render(shader);
-
-    glDisable(GL_BLEND);
+    shader->SetTranslation(Vector3(pos.x, pos.y, 0.0f));
+    shader->SetColor(text.GetColor());
+    Graphics::SetVertexBuffer(geometry.GetVertexBuffer());
+    Graphics::SetIndexBuffer(geometry.GetIndexBuffer());
+    Graphics::DrawTriangles(0, geometry.GetIndexCount());
 
     // Draw screen
     window.SwapBuffers();
