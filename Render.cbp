@@ -107,6 +107,7 @@
 		<Unit filename="src/Resource/ObjLoader.h" />
 		<Unit filename="src/Resource/ResourceCache.h" />
 		<Unit filename="src/Resource/ResourceManager.cpp" />
+		<Unit filename="src/Resource/ResourceManager.h" />
 		<Unit filename="src/Resource/SceneLoader.cpp" />
 		<Unit filename="src/Resource/SceneLoader.h" />
 		<Unit filename="src/Resource/ShaderCache.cpp" />
