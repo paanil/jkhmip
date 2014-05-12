@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __CAMERA_H__
 
 #include "Node.h"
+#include "../Math/Frustum.h"
 
 namespace Scene
 {
@@ -41,10 +42,13 @@ namespace Scene
         void SetPerspectiveProjection(float fov, float aspect, float zNear, float zFar);
 
         /// Returns the projection matrix.
-        Matrix4 GetProjection() const;
+        const Matrix4 &GetProjection() const;
+
+        Frustum GetFrustum();
 
     private:
         Matrix4 projection;
+        Frustum frustum;
     };
 
 } // Scene

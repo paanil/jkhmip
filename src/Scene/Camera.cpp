@@ -37,11 +37,17 @@ void Camera::SetOrthoProjection(float left, float right, float bottom, float top
 void Camera::SetPerspectiveProjection(float fov, float aspect, float zNear, float zFar)
 {
     projection = Matrix4::Perspective(fov, aspect, zNear, zFar);
+    frustum.Construct(fov, aspect, zNear, zFar);
 }
 
-Matrix4 Camera::GetProjection() const
+const Matrix4 &Camera::GetProjection() const
 {
     return projection;
+}
+
+Frustum Camera::GetFrustum()
+{
+    return frustum.Transformed(GetWorldTransform());
 }
 
 } // Scene

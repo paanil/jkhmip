@@ -28,7 +28,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <memory>
 
+class Frustum;
 class RenderCommandList;
+
+typedef std::vector<Scene::Object *> ObjectList;
 
 namespace Scene
 {
@@ -40,7 +43,6 @@ namespace Scene
         typedef std::unique_ptr<Node> NodePtr;
         typedef std::vector<NodePtr> NodeList;
 //        typedef std::vector<Camera *> CameraList;
-        typedef std::vector<Object *> ObjectList;
 
     public:
         /// Creates a dummy node.
@@ -49,6 +51,8 @@ namespace Scene
         Camera *CreateCamera();
         /// Creates a renderable scene object node.
         Object *CreateObject();
+
+        void FrustumCull(const Frustum &frustum, ObjectList &objects);
 
         /// Adds all scene objects to the list of render commands.
         void GetRenderCommands(RenderCommandList &commands);

@@ -33,7 +33,7 @@ namespace Scene
 class SceneRenderer
 {
 public:
-    void Render(Scene::Scene &scene, Scene::Camera *camera);
+    int Render(Scene::Scene &scene, Scene::Camera *camera);
 
 private:
     RenderCommandList commands;

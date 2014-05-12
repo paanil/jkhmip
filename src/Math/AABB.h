@@ -32,6 +32,8 @@ public:
     AABB();
 
     void Update(const Vector3 &v);
+
+    static AABB Degenerate();
 };
 
 #endif // __AABB_H__

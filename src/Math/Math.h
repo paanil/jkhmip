@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __MATH_H__
 #define __MATH_H__
 
+#include <limits>
+
 /// Namespace for math operations and constants.
 ///
 namespace Math
@@ -33,6 +35,9 @@ namespace Math
     const float RAD_TO_DEG = 180.0f / PI;
 
     const float EPSILON = 0.0000001f;
+
+    const float FLOAT_MIN = std::numeric_limits<float>::lowest();
+    const float FLOAT_MAX = std::numeric_limits<float>::max();
 
     float Sin(float angleRad);
     float Cos(float angleRad);

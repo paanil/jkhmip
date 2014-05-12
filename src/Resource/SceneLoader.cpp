@@ -64,6 +64,9 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
     {
         f.read(as_char, node_size);
 
+        if (f.eof())
+            break;
+
         Scene::Node *node = 0;
 
         if (as_node.type == 0)

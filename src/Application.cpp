@@ -197,7 +197,11 @@ void Application::Update(float dt)
 
 void Application::Render()
 {
-    renderer.Render(scene, camera);
+    int n = renderer.Render(scene, camera);
+
+    String s, tmp = text.GetText();
+    Format(s, "%, Draw Calls: %", tmp, n);
+    text.SetText(s);
 
     // Render fps
     const TextGeometry &geometry = text.GetGeometry();
@@ -215,6 +219,8 @@ void Application::Render()
     Graphics::SetVertexBuffer(geometry.GetVertexBuffer());
     Graphics::SetIndexBuffer(geometry.GetIndexBuffer());
     Graphics::DrawTriangles(0, geometry.GetIndexCount());
+
+    text.SetText(tmp);
 
     // Draw screen
     window.SwapBuffers();

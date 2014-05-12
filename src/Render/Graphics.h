@@ -50,6 +50,7 @@ namespace Graphics
 
     void InitState();
     void ResetState();
+    void ApplyState();
 
     void SetBlendMode(BlendMode mode);
     void SetTexture(Texture *tex, int unit);

@@ -34,6 +34,31 @@ Object::Object() :
 void Object::SetModel(Model *model)
 {
     this->model = model;
+    aabbDirty = true;
+}
+
+const AABB &Object::GetWorldAABB()
+{
+    if (aabbDirty)
+    {
+        const Matrix4 &M = GetWorldTransform();
+        const AABB &aabb = model->GetAABB();
+
+        worldAABB = AABB::Degenerate();
+
+        worldAABB.Update(M * Vector3(aabb.min.x, aabb.min.y, aabb.min.z));
+        worldAABB.Update(M * Vector3(aabb.min.x, aabb.min.y, aabb.max.z));
+        worldAABB.Update(M * Vector3(aabb.min.x, aabb.max.y, aabb.min.z));
+        worldAABB.Update(M * Vector3(aabb.min.x, aabb.max.y, aabb.max.z));
+        worldAABB.Update(M * Vector3(aabb.max.x, aabb.min.y, aabb.min.z));
+        worldAABB.Update(M * Vector3(aabb.max.x, aabb.min.y, aabb.max.z));
+        worldAABB.Update(M * Vector3(aabb.max.x, aabb.max.y, aabb.min.z));
+        worldAABB.Update(M * Vector3(aabb.max.x, aabb.max.y, aabb.max.z));
+
+        aabbDirty = false;
+    }
+
+    return worldAABB;
 }
 
 void Object::GetRenderCommands(RenderCommandList &commands)

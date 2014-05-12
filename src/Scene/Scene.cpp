@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Scene.h"
 #include "../Render/RenderCommand.h"
+#include "../Math/Frustum.h"
 
 namespace Scene
 {
@@ -46,6 +47,15 @@ Object *Scene::CreateObject()
     objects.push_back(object);
     AddNode(object);
     return object;
+}
+
+void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects)
+{
+    for (Object *ob : this->objects)
+    {
+        if ( frustum.TestAABB(ob->GetWorldAABB()) )
+            objects.push_back(ob);
+    }
 }
 
 void Scene::GetRenderCommands(RenderCommandList &commands)

@@ -41,6 +41,9 @@ namespace Scene
         /// Sets model.
         void SetModel(Model *model);
 
+        /// Implements the virtual GetWorldAABB().
+        const AABB &GetWorldAABB();
+
         /// Adds model to the list of render commands.
         void GetRenderCommands(RenderCommandList &commands);
 

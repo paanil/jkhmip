@@ -51,6 +51,9 @@ public:
 
     /// Returns dot product.
     float Dot(const Vector4 &v) const;
+
+    /// Scales this with InvLength(xyz).
+    void Normalize();
 };
 
 /// Multiply with scalar on the left.

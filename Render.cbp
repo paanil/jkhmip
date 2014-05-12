@@ -60,6 +60,7 @@
 		<Unit filename="src/Logger.h" />
 		<Unit filename="src/Math/AABB.cpp" />
 		<Unit filename="src/Math/AABB.h" />
+		<Unit filename="src/Math/Frustum.h" />
 		<Unit filename="src/Math/Math.cpp" />
 		<Unit filename="src/Math/Math.h" />
 		<Unit filename="src/Math/Matrix3.cpp" />

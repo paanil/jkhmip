@@ -56,6 +56,8 @@ public:
         commands.push_back(command);
     }
 
+    size_t Size() { return commands.size(); }
+
     void Clear() { commands.clear(); }
 
     std::vector<RenderCommand>::iterator begin() { return commands.begin(); }

@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "../Math/Matrix3.h"
 #include "../Math/Matrix4.h"
+#include "../Math/AABB.h"
 
 #include <vector>
 
@@ -76,6 +77,9 @@ namespace Scene
         /// Gets the inverse world transform matrix.
         Matrix4 GetInverseWorldTransform();
 
+        /// Gets axis aligned bounding box in world space.
+        virtual const AABB &GetWorldAABB() const;
+
     private:
         /// Sets world transform dirty flag.
         /// Dirties children as well.
@@ -93,6 +97,10 @@ namespace Scene
 
         Matrix4 worldTransform;
         bool worldDirty;
+
+    protected:
+        AABB worldAABB;
+        bool aabbDirty;
     };
 
 } // Scene

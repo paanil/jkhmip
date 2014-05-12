@@ -31,7 +31,8 @@ Node::Node() :
     parent(0),
     position(0.0f, 0.0f, 0.0f),
     scale(1.0f, 1.0f, 1.0f),
-    worldDirty(false)
+    worldDirty(false),
+    aabbDirty(false)
 {
     rotation = Matrix3::Identity();
     worldTransform = Matrix4::Identity();
@@ -152,11 +153,17 @@ Matrix4 Node::GetInverseWorldTransform()
     return GetWorldTransform().InverseTRS();
 }
 
+const AABB &Node::GetWorldAABB() const
+{
+    return worldAABB;
+}
+
 void Node::SetDirty()
 {
     if (!worldDirty)
     {
         worldDirty = true;
+        aabbDirty = true;
         for (Node *n : children)
         {
             n->SetDirty();

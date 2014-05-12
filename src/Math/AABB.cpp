@@ -37,3 +37,13 @@ void AABB::Update(const Vector3 &v)
     max.y = Math::Max(max.y, v.y);
     max.z = Math::Max(max.z, v.z);
 }
+
+AABB AABB::Degenerate()
+{
+    AABB aabb;
+
+    aabb.min = Vector3(Math::FLOAT_MAX, Math::FLOAT_MAX, Math::FLOAT_MAX);
+    aabb.max = Vector3(Math::FLOAT_MIN, Math::FLOAT_MIN, Math::FLOAT_MIN);
+
+    return aabb;
+}

@@ -39,6 +39,8 @@ class Model
 public:
     void SetAABB(const AABB &aabb);
 
+    const AABB &GetAABB() const;
+
     /// Sets vertex and index buffers and clears sub meshes.
     /// Releases old vertex and index buffers and takes ownership of the new ones.
     void SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf);

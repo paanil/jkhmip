@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Vector4.h"
+#include "Math.h"
 
 Vector4 Vector4::operator-() const
 {
@@ -73,4 +74,10 @@ Vector4 &Vector4::operator/=(float t)
 float Vector4::Dot(const Vector4 &v) const
 {
     return x*v.x + y*v.y + z*v.z + w*v.w;
+}
+
+void Vector4::Normalize()
+{
+    float invLen = 1.0f / Math::Sqrt(x*x + y*y + z*z);
+    x *= invLen; y *= invLen; z *= invLen; w *= invLen;
 }

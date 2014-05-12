@@ -29,6 +29,11 @@ void Model::SetAABB(const AABB &aabb)
     this->aabb = aabb;
 }
 
+const AABB &Model::GetAABB() const
+{
+    return aabb;
+}
+
 void Model::SetBuffers(VertexBuffer *vertexBuf, IndexBuffer *indexBuf)
 {
     vertexBuffer.reset(vertexBuf);
