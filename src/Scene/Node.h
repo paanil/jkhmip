@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __SCENENODE_H__
-#define __SCENENODE_H__
+#ifndef __NODE_H__
+#define __NODE_H__
 
 #include "../Math/Matrix3.h"
 #include "../Math/Matrix4.h"
@@ -97,4 +97,4 @@ namespace Scene
 
 } // Scene
 
-#endif // __SCENENODE_H__
+#endif // __NODE_H__

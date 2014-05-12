@@ -50,6 +50,15 @@ enum TexWrap
     TW_MIRROR
 };
 
+enum TexFmt
+{
+    TexFmt_RED = 0,
+    TexFmt_RG,
+    TexFmt_RGB,
+    TexFmt_RGBA,
+    TexFmt_DEPTH
+};
+
 /// Texture class.
 ///
 class Texture
@@ -60,6 +69,10 @@ public:
     Texture();
     /// Releases the gl texture resource.
     ~Texture();
+
+    void CreateTex2D(int w, int h, TexFmt fmt);
+
+//    void CreateTexCube(int w, int h, TexFmt fmt);
 
     /// Uploads the texture image to the GPU.
     void SetTexImage(int w, int h, int bpp, const void *image);

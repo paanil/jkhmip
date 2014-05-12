@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __SCENECAMERA_H__
-#define __SCENECAMERA_H__
+#ifndef __CAMERA_H__
+#define __CAMERA_H__
 
 #include "Node.h"
 
@@ -49,4 +49,4 @@ namespace Scene
 
 } // Scene
 
-#endif // __SCENECAMERA_H__
+#endif // __CAMERA_H__

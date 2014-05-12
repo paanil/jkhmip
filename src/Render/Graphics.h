@@ -57,6 +57,7 @@ namespace Graphics
     void SetVertexBuffer(VertexBuffer *vbo);
     void SetIndexBuffer(IndexBuffer *ibo);
 
+    /// Draws triangles in range [firstIndex, firstIndex + indexCount).
     void DrawTriangles(uint firstIndex, uint indexCount);
 }
 

@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __SCENEOBJECT_H__
-#define __SCENEOBJECT_H__
+#ifndef __OBJECT_H__
+#define __OBJECT_H__
 
 #include "Node.h"
 
@@ -50,4 +50,4 @@ namespace Scene
 
 } // Scene
 
-#endif // __SCENEOBJECT_H__
+#endif // __OBJECT_H__

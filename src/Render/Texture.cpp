@@ -34,6 +34,25 @@ Texture::~Texture()
     glDeleteTextures(1, &texture);
 }
 
+void Texture::CreateTex2D(int w, int h, TexFmt fmt)
+{
+    static const GLint internal_formats[] =
+    {
+        GL_RED, GL_RG,  GL_RGB, GL_RGBA, GL_DEPTH_COMPONENT24
+    };
+    static const GLenum formats[] =
+    {
+        GL_RED, GL_RG,  GL_RGB, GL_RGBA, GL_DEPTH_COMPONENT
+    };
+    static const GLenum types[] =
+    {
+        GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_INT
+    };
+
+    Bind(0);
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_formats[fmt], w, h, 0, formats[fmt], types[fmt], 0);
+}
+
 void Texture::SetTexImage(int w, int h, int bpp, const void *image)
 {
     GLint format = 0;

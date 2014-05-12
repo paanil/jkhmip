@@ -43,10 +43,6 @@ public:
     /// Binds index buffer.
     void Bind();
 
-    /// Draws triangles in range [firstIndex, firstIndex + indexCount).
-    /// TODO: This should probably be somewhere else.
-    void DrawTriangles(uint firstIndex, uint indexCount);
-
 private:
     /// GL buffer id.
     uint buffer;
