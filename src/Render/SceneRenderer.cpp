@@ -68,9 +68,8 @@ void SceneRenderer::Render(Scene::Scene &scene)
     for (Scene::Object *object : objects)
     {
         commands.ResetLights();
-        for (size_t i = 0; i < lights.size(); i++)
+        for (Scene::Light *light : lights)
         {
-            Scene::Light *light = lights[i];
             if ( light->Affects(object->GetWorldAABB()) )
             {
                 if ( commands.AddLight(light->GetLightPos(), light->GetColor()) )

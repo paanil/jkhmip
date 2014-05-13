@@ -238,20 +238,6 @@ struct State
     IndexBufferState ibo;
 } state;
 
-void ApplyState()
-{
-    state.depthTest.Apply();
-    state.cullFace.Apply();
-    state.blendMode.Apply();
-
-    for (int i = 0; i < 8; i++)
-        state.textures[i].Apply();
-
-    state.shader.Apply();
-    state.vbo.Apply();
-    state.ibo.Apply();
-}
-
 void InitState()
 {
     for (int i = 0; i < 8; i++)
@@ -273,6 +259,20 @@ void ResetState()
     state.shader.Set(0);
     state.vbo.Set(0);
     state.ibo.Set(0);
+}
+
+void ApplyState()
+{
+    state.depthTest.Apply();
+    state.cullFace.Apply();
+    state.blendMode.Apply();
+
+    for (int i = 0; i < 8; i++)
+        state.textures[i].Apply();
+
+    state.shader.Apply();
+    state.vbo.Apply();
+    state.ibo.Apply();
 }
 
 void SetDepthTest(DepthTest test)

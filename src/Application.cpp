@@ -199,6 +199,11 @@ void Application::Render()
 {
     renderer.Render(scene);
 
+    String title;
+    Format(title, "Objects: %  Lights: %  Draw Calls: %",
+           renderer.GetObjectCount(), renderer.GetLightCount(), renderer.GetDrawCount());
+    window.SetTitle(title);
+
     // Render fps
     const TextGeometry &geometry = text.GetGeometry();
     Vector2 pos = text.GetAbsolutePosition();

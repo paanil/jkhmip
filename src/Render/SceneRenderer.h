@@ -42,6 +42,10 @@ public:
 
     void Render(Scene::Scene &scene);
 
+    size_t GetObjectCount() const { return objects.size(); }
+    size_t GetLightCount() const { return lights.size(); }
+    size_t GetDrawCount() const { return commands.Size(); }
+
 private:
     int vpX, vpY, vpW, vpH;
     Scene::Camera *camera;

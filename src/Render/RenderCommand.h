@@ -81,7 +81,7 @@ public:
         commands.push_back(command);
     }
 
-    size_t Size() { return commands.size(); }
+    size_t Size() const { return commands.size(); }
     void Clear() { commands.clear(); }
 
     CommandList::iterator begin() { return commands.begin(); }
