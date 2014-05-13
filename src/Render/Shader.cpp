@@ -105,6 +105,18 @@ void Shader::SetColor(const Vector4 &color)
     glUniform4fv(loc, 1, &color.x);
 }
 
+void Shader::SetLightPositions(int lightCount, const Vector4 *positions)
+{
+    GLint loc = glGetUniformLocation(prog, "LightPosition");
+    glUniform4fv(loc, lightCount, &positions[0].x);
+}
+
+void Shader::SetLightColors(int lightCount, const Vector4 *colors)
+{
+    GLint loc = glGetUniformLocation(prog, "LightColor");
+    glUniform4fv(loc, lightCount, &colors[0].x);
+}
+
 /* Free functions */
 
 GLint GetShaderiv(GLuint shader, GLenum pname)

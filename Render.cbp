@@ -123,6 +123,8 @@
 		<Unit filename="src/Resource/TextureCache.h" />
 		<Unit filename="src/Scene/Camera.cpp" />
 		<Unit filename="src/Scene/Camera.h" />
+		<Unit filename="src/Scene/Light.cpp" />
+		<Unit filename="src/Scene/Light.h" />
 		<Unit filename="src/Scene/Node.cpp" />
 		<Unit filename="src/Scene/Node.h" />
 		<Unit filename="src/Scene/Object.cpp" />

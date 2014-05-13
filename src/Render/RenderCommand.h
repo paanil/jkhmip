@@ -27,27 +27,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <vector>
 
+#define MAX_LIGHTS 8
+
 class Material;
 class VertexBuffer;
 class IndexBuffer;
 
 struct RenderCommand
 {
+    int lightCount;
+    Vector4 lightPosition[MAX_LIGHTS];
+    Vector4 lightColor[MAX_LIGHTS];
+    Matrix4 transform;
     Material *material;
     VertexBuffer *vbo;
     IndexBuffer *ibo;
     uint firstIndex;
     uint indexCount;
-    Matrix4 transform;
 };
 
 class RenderCommandList
 {
+    typedef std::vector<RenderCommand> CommandList;
+
 public:
+    void ResetLights()
+    {
+        command.lightCount = 0;
+        for (int i = 0; i < MAX_LIGHTS; i++)
+            command.lightColor[i].w = 0.0f;
+    }
+
+    bool AddLight(const Vector4 &pos, const Vector4 &color)
+    {
+        if (command.lightCount < MAX_LIGHTS)
+        {
+            command.lightPosition[command.lightCount] = pos;
+            command.lightColor[command.lightCount] = color;
+            command.lightCount++;
+        }
+        return command.lightCount >= MAX_LIGHTS;
+    }
+
+    void SetTransform(const Matrix4 &transform) { command.transform = transform; }
     void SetMaterial(Material *material) { command.material = material; }
     void SetVertexBuffer(VertexBuffer *vbo) { command.vbo = vbo; }
     void SetIndexBuffer(IndexBuffer *ibo) { command.ibo = ibo; }
-    void SetTransform(const Matrix4 &transform) { command.transform = transform; }
 
     void AddRenderCommand(uint firstIndex, uint indexCount)
     {
@@ -57,16 +82,14 @@ public:
     }
 
     size_t Size() { return commands.size(); }
-
     void Clear() { commands.clear(); }
 
-    std::vector<RenderCommand>::iterator begin() { return commands.begin(); }
-    std::vector<RenderCommand>::iterator end() { return commands.end(); }
+    CommandList::iterator begin() { return commands.begin(); }
+    CommandList::iterator end() { return commands.end(); }
 
 private:
     RenderCommand command;
-
-    std::vector<RenderCommand> commands;
+    CommandList commands;
 };
 
 #endif // __RENDERCOMMAND_H__

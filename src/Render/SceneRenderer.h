@@ -23,6 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __SCENERENDERER_H__
 
 #include "RenderCommand.h"
+#include "../Scene/Object.h"
+#include "../Scene/Light.h"
 
 namespace Scene
 {
@@ -43,6 +45,9 @@ public:
 private:
     int vpX, vpY, vpW, vpH;
     Scene::Camera *camera;
+
+    Scene::ObjectList objects;
+    Scene::LightList lights;
     RenderCommandList commands;
 };
 

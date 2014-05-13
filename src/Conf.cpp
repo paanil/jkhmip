@@ -79,8 +79,8 @@ namespace Config
     {
         /// The main window
         clearData();
-        op.setInt("mainScreen_Width", 800);
-        op.setInt("mainScreen_Height", 600);
+        op.setInt("mainScreen_Width", 1280);
+        op.setInt("mainScreen_Height", 720);
         op.setBool("mainScreen_FullScreen", false);
         op.setBool("mainScreen_vsync", true);
 

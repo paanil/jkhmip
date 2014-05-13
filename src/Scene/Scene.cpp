@@ -36,7 +36,6 @@ Node *Scene::CreateDummy()
 Camera *Scene::CreateCamera()
 {
     Camera *camera = new Camera();
-//    cameras.push_back(camera);
     AddNode(camera);
     return camera;
 }
@@ -49,12 +48,32 @@ Object *Scene::CreateObject()
     return object;
 }
 
-void Scene::FrustumCull(const Frustum &frustum, RenderCommandList &commands)
+Light *Scene::CreateLight()
 {
-    for (Object *ob : objects)
+    Light *light = new Light();
+    lights.push_back(light);
+    AddNode(light);
+    return light;
+}
+
+void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList &lights)
+{
+    for (Object *object : this->objects)
     {
-        if ( frustum.TestAABB(ob->GetWorldAABB()) )
-            ob->GetRenderCommands(commands);
+        if ( frustum.TestAABB(object->GetWorldAABB()) )
+            objects.push_back(object);
+    }
+
+    for (Light *light : this->lights)
+    {
+        Vector4 pos = light->GetLightPos();
+        if ( pos.w > 0.0f )
+        {
+            if ( frustum.TestSphere(pos) )
+                lights.push_back(light);
+            continue;
+        }
+        lights.insert(lights.begin(), light);
     }
 }
 

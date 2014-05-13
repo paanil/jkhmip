@@ -12,20 +12,19 @@ in vec3 Position;
 in vec2 TexCoord;
 in vec3 Normal;
 
+out vec3 position;
 out vec2 texcoord;
 out vec3 normal;
-out vec3 light;
 
 void main()
 {
-    mat3 NormalMatrix = mat3(Model);
+    vec4 pos = Model * vec4(Position, 1.0);
 
+    position = pos.xyz;
     texcoord = TexCoord;
-    normal = NormalMatrix * Normal;
-    float ang = Time * 0.25;
-    light = vec3(cos(ang), sin(ang), 0.0);
+    normal = mat3(Model) * Normal;
 
-    gl_Position = Projection * View * Model * vec4(Position, 1.0);
+    gl_Position = Projection * View * pos;
 }
 
 :Frag
@@ -34,11 +33,13 @@ void main()
 
 uniform sampler2D Diffuse;
 
+uniform vec4 LightPosition[8];
+uniform vec4 LightColor[8];
+//uniform vec3 LightAmbient;
+
+in vec3 position;
 in vec2 texcoord;
 in vec3 normal;
-in vec3 light;
-
-//out vec4 fragColor;
 
 vec3 texLinear(sampler2D tex, vec2 uv)
 {
@@ -53,18 +54,40 @@ vec4 colorGamma(vec3 color)
     return vec4(pow(color, e), 1.0);
 }
 
+float lightIntensity(vec4 lightPos, vec3 n)
+{
+    vec3 light = lightPos.xyz;
+    float radius = lightPos.w;
+    if (radius > 0.0)
+    {
+        light = light - position;
+        float dist = length(light);
+        float dist2 = dist * dist;
+        float d = dist2 / (radius * radius);
+        float f = max(1.0 - d * d, 0.0) / (dist2 + 1);
+        light = normalize(light);
+        return max(dot(n, light) * f, 0.0);
+    }
+    light = normalize(light);
+    return max(dot(n, light), 0.0);
+}
+
 void main()
 {
+    vec3 LightAmbient = vec3(0.01);
     vec3 n = normalize(normal);
-//    gl_FragColor = vec4(n, 1.0);
-    vec3 l = normalize(light);
-    float ndotl = max(dot(n, l), 0.0);
-    vec3 up = vec3(0.0, 1.0, 0.0);
-    float f = smoothstep(-0.2, 0.2, dot(l, up));
-    float ambf = max(dot(n, up), 0.0) * 0.95 + 0.05;
-    vec3 ambient1 = vec3(0.01, 0.01, 0.05);
-    vec3 ambient2 = vec3(0.03, 0.03, 0.03);
-    vec3 suncolor = vec3(1.0, 0.8, 0.5);
+    vec3 light = LightAmbient;
+    light += LightColor[0].rgb * LightColor[0].a * lightIntensity(LightPosition[0], n);
+    light += LightColor[1].rgb * LightColor[1].a * lightIntensity(LightPosition[1], n);
+    light += LightColor[2].rgb * LightColor[2].a * lightIntensity(LightPosition[2], n);
+    light += LightColor[3].rgb * LightColor[3].a * lightIntensity(LightPosition[3], n);
+    light += LightColor[4].rgb * LightColor[4].a * lightIntensity(LightPosition[4], n);
+    light += LightColor[5].rgb * LightColor[5].a * lightIntensity(LightPosition[5], n);
+    light += LightColor[6].rgb * LightColor[6].a * lightIntensity(LightPosition[6], n);
+    light += LightColor[7].rgb * LightColor[7].a * lightIntensity(LightPosition[7], n);
     vec3 diffuse = texLinear(Diffuse, texcoord);
-    gl_FragColor = colorGamma(diffuse * mix(ambient1 * ambf, ambient2 + suncolor * ndotl, f));
+    gl_FragColor = colorGamma(diffuse * light);
+
+//    vec3 n = normalize(normal);
+////    gl_FragColor = vec4(n, 1.0);
 }

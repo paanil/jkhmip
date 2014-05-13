@@ -19,40 +19,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __OBJECT_H__
-#define __OBJECT_H__
+#ifndef __LIGHT_H__
+#define __LIGHT_H__
 
 #include "Node.h"
 
-class Model;
-class RenderCommandList;
+//#include "../Render/Texture.h"
+
+//#include <memory>
 
 namespace Scene
 {
 
-    /// Renderable object node.
-    ///
-    class Object : public Node
+    class Light : public Node
     {
+//        typedef std::unique_ptr<Texture> TexturePtr;
+
     public:
-        /// Sets model to 0.
-        Object();
+        void SetRadius(float radius);
+        float GetRadius() const;
 
-        /// Sets model.
-        void SetModel(Model *model);
+        void SetColor(const Vector4 &color);
+        Vector4 GetColor() const;
 
-        /// Implements the virtual GetWorldAABB().
-        const AABB &GetWorldAABB();
+        Vector4 GetLightPos() const;
 
-        /// Adds model to the list of render commands.
-        void GetRenderCommands(RenderCommandList &commands);
+        bool Affects(const AABB &aabb) const;
+
+//        Texture *GetShadowMap()
+//        {
+//            return shadowMap.get();
+//        }
 
     private:
-        Model *model;
+        float radius;
+        Vector4 color;
+
+//        TexturePtr shadowMap;
     };
 
-    typedef std::vector<Object *> ObjectList;
+    typedef std::vector<Light *> LightList;
 
 } // Scene
 
-#endif // __OBJECT_H__
+#endif // __LIGHT_H__

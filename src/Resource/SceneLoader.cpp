@@ -38,7 +38,7 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
 
     std::map<uint, Scene::Node *> node_by_id;
 
-    const uint node_size = 64;
+    const uint node_size = 60;
     const uint name_size = 32;
 
     struct Node
@@ -46,7 +46,6 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
         uint type;
         uint id;
         uint parent;
-        uint padd;
         float mat[3][4];
     };
 
@@ -78,6 +77,22 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
             Scene::Object *ob = scene.CreateObject();
             ob->SetModel(modelCache->Get(model_name + ".obj"));
             node = ob;
+        }
+        else if (as_node.type == 2)
+        {
+            float radius;
+            Vector4 color;
+            f.read((char *)&radius, sizeof(float));
+            f.read((char *)&color.x, sizeof(Vector4));
+            Scene::Light *light = scene.CreateLight();
+            light->SetRadius(radius);
+            light->SetColor(color);
+            node = light;
+        }
+        else
+        {
+            LOG_ERROR("Invalid node type.");
+            return false;
         }
 
         node_by_id[as_node.id] = node;

@@ -24,12 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Camera.h"
 #include "Object.h"
+#include "Light.h"
 
-#include <vector>
 #include <memory>
 
 class Frustum;
-class RenderCommandList;
 
 namespace Scene
 {
@@ -40,8 +39,6 @@ namespace Scene
     {
         typedef std::unique_ptr<Node> NodePtr;
         typedef std::vector<NodePtr> NodeList;
-        typedef std::vector<Object *> ObjectList;
-//        typedef std::vector<Camera *> CameraList;
 
     public:
         /// Creates a dummy node.
@@ -51,7 +48,9 @@ namespace Scene
         /// Creates a renderable scene object node.
         Object *CreateObject();
 
-        void FrustumCull(const Frustum &frustum, RenderCommandList &commands);
+        Light *CreateLight();
+
+        void FrustumCull(const Frustum &frustum, ObjectList &objects, LightList &lights);
 
     private:
         /// Adds a scene node to the node list.
@@ -60,7 +59,7 @@ namespace Scene
     private:
         NodeList nodes;
         ObjectList objects;
-//        CameraList cameras;
+        LightList lights;
     };
 
 } // Scene

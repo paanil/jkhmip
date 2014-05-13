@@ -55,12 +55,30 @@ void SceneRenderer::SetCamera(Scene::Camera *camera)
 
 void SceneRenderer::Render(Scene::Scene &scene)
 {
+    objects.clear();
+    lights.clear();
+    commands.Clear();
+
     Matrix4 proj = camera->GetProjection();
     Matrix4 view = camera->GetInverseWorldTransform();
     Frustum frus = Frustum::Extract(proj * view);
 
-    commands.Clear();
-    scene.FrustumCull(frus, commands);
+    scene.FrustumCull(frus, objects, lights);
+
+    for (Scene::Object *object : objects)
+    {
+        commands.ResetLights();
+        for (size_t i = 0; i < lights.size(); i++)
+        {
+            Scene::Light *light = lights[i];
+            if ( light->Affects(object->GetWorldAABB()) )
+            {
+                if ( commands.AddLight(light->GetLightPos(), light->GetColor()) )
+                    break;
+            }
+        }
+        object->GetRenderCommands(commands);
+    }
 
     Graphics::SetViewport(vpX, vpY, vpW, vpH);
     Graphics::Clear(CLEAR_COLOR_AND_DEPTH);
@@ -77,6 +95,8 @@ void SceneRenderer::Render(Scene::Scene &scene)
         shader->SetViewMatrix(view);
         shader->SetModelMatrix(command.transform);
         shader->SetTime(SDL_GetTicks() / 1000.0f);
+        shader->SetLightPositions(command.lightCount, command.lightPosition);
+        shader->SetLightColors(MAX_LIGHTS, command.lightColor);
 
         Graphics::SetVertexBuffer(command.vbo);
         Graphics::SetIndexBuffer(command.ibo);

@@ -58,6 +58,9 @@ public:
     /// Sets color uniform.
     void SetColor(const Vector4 &color);
 
+    void SetLightPositions(int lightCount, const Vector4 *positions);
+    void SetLightColors(int lightCount, const Vector4 *colors);
+
 private:
     /// GL ids.
     uint vert;

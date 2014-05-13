@@ -36,6 +36,18 @@ bool Frustum::TestAABB(const AABB &aabb) const
     return true;
 }
 
+bool Frustum::TestSphere(const Vector4 &sphere) const
+{
+    float dist;
+    Vector4 center(sphere.x, sphere.y, sphere.z, 1.0);
+    for (int i = 0; i < 6; i++)
+    {
+        dist = planes[i].Dot(center);
+        if (dist < sphere.w) break;
+    }
+    return (dist > -sphere.w);
+}
+
 Frustum Frustum::Extract(const Matrix4 &viewProj)
 {
     Frustum frus;
