@@ -31,6 +31,19 @@ enum
     CLEAR_COLOR_AND_DEPTH = CLEAR_COLOR | CLEAR_DEPTH
 };
 
+enum DepthTest
+{
+    DT_NONE,
+    DT_LEQUAL
+};
+
+enum CullFace
+{
+    CULL_NONE,
+    CULL_BACK,
+    CULL_FRONT
+};
+
 enum BlendMode
 {
     BM_NONE,
@@ -52,6 +65,8 @@ namespace Graphics
     void ResetState();
     void ApplyState();
 
+    void SetDepthTest(DepthTest test);
+    void SetCullFace(CullFace face);
     void SetBlendMode(BlendMode mode);
     void SetTexture(Texture *tex, int unit);
     void SetShader(Shader *shader);

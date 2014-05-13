@@ -48,6 +48,59 @@ protected:
     T next;
 };
 
+class DepthState : public RenderState<DepthTest>
+{
+public:
+    void Apply()
+    {
+        if (current != next)
+        {
+            switch (next)
+            {
+            case DT_NONE:
+                glDisable(GL_DEPTH_TEST);
+                break;
+
+            case DT_LEQUAL:
+                glEnable(GL_DEPTH_TEST);
+                glDepthFunc(GL_LEQUAL);
+                break;
+            }
+            current = next;
+        }
+    }
+};
+
+class CullState : public RenderState<CullFace>
+{
+public:
+    void Apply()
+    {
+        if (current != next)
+        {
+            switch (next)
+            {
+            case CULL_NONE:
+                glDisable(GL_CULL_FACE);
+                break;
+
+            case CULL_BACK:
+                glEnable(GL_CULL_FACE);
+                glFrontFace(GL_CW);
+                glCullFace(GL_BACK);
+                break;
+
+            case CULL_FRONT:
+                glEnable(GL_CULL_FACE);
+                glFrontFace(GL_CW);
+                glCullFace(GL_FRONT);
+                break;
+            }
+            current = next;
+        }
+    }
+};
+
 class BlendState : public RenderState<BlendMode>
 {
 public:
@@ -176,6 +229,8 @@ void Clear(uint mask)
 
 struct State
 {
+    DepthState depthTest;
+    CullState cullFace;
     BlendState blendMode;
     TextureState textures[8];
     ShaderState shader;
@@ -185,6 +240,8 @@ struct State
 
 void ApplyState()
 {
+    state.depthTest.Apply();
+    state.cullFace.Apply();
     state.blendMode.Apply();
 
     for (int i = 0; i < 8; i++)
@@ -206,12 +263,26 @@ void InitState()
 
 void ResetState()
 {
+    state.depthTest.Set(DT_LEQUAL);
+    state.cullFace.Set(CULL_BACK);
     state.blendMode.Set(BM_NONE);
+
     for (int i = 0; i < 8; i++)
         state.textures[i].Set(0);
+
     state.shader.Set(0);
     state.vbo.Set(0);
     state.ibo.Set(0);
+}
+
+void SetDepthTest(DepthTest test)
+{
+    state.depthTest.Set(test);
+}
+
+void SetCullFace(CullFace face)
+{
+    state.cullFace.Set(face);
 }
 
 void SetBlendMode(BlendMode mode)

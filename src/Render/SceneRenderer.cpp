@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../Math/Frustum.h"
 
 #include <SDL2/SDL.h>
-#include <GL/glew.h>
 
 SceneRenderer::SceneRenderer() :
     vpX(0), vpY(0), vpW(800), vpH(600),
@@ -56,12 +55,6 @@ void SceneRenderer::SetCamera(Scene::Camera *camera)
 
 void SceneRenderer::Render(Scene::Scene &scene)
 {
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CW);
-    glCullFace(GL_BACK);
-
     Matrix4 proj = camera->GetProjection();
     Matrix4 view = camera->GetInverseWorldTransform();
     Frustum frus = Frustum::Extract(proj * view);
@@ -70,8 +63,6 @@ void SceneRenderer::Render(Scene::Scene &scene)
     scene.FrustumCull(frus, commands);
 
     Graphics::SetViewport(vpX, vpY, vpW, vpH);
-
-    glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
     Graphics::Clear(CLEAR_COLOR_AND_DEPTH);
 
     for (RenderCommand &command : commands)
