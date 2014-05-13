@@ -49,19 +49,13 @@ Object *Scene::CreateObject()
     return object;
 }
 
-void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects)
+void Scene::FrustumCull(const Frustum &frustum, RenderCommandList &commands)
 {
-    for (Object *ob : this->objects)
+    for (Object *ob : objects)
     {
         if ( frustum.TestAABB(ob->GetWorldAABB()) )
-            objects.push_back(ob);
+            ob->GetRenderCommands(commands);
     }
-}
-
-void Scene::GetRenderCommands(RenderCommandList &commands)
-{
-    for (Object *object : objects)
-        object->GetRenderCommands(commands);
 }
 
 void Scene::AddNode(Node *node)

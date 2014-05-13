@@ -30,12 +30,12 @@ namespace Scene
 Node::Node() :
     parent(0),
     position(0.0f, 0.0f, 0.0f),
+    rotation(Matrix3::Identity()),
     scale(1.0f, 1.0f, 1.0f),
+    worldTransform(Matrix4::Identity()),
     worldDirty(false),
     aabbDirty(false)
 {
-    rotation = Matrix3::Identity();
-    worldTransform = Matrix4::Identity();
 }
 
 Node::~Node()

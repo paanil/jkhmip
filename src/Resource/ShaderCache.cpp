@@ -65,7 +65,7 @@ bool ShaderCache::LoadSourceFile(const String &file, String &vertSrc, String &fr
 {
     LOG_INFO("Loading shader '%'...", file);
 
-    std::ifstream f(file);
+    std::ifstream f(file.c_str());
 
     if (!f.is_open())
     {

@@ -24,20 +24,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace Scene
 {
 
-Camera::Camera()
+Camera::Camera() :
+    fov(50.0f),
+    aspect(1.333f),
+    zNear(0.1f),
+    zFar(100.0f)
 {
-    projection = Matrix4::Identity();
+    Update();
 }
 
-void Camera::SetOrthoProjection(float left, float right, float bottom, float top, float zNear, float zFar)
+void Camera::SetParameters(float fov, float zNear, float zFar)
 {
-    projection = Matrix4::Ortho(left, right, bottom, top, zNear, zFar);
+    this->fov = fov;
+    this->zNear = zNear;
+    this->zFar = zFar;
+    Update();
 }
 
-void Camera::SetPerspectiveProjection(float fov, float aspect, float zNear, float zFar)
+void Camera::SetAspectRatio(float aspect)
 {
-    projection = Matrix4::Perspective(fov, aspect, zNear, zFar);
-    frustum.Construct(fov, aspect, zNear, zFar);
+    this->aspect = aspect;
+    Update();
 }
 
 const Matrix4 &Camera::GetProjection() const
@@ -48,6 +55,12 @@ const Matrix4 &Camera::GetProjection() const
 Frustum Camera::GetFrustum()
 {
     return frustum.Transformed(GetWorldTransform());
+}
+
+void Camera::Update()
+{
+    projection = Matrix4::Perspective(fov, aspect, zNear, zFar);
+    frustum.Construct(fov, aspect, zNear, zFar);
 }
 
 } // Scene

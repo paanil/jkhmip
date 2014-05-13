@@ -35,6 +35,11 @@ const char *VA_NAMES[] =
 VertexBuffer::VertexBuffer()
 {
     glGenBuffers(1, &buffer);
+
+    for (int i = 0; i < VA_COUNT; i++)
+    {
+        attributes[i].size = 0;
+    }
 }
 
 VertexBuffer::~VertexBuffer()

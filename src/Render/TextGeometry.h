@@ -32,6 +32,8 @@ class IndexBuffer;
 class TextGeometry
 {
 public:
+    TextGeometry();
+
     Texture *GetFontTexture() const;
     VertexBuffer *GetVertexBuffer() const;
     IndexBuffer *GetIndexBuffer() const;

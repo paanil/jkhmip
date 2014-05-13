@@ -91,6 +91,8 @@ public:
 private:
     /// GL texture id.
     uint texture;
+
+    friend class FrameBuffer;
 };
 
 #endif // __TEXTURE_H__

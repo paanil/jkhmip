@@ -19,28 +19,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __FRAMEBUFFER_H__
-#define __FRAMEBUFFER_H__
+#include "FrameBuffer.h"
+#include "Texture.h"
 
-#include "../Types.h"
+#include <GL/glew.h>
 
-class Texture;
-
-class FrameBuffer
+FrameBuffer::FrameBuffer()
 {
-public:
-    FrameBuffer();
-    ~FrameBuffer();
+    glGenFramebuffers(1, &framebuf);
+}
 
-    void AttachDepthTex2D(Texture *depthTex);
-    void AttachColorTex2D(Texture *colorTex);
+FrameBuffer::~FrameBuffer()
+{
+    glDeleteFramebuffers(1, &framebuf);
+}
 
-    void Bind();
+void FrameBuffer::AttachDepthTex2D(Texture *depthTex)
+{
+    Bind();
+    GLuint tex = depthTex ? depthTex->texture : 0;
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex, 0);
+}
 
-    void Unbind();
+void FrameBuffer::AttachColorTex2D(Texture *colorTex)
+{
+    Bind();
+    GLuint tex = colorTex ? colorTex->texture : 0;
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
+}
 
-private:
-    uint framebuf;
-};
+void FrameBuffer::Bind()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuf);
+}
 
-#endif // __FRAMEBUFFER_H__
+void FrameBuffer::Unbind()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}

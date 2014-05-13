@@ -51,6 +51,16 @@ void Texture::CreateTex2D(int w, int h, TexFmt fmt)
 
     Bind(0);
     glTexImage2D(GL_TEXTURE_2D, 0, internal_formats[fmt], w, h, 0, formats[fmt], types[fmt], 0);
+
+    SetFilterMode(TF_MIN_NEAREST, TF_MAG_NEAREST);
+    SetWrapMode(TW_CLAMP, TW_CLAMP);
+
+    if (fmt == TexFmt_DEPTH)
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+    }
 }
 
 void Texture::SetTexImage(int w, int h, int bpp, const void *image)

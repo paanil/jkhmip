@@ -25,7 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Font::Font() :
     vertices(MAX_TEXT_LENGTH * 4),
-    indexBuffer(0)
+    indexBuffer(0),
+    lineH(0), base(0),
+    texW(0), texH(0),
+    texture(0)
 {
 }
 

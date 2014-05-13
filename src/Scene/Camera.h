@@ -33,13 +33,10 @@ namespace Scene
     class Camera : public Node
     {
     public:
-        /// Initializes identity projection.
         Camera();
 
-        /// Sets orthographic projection.
-        void SetOrthoProjection(float left, float right, float bottom, float top, float zNear, float zFar);
-        /// Sets perspective projection.
-        void SetPerspectiveProjection(float fov, float aspect, float zNear, float zFar);
+        void SetParameters(float fov, float zNear, float zFar);
+        void SetAspectRatio(float aspect);
 
         /// Returns the projection matrix.
         const Matrix4 &GetProjection() const;
@@ -47,6 +44,14 @@ namespace Scene
         Frustum GetFrustum();
 
     private:
+        void Update();
+
+    private:
+        float fov;
+        float aspect;
+        float zNear;
+        float zFar;
+
         Matrix4 projection;
         Frustum frustum;
     };

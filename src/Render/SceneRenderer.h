@@ -33,9 +33,16 @@ namespace Scene
 class SceneRenderer
 {
 public:
-    int Render(Scene::Scene &scene, Scene::Camera *camera);
+    SceneRenderer();
+
+    void SetViewport(int x, int y, int w, int h);
+    void SetCamera(Scene::Camera *camera);
+
+    void Render(Scene::Scene &scene);
 
 private:
+    int vpX, vpY, vpW, vpH;
+    Scene::Camera *camera;
     RenderCommandList commands;
 };
 

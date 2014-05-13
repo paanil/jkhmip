@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <cstring>
 
 Image::Image() :
+    w(0), h(0), bpp(0),
     data(0)
 {
 }
@@ -141,7 +142,7 @@ bool LoadTGA(const String &file, Image &image)
         // read rle-compressed image
         char *p = &data[0];
         char *e = &data[size];
-        for(int info; p < e; p += info*bpp)
+        for(int info = 0; p < e; p += info*bpp)
         {
             info = f.get()+1;
             if(info < 129)

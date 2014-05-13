@@ -83,19 +83,20 @@ bool Application::Init(const String &title)
 
 void Application::Run()
 {
+    OnWindowResize(Config::getInt("mainScreen_Width"), Config::getInt("mainScreen_Height"));
+
     resources.LoadScene(scene, "test.scene");
 
-    camera = scene.CreateCamera();
-    camera->SetPosition(Vector3(0.0f, 1.0f, 0.0f));
-    OnWindowResize(Config::getInt("mainScreen_Width"), Config::getInt("mainScreen_Height")); // Make sure the projection is OK.
+    Scene::Camera *camera = scene.CreateCamera();
+    camera->SetParameters(50.0f, 0.1f, 100.0f);
+    renderer.SetCamera(camera);
+    cam.SetCamera(camera);
 
     Scene::Object *sword = scene.CreateObject();
     sword->SetModel(resources.GetModel("sword.obj"));
     sword->SetParent(camera);
     sword->SetPosition(Vector3(0.3f, -0.3f, 0.6f));
     sword->SetRotation(Matrix3::RotationX(25.0f) * Matrix3::RotationY(-17.5f));
-
-    cam.SetCamera(camera);
 
 
     text.SetRelativePosition(Vector2(10.0f, 10.0f));
@@ -185,8 +186,7 @@ void Application::OnWindowResize(int w, int h)
     Config::setInt("mainScreen_Width",w);
     Config::setInt("mainScreen_Heigth",h);
 
-    Graphics::SetViewport(0, 0, w, h);
-    camera->SetPerspectiveProjection(50.0f, float(w)/h, 0.1f, 100.0f);
+    renderer.SetViewport(0, 0, w, h);
     proj2d = Matrix4::Ortho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
 }
 
@@ -197,11 +197,7 @@ void Application::Update(float dt)
 
 void Application::Render()
 {
-    int n = renderer.Render(scene, camera);
-
-    String s, tmp = text.GetText();
-    Format(s, "%, Draw Calls: %", tmp, n);
-    text.SetText(s);
+    renderer.Render(scene);
 
     // Render fps
     const TextGeometry &geometry = text.GetGeometry();
@@ -219,8 +215,6 @@ void Application::Render()
     Graphics::SetVertexBuffer(geometry.GetVertexBuffer());
     Graphics::SetIndexBuffer(geometry.GetIndexBuffer());
     Graphics::DrawTriangles(0, geometry.GetIndexCount());
-
-    text.SetText(tmp);
 
     // Draw screen
     window.SwapBuffers();

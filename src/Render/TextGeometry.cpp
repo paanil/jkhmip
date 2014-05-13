@@ -21,6 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "TextGeometry.h"
 
+TextGeometry::TextGeometry() :
+    fontTexture(0),
+    indexBuffer(0),
+    indexCount(0)
+{
+}
+
 Texture *TextGeometry::GetFontTexture() const
 {
     return fontTexture;

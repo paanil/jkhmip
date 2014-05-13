@@ -20,16 +20,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "SceneRenderer.h"
+#include "Graphics.h"
 #include "Material.h"
 #include "Shader.h"
 #include "../Scene/Scene.h"
-#include "Graphics.h"
 #include "../Math/Frustum.h"
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 
-int SceneRenderer::Render(Scene::Scene &scene, Scene::Camera *camera)
+SceneRenderer::SceneRenderer() :
+    vpX(0), vpY(0), vpW(800), vpH(600),
+    camera(0), commands()
+{
+}
+
+void SceneRenderer::SetViewport(int x, int y, int w, int h)
+{
+    vpX = x;
+    vpY = y;
+    vpW = w;
+    vpH = h;
+
+    if (camera)
+        camera->SetAspectRatio( float(w)/float(h) );
+}
+
+void SceneRenderer::SetCamera(Scene::Camera *camera)
+{
+    this->camera = camera;
+
+    if (camera)
+        camera->SetAspectRatio( float(vpW)/float(vpH) );
+}
+
+void SceneRenderer::Render(Scene::Scene &scene)
 {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -37,51 +62,17 @@ int SceneRenderer::Render(Scene::Scene &scene, Scene::Camera *camera)
     glFrontFace(GL_CW);
     glCullFace(GL_BACK);
 
-    glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
-    Graphics::Clear(CLEAR_COLOR_AND_DEPTH);
-
     Matrix4 proj = camera->GetProjection();
     Matrix4 view = camera->GetInverseWorldTransform();
     Frustum frus = camera->GetFrustum();
 
-    ObjectList objects;
-    scene.FrustumCull(frus, objects);
-
     commands.Clear();
-    for (Scene::Object *ob : objects)
-    {
-        Graphics::ResetState();
-        Graphics::ApplyState();
+    scene.FrustumCull(frus, commands);
 
-        glMatrixMode(GL_PROJECTION);
-        glLoadMatrixf(proj.data);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadMatrixf(view.data);
+    Graphics::SetViewport(vpX, vpY, vpW, vpH);
 
-        const AABB &aabb = ob->GetWorldAABB();
-
-        glBegin(GL_LINE_STRIP);
-        glColor3f(1.0f, 1.0f, 0.0f);
-        glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z);
-        glVertex3f(aabb.max.x, aabb.min.y, aabb.min.z);
-        glVertex3f(aabb.max.x, aabb.max.y, aabb.min.z);
-        glVertex3f(aabb.max.x, aabb.max.y, aabb.max.z);
-        glVertex3f(aabb.min.x, aabb.max.y, aabb.max.z);
-        glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z);
-        glVertex3f(aabb.min.x, aabb.min.y, aabb.min.z);
-        glVertex3f(aabb.min.x, aabb.max.y, aabb.min.z);
-        glVertex3f(aabb.max.x, aabb.max.y, aabb.min.z);
-        glVertex3f(aabb.min.x, aabb.max.y, aabb.min.z);
-        glVertex3f(aabb.min.x, aabb.max.y, aabb.max.z);
-        glVertex3f(aabb.max.x, aabb.max.y, aabb.max.z);
-        glVertex3f(aabb.max.x, aabb.min.y, aabb.max.z);
-        glVertex3f(aabb.min.x, aabb.min.y, aabb.max.z);
-        glVertex3f(aabb.max.x, aabb.min.y, aabb.max.z);
-        glVertex3f(aabb.max.x, aabb.min.y, aabb.min.z);
-        glEnd();
-
-        ob->GetRenderCommands(commands);
-    }
+    glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
+    Graphics::Clear(CLEAR_COLOR_AND_DEPTH);
 
     for (RenderCommand &command : commands)
     {
@@ -101,6 +92,4 @@ int SceneRenderer::Render(Scene::Scene &scene, Scene::Camera *camera)
 
         Graphics::DrawTriangles(command.firstIndex, command.indexCount);
     }
-
-    return commands.Size();
 }

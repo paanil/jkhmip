@@ -71,10 +71,8 @@ private:
     /* Members for the test app */
     ResourceManager resources;
 
-    SceneRenderer renderer;
-
     Scene::Scene scene;
-    Scene::Camera *camera;
+    SceneRenderer renderer;
 
     CameraController cam;
 
