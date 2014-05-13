@@ -30,7 +30,7 @@ Camera::Camera() :
     zNear(0.1f),
     zFar(100.0f)
 {
-    Update();
+    UpdateProjection();
 }
 
 void Camera::SetParameters(float fov, float zNear, float zFar)
@@ -38,13 +38,13 @@ void Camera::SetParameters(float fov, float zNear, float zFar)
     this->fov = fov;
     this->zNear = zNear;
     this->zFar = zFar;
-    Update();
+    UpdateProjection();
 }
 
 void Camera::SetAspectRatio(float aspect)
 {
     this->aspect = aspect;
-    Update();
+    UpdateProjection();
 }
 
 const Matrix4 &Camera::GetProjection() const
@@ -52,15 +52,9 @@ const Matrix4 &Camera::GetProjection() const
     return projection;
 }
 
-Frustum Camera::GetFrustum()
-{
-    return frustum.Transformed(GetWorldTransform());
-}
-
-void Camera::Update()
+void Camera::UpdateProjection()
 {
     projection = Matrix4::Perspective(fov, aspect, zNear, zFar);
-    frustum.Construct(fov, aspect, zNear, zFar);
 }
 
 } // Scene

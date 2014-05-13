@@ -64,7 +64,7 @@ void SceneRenderer::Render(Scene::Scene &scene)
 
     Matrix4 proj = camera->GetProjection();
     Matrix4 view = camera->GetInverseWorldTransform();
-    Frustum frus = camera->GetFrustum();
+    Frustum frus = Frustum::Extract(proj * view);
 
     commands.Clear();
     scene.FrustumCull(frus, commands);

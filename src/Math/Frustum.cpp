@@ -24,32 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "AABB.h"
 #include "Math.h"
 
-void Frustum::Construct(float fov, float aspect, float zNear, float zFar)
-{
-    fov *= Math::DEG_TO_RAD * 0.5f;
-    float si = Math::Sin(fov);
-    float co = Math::Cos(fov);
-
-    planes[0] = Vector4(co, 0.0f, si*aspect, 0.0f);
-    planes[1] = Vector4(-co, 0.0f, si*aspect, 0.0f);
-    planes[2] = Vector4(0.0f, co, si, 0.0f);
-    planes[3] = Vector4(0.0f, -co, si, 0.0f);
-    planes[4] = Vector4(0.0f, 0.0f, 1.0f, zNear);
-    planes[5] = Vector4(0.0f, 0.0f, -1.0f, zFar);
-}
-
-Frustum Frustum::Transformed(const Matrix4 &M) const
-{
-    Frustum F;
-    for (int i = 0; i < 6; i++)
-    {
-        F.planes[i] = M * Vector4(planes[i].x, planes[i].y, planes[i].z, 0.0f);
-        F.planes[i].w = planes[i].w - Vector4(M.m14, M.m24, M.m34, 0.0f).Dot(F.planes[i]);
-        F.planes[i].Normalize();
-    }
-    return F;
-}
-
 bool Frustum::TestAABB(const AABB &aabb) const
 {
     for (int i = 0; i < 6; i++)
@@ -60,4 +34,53 @@ bool Frustum::TestAABB(const AABB &aabb) const
             return false;
     }
     return true;
+}
+
+Frustum Frustum::Extract(const Matrix4 &viewProj)
+{
+    Frustum frus;
+
+    // LEFT
+    frus.planes[0].x = viewProj.m41 + viewProj.m11;
+    frus.planes[0].y = viewProj.m42 + viewProj.m12;
+    frus.planes[0].z = viewProj.m43 + viewProj.m13;
+    frus.planes[0].w = viewProj.m44 + viewProj.m14;
+    frus.planes[0].Normalize();
+
+    // RIGHT
+    frus.planes[1].x = viewProj.m41 - viewProj.m11;
+    frus.planes[1].y = viewProj.m42 - viewProj.m12;
+    frus.planes[1].z = viewProj.m43 - viewProj.m13;
+    frus.planes[1].w = viewProj.m44 - viewProj.m14;
+    frus.planes[1].Normalize();
+
+    // BOTTOM
+    frus.planes[2].x = viewProj.m41 + viewProj.m21;
+    frus.planes[2].y = viewProj.m42 + viewProj.m22;
+    frus.planes[2].z = viewProj.m43 + viewProj.m23;
+    frus.planes[2].w = viewProj.m44 + viewProj.m24;
+    frus.planes[2].Normalize();
+
+    // TOP
+    frus.planes[3].x = viewProj.m41 - viewProj.m21;
+    frus.planes[3].y = viewProj.m42 - viewProj.m22;
+    frus.planes[3].z = viewProj.m43 - viewProj.m23;
+    frus.planes[3].w = viewProj.m44 - viewProj.m24;
+    frus.planes[3].Normalize();
+
+    // NEAR
+    frus.planes[4].x = viewProj.m41 + viewProj.m31;
+    frus.planes[4].y = viewProj.m42 + viewProj.m32;
+    frus.planes[4].z = viewProj.m43 + viewProj.m33;
+    frus.planes[4].w = viewProj.m44 + viewProj.m34;
+    frus.planes[4].Normalize();
+
+    // FAR
+    frus.planes[5].x = viewProj.m41 - viewProj.m31;
+    frus.planes[5].y = viewProj.m42 - viewProj.m32;
+    frus.planes[5].z = viewProj.m43 - viewProj.m33;
+    frus.planes[5].w = viewProj.m44 - viewProj.m34;
+    frus.planes[5].Normalize();
+
+    return frus;
 }

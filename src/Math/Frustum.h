@@ -32,10 +32,9 @@ class Frustum
 public:
     Vector4 planes[6];
 
-    void Construct(float fov, float aspect, float zNear, float zFar);
-    Frustum Transformed(const Matrix4 &M) const;
-
     bool TestAABB(const AABB &aabb) const;
+
+    static Frustum Extract(const Matrix4 &viewProj);
 };
 
 #endif // __FRUSTUM_H__

@@ -41,10 +41,8 @@ namespace Scene
         /// Returns the projection matrix.
         const Matrix4 &GetProjection() const;
 
-        Frustum GetFrustum();
-
     private:
-        void Update();
+        void UpdateProjection();
 
     private:
         float fov;
@@ -53,7 +51,6 @@ namespace Scene
         float zFar;
 
         Matrix4 projection;
-        Frustum frustum;
     };
 
 } // Scene
