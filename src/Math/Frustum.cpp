@@ -43,9 +43,9 @@ bool Frustum::TestSphere(const Vector4 &sphere) const
     for (int i = 0; i < 6; i++)
     {
         dist = planes[i].Dot(center);
-        if (dist < sphere.w) break;
+        if (dist < -sphere.w) return false;
     }
-    return (dist > -sphere.w);
+    return true;
 }
 
 Frustum Frustum::Extract(const Matrix4 &viewProj)
