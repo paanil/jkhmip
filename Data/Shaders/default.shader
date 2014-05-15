@@ -53,15 +53,19 @@ out vec4 fragColor;
 
 vec3 texLinear(sampler2D tex, vec2 uv)
 {
-    vec3 e = vec3(2.2);
     vec3 color = texture(tex, uv).rgb;
-    return pow(color, e);
+    return color * (color * (color * 0.305306011 + 0.682171111) + 0.012522878);
 }
 
 vec4 colorGamma(vec3 color)
 {
-    vec3 e = vec3(1.0/2.2);
-    return vec4(pow(color, e), 1.0);
+//    vec3 s1 = sqrt(color);
+//    vec3 s2 = sqrt(s1);
+//    vec3 s3 = sqrt(s2);
+//    vec3 srgb = 0.585122381 * s1 + 0.783140355 * s2 - 0.368262736 * s3;
+//    return vec4(srgb, 1.0);
+
+    return vec4(pow(color, vec3(1.0/2.2)), 1.0);
 }
 
 float lightIntensity(int i, vec3 n)
@@ -110,7 +114,7 @@ vec3 lightningBolt(int i, vec3 n, sampler2DShadow shadowMap)
 
 void main()
 {
-    vec3 ambient = vec3(0.01);
+    vec3 ambient = vec3(0.05);
     vec3 n = normalize(normal);
     vec3 light = ambient;
     light += lightningBolt(0, n, ShadowMap0);
