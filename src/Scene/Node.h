@@ -80,12 +80,12 @@ namespace Scene
         /// Gets axis aligned bounding box in world space.
         virtual const AABB &GetWorldAABB() const;
 
-    private:
+    protected:
         /// Sets world transform dirty flag.
         /// Dirties children as well.
         void SetDirty();
 
-    private:
+    protected:
         typedef std::vector<Node *> NodeList;
 
         Node *parent;
@@ -96,10 +96,9 @@ namespace Scene
         Vector3 scale;
 
         Matrix4 worldTransform;
-        bool worldDirty;
-
-    protected:
         AABB worldAABB;
+
+        bool worldDirty;
         bool aabbDirty;
     };
 

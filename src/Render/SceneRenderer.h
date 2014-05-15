@@ -23,8 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __SCENERENDERER_H__
 
 #include "RenderCommand.h"
+#include "FrameBuffer.h"
 #include "../Scene/Object.h"
 #include "../Scene/Light.h"
+
+#include <memory>
 
 namespace Scene
 {
@@ -32,10 +35,16 @@ namespace Scene
     class Camera;
 }
 
+class Shader;
+
 class SceneRenderer
 {
+    typedef std::unique_ptr<FrameBuffer> FrameBufferPtr;
+
 public:
     SceneRenderer();
+
+    void Init(Shader *depthShader);
 
     void SetViewport(int x, int y, int w, int h);
     void SetCamera(Scene::Camera *camera);
@@ -49,6 +58,8 @@ public:
 private:
     int vpX, vpY, vpW, vpH;
     Scene::Camera *camera;
+    Shader *depthShader;
+    FrameBufferPtr shadowFBO;
 
     Scene::ObjectList objects;
     Scene::LightList lights;

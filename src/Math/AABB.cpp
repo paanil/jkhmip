@@ -38,6 +38,31 @@ void AABB::Update(const Vector3 &v)
     max.z = Math::Max(max.z, v.z);
 }
 
+void AABB::Update(const AABB &aabb)
+{
+    Update(aabb.min);
+    Update(aabb.max);
+}
+
+AABB AABB::Transform(const Matrix4 &mat) const
+{
+    AABB aabb = AABB::Degenerate();
+    aabb.Update(mat * Vector3(min.x, min.y, min.z));
+    aabb.Update(mat * Vector3(min.x, min.y, max.z));
+    aabb.Update(mat * Vector3(min.x, max.y, min.z));
+    aabb.Update(mat * Vector3(min.x, max.y, max.z));
+    aabb.Update(mat * Vector3(max.x, min.y, min.z));
+    aabb.Update(mat * Vector3(max.x, min.y, max.z));
+    aabb.Update(mat * Vector3(max.x, max.y, min.z));
+    aabb.Update(mat * Vector3(max.x, max.y, max.z));
+    return aabb;
+}
+
+Matrix4 AABB::CreateOrthoProjection() const
+{
+    return Matrix4::Ortho(min.x, max.x, min.y, max.y, min.z, max.z);
+}
+
 AABB AABB::Degenerate()
 {
     AABB aabb;

@@ -56,7 +56,7 @@ Light *Scene::CreateLight()
     return light;
 }
 
-void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList &lights)
+void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList *lights)
 {
     for (Object *object : this->objects)
     {
@@ -64,16 +64,20 @@ void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList &
             objects.push_back(object);
     }
 
+    if (lights == 0)
+        return;
+
+    for (Light *light : this->lights)
+    {
+        if (light->GetRadius() <= 0.0f)
+            lights->push_back(light);
+    }
+
     for (Light *light : this->lights)
     {
         Vector4 pos = light->GetLightPos();
-        if ( pos.w > 0.0f )
-        {
-            if ( frustum.TestSphere(pos) )
-                lights.push_back(light);
-            continue;
-        }
-        lights.insert(lights.begin(), light);
+        if ( pos.w > 0.0f && frustum.TestSphere(pos) )
+            lights->push_back(light);
     }
 }
 

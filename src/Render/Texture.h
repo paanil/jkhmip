@@ -70,6 +70,9 @@ public:
     /// Releases the gl texture resource.
     ~Texture();
 
+    int GetWidth()  const { return w; }
+    int GetHeight() const { return h; }
+
     void CreateTex2D(int w, int h, TexFmt fmt);
 
 //    void CreateTexCube(int w, int h, TexFmt fmt);
@@ -91,6 +94,7 @@ public:
 private:
     /// GL texture id.
     uint texture;
+    int w, h;
 
     friend class FrameBuffer;
 };

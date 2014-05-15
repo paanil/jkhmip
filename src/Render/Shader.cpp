@@ -61,6 +61,19 @@ bool Shader::Compile(const String &vertSrc, const String &fragSrc)
         LOG_ERROR("Couldn't link shader.");
         return false;
     }
+
+    Use();
+    SetUniform("Diffuse", 0);
+    SetUniform("Font", 0);
+    SetUniform("ShadowMap0", 1);
+    SetUniform("ShadowMap1", 2);
+    SetUniform("ShadowMap2", 3);
+    SetUniform("ShadowMap3", 4);
+    SetUniform("ShadowMap4", 5);
+    SetUniform("ShadowMap5", 6);
+    SetUniform("ShadowMap6", 7);
+    SetUniform("ShadowMap7", 8);
+
     return true;
 }
 
@@ -69,52 +82,46 @@ void Shader::Use()
     glUseProgram(prog);
 }
 
-void Shader::SetProjMatrix(const Matrix4 &proj)
+void Shader::SetUniform(const String &name, int value)
 {
-    GLint loc = glGetUniformLocation(prog, "Projection");
-    glUniformMatrix4fv(loc, 1, GL_FALSE, proj.data);
+    GLint loc = glGetUniformLocation(prog, name.c_str());
+    glUniform1i(loc, value);
 }
 
-void Shader::SetViewMatrix(const Matrix4 &view)
+void Shader::SetUniform(const String &name, float value)
 {
-    GLint loc = glGetUniformLocation(prog, "View");
-    glUniformMatrix4fv(loc, 1, GL_FALSE, view.data);
+    GLint loc = glGetUniformLocation(prog, name.c_str());
+    glUniform1f(loc, value);
 }
 
-void Shader::SetModelMatrix(const Matrix4 &model)
+void Shader::SetUniform(const String &name, const Vector3 &value)
 {
-    GLint loc = glGetUniformLocation(prog, "Model");
-    glUniformMatrix4fv(loc, 1, GL_FALSE, model.data);
+    GLint loc = glGetUniformLocation(prog, name.c_str());
+    glUniform3fv(loc, 1, &value.x);
 }
 
-void Shader::SetTime(float t)
+void Shader::SetUniform(const String &name, const Vector4 &value)
 {
-    GLint loc = glGetUniformLocation(prog, "Time");
-    glUniform1f(loc, t);
+    GLint loc = glGetUniformLocation(prog, name.c_str());
+    glUniform4fv(loc, 1, &value.x);
 }
 
-void Shader::SetTranslation(const Vector3 &t)
+void Shader::SetUniform(const String &name, const Matrix4 &value)
 {
-    GLint loc = glGetUniformLocation(prog, "Translation");
-    glUniform3fv(loc, 1, &t.x);
+    GLint loc = glGetUniformLocation(prog, name.c_str());
+    glUniformMatrix4fv(loc, 1, GL_FALSE, value.data);
 }
 
-void Shader::SetColor(const Vector4 &color)
+void Shader::SetUniform(const String &name, int count, const Vector4 *values)
 {
-    GLint loc = glGetUniformLocation(prog, "Color");
-    glUniform4fv(loc, 1, &color.x);
+    GLint loc = glGetUniformLocation(prog, name.c_str());
+    glUniform4fv(loc, count, &values[0].x);
 }
 
-void Shader::SetLightPositions(int lightCount, const Vector4 *positions)
+void Shader::SetUniform(const String &name, int count, const Matrix4 *values)
 {
-    GLint loc = glGetUniformLocation(prog, "LightPosition");
-    glUniform4fv(loc, lightCount, &positions[0].x);
-}
-
-void Shader::SetLightColors(int lightCount, const Vector4 *colors)
-{
-    GLint loc = glGetUniformLocation(prog, "LightColor");
-    glUniform4fv(loc, lightCount, &colors[0].x);
+    GLint loc = glGetUniformLocation(prog, name.c_str());
+    glUniformMatrix4fv(loc, count, GL_FALSE, values[0].data);
 }
 
 /* Free functions */

@@ -6,7 +6,6 @@
 uniform mat4 Projection;
 uniform mat4 View;
 uniform mat4 Model;
-uniform float Time;
 
 in vec3 Position;
 in vec2 TexCoord;
@@ -33,18 +32,29 @@ void main()
 
 uniform sampler2D Diffuse;
 
+uniform sampler2DShadow ShadowMap0;
+uniform sampler2DShadow ShadowMap1;
+uniform sampler2DShadow ShadowMap2;
+uniform sampler2DShadow ShadowMap3;
+uniform sampler2DShadow ShadowMap4;
+uniform sampler2DShadow ShadowMap5;
+uniform sampler2DShadow ShadowMap6;
+uniform sampler2DShadow ShadowMap7;
+
 uniform vec4 LightPosition[8];
 uniform vec4 LightColor[8];
-//uniform vec3 LightAmbient;
+uniform mat4 LightMatrix[8];
 
 in vec3 position;
 in vec2 texcoord;
 in vec3 normal;
 
+out vec4 fragColor;
+
 vec3 texLinear(sampler2D tex, vec2 uv)
 {
     vec3 e = vec3(2.2);
-    vec3 color = texture2D(tex, uv).rgb;
+    vec3 color = texture(tex, uv).rgb;
     return pow(color, e);
 }
 
@@ -54,39 +64,65 @@ vec4 colorGamma(vec3 color)
     return vec4(pow(color, e), 1.0);
 }
 
-float lightIntensity(vec4 lightPos, vec3 n)
+float lightIntensity(int i, vec3 n)
 {
-    vec3 light = lightPos.xyz;
-    float radius = lightPos.w;
+    vec4 light = LightPosition[i];
+    float energy = LightColor[i].a;
+    vec3 pos = light.xyz;
+    float radius = light.w;
     if (radius > 0.0)
     {
-        light = light - position;
-        float dist = length(light);
+        pos = pos - position;
+        float dist = length(pos);
         float dist2 = dist * dist;
         float d = dist2 / (radius * radius);
         float f = max(1.0 - d * d, 0.0) / (dist2 + 1);
-        light = normalize(light);
-        return max(dot(n, light) * f, 0.0);
+        vec3 l = normalize(pos);
+        return max(dot(n, l) * f, 0.0) * energy;
     }
-    light = normalize(light);
-    return max(dot(n, light), 0.0);
+    vec3 l = normalize(pos);
+    return max(dot(n, l), 0.0) * energy;
+}
+
+float shadowValue(int i, vec3 n, sampler2DShadow shadowMap)
+{
+    vec4 light = LightPosition[i];
+    float mx = light.w > 0.0 ? 1.0 : 0.0;
+
+    vec4 shadowCoord = (LightMatrix[i] * vec4(position, 1.0));
+    float bias = 0.0025*tan(acos(max(dot(n, light.xyz), 0.0)));
+    shadowCoord.z -= clamp(bias, 0.0, 0.005);
+//    shadowCoord.z -= 0.002;
+
+    float offs = 0.0005;
+    float value = textureProj(shadowMap, shadowCoord + vec4(-offs, -offs, 0.0, 0.0));
+    value += textureProj(shadowMap, shadowCoord + vec4(offs, -offs, 0.0, 0.0));
+    value += textureProj(shadowMap, shadowCoord + vec4(offs, offs, 0.0, 0.0));
+    value += textureProj(shadowMap, shadowCoord + vec4(-offs, offs, 0.0, 0.0));
+
+    return max(value / 4.0, mx);
+}
+
+vec3 lightningBolt(int i, vec3 n, sampler2DShadow shadowMap)
+{
+    return LightColor[i].rgb * lightIntensity(i, n) * shadowValue(i, n, shadowMap);
 }
 
 void main()
 {
-    vec3 LightAmbient = vec3(0.01);
+    vec3 ambient = vec3(0.01);
     vec3 n = normalize(normal);
-    vec3 light = LightAmbient;
-    light += LightColor[0].rgb * LightColor[0].a * lightIntensity(LightPosition[0], n);
-    light += LightColor[1].rgb * LightColor[1].a * lightIntensity(LightPosition[1], n);
-    light += LightColor[2].rgb * LightColor[2].a * lightIntensity(LightPosition[2], n);
-    light += LightColor[3].rgb * LightColor[3].a * lightIntensity(LightPosition[3], n);
-    light += LightColor[4].rgb * LightColor[4].a * lightIntensity(LightPosition[4], n);
-    light += LightColor[5].rgb * LightColor[5].a * lightIntensity(LightPosition[5], n);
-    light += LightColor[6].rgb * LightColor[6].a * lightIntensity(LightPosition[6], n);
-    light += LightColor[7].rgb * LightColor[7].a * lightIntensity(LightPosition[7], n);
+    vec3 light = ambient;
+    light += lightningBolt(0, n, ShadowMap0);
+    light += lightningBolt(1, n, ShadowMap1);
+    light += lightningBolt(2, n, ShadowMap2);
+    light += lightningBolt(3, n, ShadowMap3);
+    light += lightningBolt(4, n, ShadowMap4);
+    light += lightningBolt(5, n, ShadowMap5);
+    light += lightningBolt(6, n, ShadowMap6);
+    light += lightningBolt(7, n, ShadowMap7);
     vec3 diffuse = texLinear(Diffuse, texcoord);
-    gl_FragColor = colorGamma(diffuse * light);
+    fragColor = colorGamma(diffuse * light);
 
 //    vec3 n = normalize(normal);
 ////    gl_FragColor = vec4(n, 1.0);

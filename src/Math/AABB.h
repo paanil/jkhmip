@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __AABB_H__
 
 #include "Vector3.h"
+#include "Matrix4.h"
 
 class AABB
 {
@@ -32,6 +33,10 @@ public:
     AABB();
 
     void Update(const Vector3 &v);
+    void Update(const AABB &aabb);
+
+    AABB Transform(const Matrix4 &mat) const;
+    Matrix4 CreateOrthoProjection() const;
 
     static AABB Degenerate();
 };

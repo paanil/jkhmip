@@ -46,7 +46,7 @@ void Texture::CreateTex2D(int w, int h, TexFmt fmt)
     };
     static const GLenum types[] =
     {
-        GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_INT
+        GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_FLOAT
     };
 
     Bind(0);
@@ -57,10 +57,13 @@ void Texture::CreateTex2D(int w, int h, TexFmt fmt)
 
     if (fmt == TexFmt_DEPTH)
     {
-        glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+        SetFilterMode(TF_MIN_LINEAR, TF_MAG_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     }
+
+    this->w = w;
+    this->h = h;
 }
 
 void Texture::SetTexImage(int w, int h, int bpp, const void *image)
@@ -90,6 +93,9 @@ void Texture::SetTexImage(int w, int h, int bpp, const void *image)
 
     SetFilterMode(TF_MIN_NEAREST, TF_MAG_NEAREST);
     SetWrapMode(TW_CLAMP, TW_CLAMP);
+
+    this->w = w;
+    this->h = h;
 }
 
 void Texture::SetFilterMode(TexFilterMin minFilter, TexFilterMag magFilter)
@@ -112,7 +118,7 @@ void Texture::SetWrapMode(TexWrap wrapS, TexWrap wrapT)
 {
     static const GLenum wrapModes[] =
     {
-        GL_CLAMP, GL_REPEAT, GL_MIRRORED_REPEAT
+        GL_CLAMP_TO_EDGE, GL_REPEAT, GL_MIRRORED_REPEAT
     };
 
     Bind(0);

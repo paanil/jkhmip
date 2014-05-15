@@ -50,7 +50,7 @@ namespace Scene
 
         Light *CreateLight();
 
-        void FrustumCull(const Frustum &frustum, ObjectList &objects, LightList &lights);
+        void FrustumCull(const Frustum &frustum, ObjectList &objects, LightList *lights = 0);
 
     private:
         /// Adds a scene node to the node list.

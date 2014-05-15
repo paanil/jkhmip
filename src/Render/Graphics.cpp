@@ -227,12 +227,14 @@ void Clear(uint mask)
     glClear(gl_masks[mask]);
 }
 
+#define MAX_TEXTURES 16
+
 struct State
 {
     DepthState depthTest;
     CullState cullFace;
     BlendState blendMode;
-    TextureState textures[8];
+    TextureState textures[MAX_TEXTURES];
     ShaderState shader;
     VertexBufferState vbo;
     IndexBufferState ibo;
@@ -240,7 +242,7 @@ struct State
 
 void InitState()
 {
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < MAX_TEXTURES; i++)
         state.textures[i].SetUnit(i);
 
     ResetState();
@@ -253,7 +255,7 @@ void ResetState()
     state.cullFace.Set(CULL_BACK);
     state.blendMode.Set(BM_NONE);
 
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < MAX_TEXTURES; i++)
         state.textures[i].Set(0);
 
     state.shader.Set(0);
@@ -267,7 +269,7 @@ void ApplyState()
     state.cullFace.Apply();
     state.blendMode.Apply();
 
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < MAX_TEXTURES; i++)
         state.textures[i].Apply();
 
     state.shader.Apply();

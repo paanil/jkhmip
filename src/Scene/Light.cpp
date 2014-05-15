@@ -47,8 +47,14 @@ Vector4 Light::GetColor() const
 
 Vector4 Light::GetLightPos() const
 {
-    Vector3 pos = GetPosition(); // TODO: Get world position
-    return Vector4(pos.x, pos.y, pos.z, radius);
+    if (radius > 0.0f)
+    {
+        Vector3 pos = GetPosition(); // TODO: Get world position
+        return Vector4(pos.x, pos.y, pos.z, radius);
+    }
+    Vector3 right, up, look;
+    GetBasisVectors(right, up, look);
+    return Vector4(up.x, up.y, up.z, radius);
 }
 
 bool Light::Affects(const AABB &aabb) const
@@ -65,6 +71,41 @@ bool Light::Affects(const AABB &aabb) const
     }
 
     return true; // Directional light affects always
+}
+
+void Light::UpdateLightMatrix(const AABB &aabb)
+{
+    if (radius > 0.0f)
+    {
+        matrix = Matrix4::Identity();
+        return;
+    }
+
+    Matrix4 view = Matrix4::Identity();
+    for (int i = 0; i < 3; i++)
+    {
+        view.mat[i][0] = rotation.mat[0][i];
+        view.mat[i][1] = rotation.mat[2][i];
+        view.mat[i][2] = -rotation.mat[1][i];
+    }
+    Matrix4 proj = aabb.Transform(view).CreateOrthoProjection();
+    matrix = proj * view;
+}
+
+const Matrix4 &Light::GetLightMatrix() const
+{
+    return matrix;
+}
+
+void Light::CreateShadowMap(int w, int h)
+{
+    shadowMap.reset(new Texture());
+    shadowMap->CreateTex2D(w, h, TexFmt_DEPTH);
+}
+
+Texture *Light::GetShadowMap() const
+{
+    return shadowMap.get();
 }
 
 } // Scene

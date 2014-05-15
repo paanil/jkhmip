@@ -42,19 +42,7 @@ const AABB &Object::GetWorldAABB()
     if (aabbDirty)
     {
         const Matrix4 &M = GetWorldTransform();
-        const AABB &aabb = model->GetAABB();
-
-        worldAABB = AABB::Degenerate();
-
-        worldAABB.Update(M * Vector3(aabb.min.x, aabb.min.y, aabb.min.z));
-        worldAABB.Update(M * Vector3(aabb.min.x, aabb.min.y, aabb.max.z));
-        worldAABB.Update(M * Vector3(aabb.min.x, aabb.max.y, aabb.min.z));
-        worldAABB.Update(M * Vector3(aabb.min.x, aabb.max.y, aabb.max.z));
-        worldAABB.Update(M * Vector3(aabb.max.x, aabb.min.y, aabb.min.z));
-        worldAABB.Update(M * Vector3(aabb.max.x, aabb.min.y, aabb.max.z));
-        worldAABB.Update(M * Vector3(aabb.max.x, aabb.max.y, aabb.min.z));
-        worldAABB.Update(M * Vector3(aabb.max.x, aabb.max.y, aabb.max.z));
-
+        worldAABB = model->GetAABB().Transform(M);
         aabbDirty = false;
     }
 
@@ -63,7 +51,7 @@ const AABB &Object::GetWorldAABB()
 
 void Object::GetRenderCommands(RenderCommandList &commands)
 {
-    commands.SetTransform(GetWorldTransform());
+    commands.SetModelMatrix(GetWorldTransform());
     model->GetRenderCommands(commands);
 }
 

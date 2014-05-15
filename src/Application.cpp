@@ -71,9 +71,10 @@ bool Application::Init(const String &title)
 
     // Initialize graphics state.
     Graphics::InitState();
-
     // Initialize resource manager.
     resources.Init();
+    // Initialize scene renderer.
+    renderer.Init(resources.GetShader("depth.shader"));
 
     // All good, we can allow running of the app.
     running = true;
@@ -214,9 +215,9 @@ void Application::Render()
     Graphics::SetBlendMode(BM_MIX);
     Graphics::SetTexture(geometry.GetFontTexture(), 0);
     Graphics::SetShader(shader);
-    shader->SetProjMatrix(proj2d);
-    shader->SetTranslation(Vector3(pos.x, pos.y, 0.0f));
-    shader->SetColor(text.GetColor());
+    shader->SetUniform("Projection", proj2d);
+    shader->SetUniform("Translation", Vector3(pos.x, pos.y, 0.0f));
+    shader->SetUniform("Color", text.GetColor());
     Graphics::SetVertexBuffer(geometry.GetVertexBuffer());
     Graphics::SetIndexBuffer(geometry.GetIndexBuffer());
     Graphics::DrawTriangles(0, geometry.GetIndexCount());

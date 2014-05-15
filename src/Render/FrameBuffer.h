@@ -32,10 +32,10 @@ public:
     FrameBuffer();
     ~FrameBuffer();
 
-    void AttachDepthTex2D(Texture *depthTex);
     void AttachColorTex2D(Texture *colorTex);
+    void AttachDepthTex2D(Texture *depthTex);
 
-    void Bind();
+    void Bind(bool depthOnly = false);
 
     void Unbind();
 

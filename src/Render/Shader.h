@@ -45,21 +45,13 @@ public:
     /// Uses the shader program.
     void Use();
 
-    /// Sets projection matrix uniform.
-    void SetProjMatrix(const Matrix4 &proj);
-    /// Sets view matrix uniform.
-    void SetViewMatrix(const Matrix4 &view);
-    /// Sets model matrix uniform.
-    void SetModelMatrix(const Matrix4 &model);
-    /// Sets time uniform.
-    void SetTime(float t);
-    /// Sets translation uniform.
-    void SetTranslation(const Vector3 &t);
-    /// Sets color uniform.
-    void SetColor(const Vector4 &color);
-
-    void SetLightPositions(int lightCount, const Vector4 *positions);
-    void SetLightColors(int lightCount, const Vector4 *colors);
+    void SetUniform(const String &name, int value);
+    void SetUniform(const String &name, float value);
+    void SetUniform(const String &name, const Vector3 &value);
+    void SetUniform(const String &name, const Vector4 &value);
+    void SetUniform(const String &name, const Matrix4 &value);
+    void SetUniform(const String &name, int count, const Vector4 *values);
+    void SetUniform(const String &name, int count, const Matrix4 *values);
 
 private:
     /// GL ids.

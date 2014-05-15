@@ -34,26 +34,33 @@ FrameBuffer::~FrameBuffer()
     glDeleteFramebuffers(1, &framebuf);
 }
 
-void FrameBuffer::AttachDepthTex2D(Texture *depthTex)
-{
-    Bind();
-    GLuint tex = depthTex ? depthTex->texture : 0;
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex, 0);
-}
-
 void FrameBuffer::AttachColorTex2D(Texture *colorTex)
 {
-    Bind();
     GLuint tex = colorTex ? colorTex->texture : 0;
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuf);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
 }
 
-void FrameBuffer::Bind()
+void FrameBuffer::AttachDepthTex2D(Texture *depthTex)
+{
+    GLuint tex = depthTex ? depthTex->texture : 0;
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuf);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex, 0);
+}
+
+void FrameBuffer::Bind(bool depthOnly)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, framebuf);
+    if (depthOnly)
+    {
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+    }
 }
 
 void FrameBuffer::Unbind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDrawBuffer(GL_BACK);
+    glReadBuffer(GL_BACK);
 }

@@ -24,16 +24,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Node.h"
 
-//#include "../Render/Texture.h"
+#include "../Render/Texture.h"
 
-//#include <memory>
+#include <memory>
 
 namespace Scene
 {
 
     class Light : public Node
     {
-//        typedef std::unique_ptr<Texture> TexturePtr;
+        typedef std::unique_ptr<Texture> TexturePtr;
 
     public:
         void SetRadius(float radius);
@@ -46,16 +46,17 @@ namespace Scene
 
         bool Affects(const AABB &aabb) const;
 
-//        Texture *GetShadowMap()
-//        {
-//            return shadowMap.get();
-//        }
+        void UpdateLightMatrix(const AABB &aabb);
+        const Matrix4 &GetLightMatrix() const;
+
+        void CreateShadowMap(int w, int h);
+        Texture *GetShadowMap() const;
 
     private:
         float radius;
         Vector4 color;
-
-//        TexturePtr shadowMap;
+        Matrix4 matrix;
+        TexturePtr shadowMap;
     };
 
     typedef std::vector<Light *> LightList;
