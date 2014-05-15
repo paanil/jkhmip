@@ -90,14 +90,9 @@ void Application::Run()
 
     Scene::Camera *camera = scene.CreateCamera();
     camera->SetParameters(50.0f, 0.1f, 100.0f);
+    camera->SetPosition(Vector3(0.0f, 1.8f, 0.0f));
     renderer.SetCamera(camera);
     cam.SetCamera(camera);
-
-    Scene::Object *sword = scene.CreateObject();
-    sword->SetModel(resources.GetModel("sword.obj"));
-    sword->SetParent(camera);
-    sword->SetPosition(Vector3(0.3f, -0.3f, 0.6f));
-    sword->SetRotation(Matrix3::RotationX(25.0f) * Matrix3::RotationY(-17.5f));
 
 
     text.SetRelativePosition(Vector2(10.0f, 10.0f));
@@ -200,10 +195,10 @@ void Application::Render()
 {
     renderer.Render(scene);
 
-    String title;
-    Format(title, "Objects: %  Lights: %  Draw Calls: %",
-           renderer.GetObjectCount(), renderer.GetLightCount(), renderer.GetDrawCount());
-    window.SetTitle(title);
+//    String title;
+//    Format(title, "Objects: %  Lights: %  Draw Calls: %",
+//           renderer.GetObjectCount(), renderer.GetLightCount(), renderer.GetDrawCount());
+//    window.SetTitle(title);
 
     // Render fps
     const TextGeometry &geometry = text.GetGeometry();

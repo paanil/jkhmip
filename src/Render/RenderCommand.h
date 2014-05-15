@@ -58,7 +58,8 @@ public:
         lightCount = 0;
         for (int i = 0; i < MAX_LIGHTS; i++)
         {
-            command.lightColor[i].w = 0.0f;
+            command.lightColor[i] = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+//            command.lightColor[i].w = 0.0f;
             command.shadowMap[i] = 0;
         }
     }
