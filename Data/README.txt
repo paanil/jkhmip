@@ -17,13 +17,13 @@ Copyright (c) 2014 Ilari Paananen
 
 ------------------------------------------------------------
 
-Files: ./Models/sword.obj, ./Textures/sword.tga
+Files: ./Models/barrel.obj, ./Textures/barrel.tga
 
 Copyright (c) 2014 Ilari Paananen
 
 ------------------------------------------------------------
 
-File: ./Textures/ground.tga
+File: ./Textures/terrain.tga
 
 Downloaded from: http://seamless-pixels.blogspot.fi/
 
