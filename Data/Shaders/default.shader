@@ -59,13 +59,13 @@ vec3 texLinear(sampler2D tex, vec2 uv)
 
 vec4 colorGamma(vec3 color)
 {
-//    vec3 s1 = sqrt(color);
-//    vec3 s2 = sqrt(s1);
-//    vec3 s3 = sqrt(s2);
-//    vec3 srgb = 0.585122381 * s1 + 0.783140355 * s2 - 0.368262736 * s3;
-//    return vec4(srgb, 1.0);
+    vec3 s1 = sqrt(color);
+    vec3 s2 = sqrt(s1);
+    vec3 s3 = sqrt(s2);
+    vec3 srgb = 0.662002687 * s1 + 0.684122060 * s2 - 0.323583601 * s3 - 0.225411470 * color;
+    return vec4(srgb, 1.0);
 
-    return vec4(pow(color, vec3(1.0/2.2)), 1.0);
+//    return vec4(pow(color, vec3(1.0/2.233333)), 1.0);
 }
 
 float lightIntensity(int i, vec3 n)
@@ -94,9 +94,9 @@ float shadowValue(int i, vec3 n, sampler2DShadow shadowMap)
     float mx = light.w > 0.0 ? 1.0 : 0.0;
 
     vec4 shadowCoord = (LightMatrix[i] * vec4(position, 1.0));
-    float bias = 0.0025*tan(acos(max(dot(n, light.xyz), 0.0)));
-    shadowCoord.z -= clamp(bias, 0.0, 0.005);
-//    shadowCoord.z -= 0.002;
+//    float bias = 0.0025*tan(acos(max(dot(n, light.xyz), 0.0)));
+//    shadowCoord.z -= clamp(bias, 0.0, 0.005);
+    shadowCoord.z -= 0.0025;
 
     float offs = 0.0005;
     float value = textureProj(shadowMap, shadowCoord + vec4(-offs, -offs, 0.0, 0.0));
@@ -114,7 +114,7 @@ vec3 lightningBolt(int i, vec3 n, sampler2DShadow shadowMap)
 
 void main()
 {
-    vec3 ambient = vec3(0.05);
+    vec3 ambient = vec3(0.1);
     vec3 n = normalize(normal);
     vec3 light = ambient;
     light += lightningBolt(0, n, ShadowMap0);
