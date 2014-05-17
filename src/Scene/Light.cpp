@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Light.h"
+#include "Camera.h"
+#include "../Math/Frustum.h"
 #include "../Math/Math.h"
 
 namespace Scene
@@ -45,23 +47,20 @@ Vector4 Light::GetColor() const
     return color;
 }
 
-Vector4 Light::GetLightPos() const
+Vector4 Light::GetLightPos()
 {
+    const Matrix4 &m = GetWorldTransform();
     if (radius > 0.0f)
-    {
-        Vector3 pos = GetPosition(); // TODO: Get world position
-        return Vector4(pos.x, pos.y, pos.z, radius);
-    }
-    Vector3 right, up, look;
-    GetBasisVectors(right, up, look);
-    return Vector4(up.x, up.y, up.z, radius);
+        return Vector4(m.m14, m.m24, m.m34, radius);
+    return Vector4(-m.m13, -m.m23, -m.m33, radius);
 }
 
-bool Light::Affects(const AABB &aabb) const
+bool Light::Affects(const AABB &aabb)
 {
     if (radius > 0.0f) // Point light
     {
-        Vector3 pos = GetPosition(); // TODO: Get world position
+        const Matrix4 &m = GetWorldTransform();
+        Vector3 pos = Vector3(m.m14, m.m24, m.m34);
 
         pos.x = Math::Clamp(pos.x, aabb.min.x, aabb.max.x) - pos.x;
         pos.y = Math::Clamp(pos.y, aabb.min.y, aabb.max.y) - pos.y;
@@ -73,7 +72,7 @@ bool Light::Affects(const AABB &aabb) const
     return true; // Directional light affects always
 }
 
-void Light::UpdateLightMatrix(const AABB &aabb)
+void Light::UpdateLightMatrix(const AABB &visibleScene, const AABB &wholeScene)
 {
     if (radius > 0.0f)
     {
@@ -81,14 +80,18 @@ void Light::UpdateLightMatrix(const AABB &aabb)
         return;
     }
 
-    Matrix4 view = Matrix4::Identity();
-    for (int i = 0; i < 3; i++)
-    {
-        view.mat[i][0] = rotation.mat[0][i];
-        view.mat[i][1] = rotation.mat[2][i];
-        view.mat[i][2] = -rotation.mat[1][i];
-    }
-    Matrix4 proj = aabb.Transform(view).CreateOrthoProjection();
+    Matrix4 view = GetInverseWorldTransform();
+    lightAABB = visibleScene.Transform(view);
+    lightAABB.min.z = wholeScene.Transform(view).min.z;
+    Matrix4 proj = lightAABB.CreateOrthoProjection();
+    matrix = proj * view;
+}
+
+void Light::UpdateLightMatrixNear(const AABB &visibleScene)
+{
+    Matrix4 view = GetInverseWorldTransform();
+    lightAABB.min.z = visibleScene.Transform(view).min.z;
+    Matrix4 proj = lightAABB.CreateOrthoProjection();
     matrix = proj * view;
 }
 
@@ -106,6 +109,14 @@ void Light::CreateShadowMap(int w, int h)
 Texture *Light::GetShadowMap() const
 {
     return shadowMap.get();
+}
+
+void Light::OnDirty()
+{
+    if (radius <= 0.0f)
+    {
+        SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+    }
 }
 
 } // Scene

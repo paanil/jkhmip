@@ -63,55 +63,41 @@ void SceneRenderer::SetCamera(Scene::Camera *camera)
         camera->SetAspectRatio( float(vpW)/float(vpH) );
 }
 
-void SceneRenderer::Render(Scene::Scene &scene)
+void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
 {
-    Matrix4 proj = camera->GetProjection();
-    Matrix4 view = camera->GetInverseWorldTransform();
-    Frustum frus = Frustum::Extract(proj * view);
-
-    objects.clear();
-    lights.clear();
-    scene.FrustumCull(frus, objects, &lights);
-
-    AABB aabb = AABB::Degenerate();
+    AABB wholeScene = scene.GetBoundingBox();
+    AABB visibleScene = AABB::Degenerate();
     for (Scene::Object *object : objects)
-        aabb.Update(object->GetWorldAABB());
+        visibleScene.Update(object->GetWorldAABB());
 
     for (Scene::Light *light : lights)
     {
         if (light->GetRadius() > 0.0f) continue;
 
-        light->UpdateLightMatrix(aabb);
+        light->UpdateLightMatrix(visibleScene, wholeScene);
 
         Matrix4 lightMatrix = light->GetLightMatrix();
-//        Frustum frus2 = Frustum::Extract(lightMatrix);
+        Frustum frus = Frustum::Extract(lightMatrix);
         Texture *shadowMap = light->GetShadowMap();
-        if (shadowMap == 0)
-        {
-            light->CreateShadowMap(1024, 1024);
-            shadowMap = light->GetShadowMap();
-        }
         int w = shadowMap->GetWidth();
         int h = shadowMap->GetHeight();
 
-//        Scene::ObjectList objects2;
-//        scene.FrustumCull(frus2, objects2);
+        Scene::ObjectList objects2;
+        scene.FrustumCull(frus, objects2);
 
-//        aabb = AABB::Degenerate();
+        visibleScene = AABB::Degenerate();
         commands.Clear();
-        for (Scene::Object *object : objects)
+        for (Scene::Object *object : objects2)
         {
-//            aabb.Update(object->GetWorldAABB());
+            visibleScene.Update(object->GetWorldAABB());
             object->GetRenderCommands(commands);
         }
 
-//        light->UpdateLightMatrix(aabb);
-//        lightMatrix = light->GetLightMatrix();
+        light->UpdateLightMatrixNear(visibleScene);
+        lightMatrix = light->GetLightMatrix();
 
         shadowFBO->AttachDepthTex2D(shadowMap);
         shadowFBO->Bind(true);
-
-//        glClearDepth(1.0f);
 
         Graphics::SetViewport(0, 0, w, h);
         Graphics::Clear(CLEAR_DEPTH);
@@ -131,6 +117,18 @@ void SceneRenderer::Render(Scene::Scene &scene)
     }
 
     shadowFBO->Unbind();
+}
+
+void SceneRenderer::Render(Scene::Scene &scene)
+{
+    Matrix4 viewProj = camera->GetProjection() * camera->GetInverseWorldTransform();
+    Frustum frus = Frustum::Extract(viewProj);
+
+    objects.clear();
+    lights.clear();
+    scene.FrustumCull(frus, objects, &lights);
+
+    UpdateShadowMaps(scene);
 
     commands.Clear();
     for (Scene::Object *object : objects)
@@ -153,8 +151,7 @@ void SceneRenderer::Render(Scene::Scene &scene)
         Graphics::ResetState();
         Shader *shader = command.material->GetShader();
         Graphics::SetShader(shader);
-        shader->SetUniform("Projection", proj);
-        shader->SetUniform("View", view);
+        shader->SetUniform("ViewProj", viewProj);
         shader->SetUniform("Model", command.modelMatrix);
         shader->SetUniform("LightPosition", MAX_LIGHTS, command.lightPosition);
         shader->SetUniform("LightColor", MAX_LIGHTS, command.lightColor);

@@ -49,6 +49,7 @@ public:
     void SetViewport(int x, int y, int w, int h);
     void SetCamera(Scene::Camera *camera);
 
+    void UpdateShadowMaps(Scene::Scene &scene);
     void Render(Scene::Scene &scene);
 
     size_t GetObjectCount() const { return objects.size(); }
@@ -60,6 +61,7 @@ private:
     Scene::Camera *camera;
     Shader *depthShader;
     FrameBufferPtr shadowFBO;
+    Vector3 corners[8];
 
     Scene::ObjectList objects;
     Scene::LightList lights;

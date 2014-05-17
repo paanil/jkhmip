@@ -84,7 +84,11 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
             Vector4 color;
             f.read((char *)&radius, sizeof(float));
             f.read((char *)&color.x, sizeof(Vector4));
-            Scene::Light *light = scene.CreateLight();
+            Scene::Light *light;
+            if (radius > 0.0f)
+                light = scene.CreatePointLight();
+            else
+                light = scene.CreateDirLight();
             light->SetRadius(radius);
             light->SetColor(color);
             node = light;

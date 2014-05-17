@@ -77,13 +77,12 @@ namespace Scene
         /// Gets the inverse world transform matrix.
         Matrix4 GetInverseWorldTransform();
 
-        /// Gets axis aligned bounding box in world space.
-        virtual const AABB &GetWorldAABB() const;
-
     protected:
         /// Sets world transform dirty flag.
         /// Dirties children as well.
         void SetDirty();
+
+        virtual void OnDirty() {}
 
     protected:
         typedef std::vector<Node *> NodeList;
@@ -96,10 +95,7 @@ namespace Scene
         Vector3 scale;
 
         Matrix4 worldTransform;
-        AABB worldAABB;
-
         bool worldDirty;
-        bool aabbDirty;
     };
 
 } // Scene

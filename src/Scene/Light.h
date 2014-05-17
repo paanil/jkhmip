@@ -23,13 +23,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __LIGHT_H__
 
 #include "Node.h"
-
 #include "../Render/Texture.h"
 
 #include <memory>
 
+class Frustum;
+
 namespace Scene
 {
+
+    class Camera;
 
     class Light : public Node
     {
@@ -42,19 +45,24 @@ namespace Scene
         void SetColor(const Vector4 &color);
         Vector4 GetColor() const;
 
-        Vector4 GetLightPos() const;
+        Vector4 GetLightPos();
 
-        bool Affects(const AABB &aabb) const;
+        bool Affects(const AABB &aabb);
 
-        void UpdateLightMatrix(const AABB &aabb);
+        void UpdateLightMatrix(const AABB &visibleScene, const AABB &wholeScene);
+        void UpdateLightMatrixNear(const AABB &visibleScene);
         const Matrix4 &GetLightMatrix() const;
 
         void CreateShadowMap(int w, int h);
         Texture *GetShadowMap() const;
 
+    protected:
+        void OnDirty();
+
     private:
         float radius;
         Vector4 color;
+        AABB lightAABB;
         Matrix4 matrix;
         TexturePtr shadowMap;
     };

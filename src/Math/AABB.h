@@ -39,6 +39,7 @@ public:
     Matrix4 CreateOrthoProjection() const;
 
     static AABB Degenerate();
+    static AABB Intersection(const AABB &a, const AABB &b);
 };
 
 #endif // __AABB_H__

@@ -48,12 +48,29 @@ Object *Scene::CreateObject()
     return object;
 }
 
-Light *Scene::CreateLight()
+Light *Scene::CreateDirLight()
 {
     Light *light = new Light();
-    lights.push_back(light);
+    light->CreateShadowMap(2048, 2048);
+    dirLights.push_back(light);
     AddNode(light);
     return light;
+}
+
+Light *Scene::CreatePointLight()
+{
+    Light *light = new Light();
+    pointLights.push_back(light);
+    AddNode(light);
+    return light;
+}
+
+AABB Scene::GetBoundingBox() const
+{
+    AABB boundBox = AABB::Degenerate();
+    for (Object *object : this->objects)
+        boundBox.Update(object->GetWorldAABB());
+    return boundBox;
 }
 
 void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList *lights)
@@ -64,20 +81,16 @@ void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList *
             objects.push_back(object);
     }
 
-    if (lights == 0)
-        return;
-
-    for (Light *light : this->lights)
+    if (lights)
     {
-        if (light->GetRadius() <= 0.0f)
+        for (Light *light : dirLights)
             lights->push_back(light);
-    }
 
-    for (Light *light : this->lights)
-    {
-        Vector4 pos = light->GetLightPos();
-        if ( pos.w > 0.0f && frustum.TestSphere(pos) )
-            lights->push_back(light);
+        for (Light *light : pointLights)
+        {
+            if ( frustum.TestSphere(light->GetLightPos()) )
+                lights->push_back(light);
+        }
     }
 }
 

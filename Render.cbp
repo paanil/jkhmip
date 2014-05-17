@@ -43,10 +43,10 @@
 			<Add directory="libs/lib" />
 		</Linker>
 		<Unit filename="Blends/scene_exporter.py" />
+		<Unit filename="Data/Materials/barrel.material" />
 		<Unit filename="Data/Materials/house_roof.material" />
 		<Unit filename="Data/Materials/house_wall.material" />
 		<Unit filename="Data/Materials/house_wood_parts.material" />
-		<Unit filename="Data/Materials/sword.material" />
 		<Unit filename="Data/Materials/terrain.material" />
 		<Unit filename="Data/Shaders/default.shader" />
 		<Unit filename="Data/Shaders/depth.shader" />

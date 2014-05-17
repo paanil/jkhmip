@@ -41,6 +41,8 @@ namespace Scene
         /// Returns the projection matrix.
         const Matrix4 &GetProjection() const;
 
+        void GetFrustumCorners(Vector3 (&corners)[8], float zFar);
+
     private:
         void UpdateProjection();
 

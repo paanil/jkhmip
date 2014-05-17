@@ -72,3 +72,17 @@ AABB AABB::Degenerate()
 
     return aabb;
 }
+
+AABB AABB::Intersection(const AABB &a, const AABB &b)
+{
+    AABB aabb;
+
+    aabb.min.x = Math::Max(a.min.x, b.min.x);
+    aabb.min.y = Math::Max(a.min.y, b.min.y);
+    aabb.min.z = Math::Max(a.min.z, b.min.z);
+    aabb.max.x = Math::Min(a.max.x, b.max.x);
+    aabb.max.y = Math::Min(a.max.y, b.max.y);
+    aabb.max.z = Math::Min(a.max.z, b.max.z);
+
+    return aabb;
+}

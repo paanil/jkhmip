@@ -48,7 +48,10 @@ namespace Scene
         /// Creates a renderable scene object node.
         Object *CreateObject();
 
-        Light *CreateLight();
+        Light *CreateDirLight();
+        Light *CreatePointLight();
+
+        AABB GetBoundingBox() const;
 
         void FrustumCull(const Frustum &frustum, ObjectList &objects, LightList *lights = 0);
 
@@ -59,7 +62,8 @@ namespace Scene
     private:
         NodeList nodes;
         ObjectList objects;
-        LightList lights;
+        LightList dirLights;
+        LightList pointLights;
     };
 
 } // Scene

@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Camera.h"
+#include "../Math/Math.h"
+#include "../Logger.h"
 
 namespace Scene
 {
@@ -50,6 +52,35 @@ void Camera::SetAspectRatio(float aspect)
 const Matrix4 &Camera::GetProjection() const
 {
     return projection;
+}
+
+void Camera::GetFrustumCorners(Vector3 (&corners)[8], float zFar)
+{
+    const Matrix4 &m = GetWorldTransform();
+
+    Vector3 r(m.m11, m.m21, m.m31);
+    Vector3 u(m.m12, m.m22, m.m32);
+    Vector3 l(m.m13, m.m23, m.m33);
+    Vector3 p(m.m14, m.m24, m.m34);
+
+    Vector3 centerN = p + l * zNear;
+    Vector3 centerF = p + l * zFar;
+
+    float t = Math::Tan(fov*0.5f*Math::DEG_TO_RAD);
+
+    float h2 = t * zNear;
+    float H2 = t * zFar;
+    float w2 = h2 * aspect;
+    float W2 = H2 * aspect;
+
+    corners[0] = centerN - r*w2 - u*h2;
+    corners[1] = centerN + r*w2 - u*h2;
+    corners[2] = centerN - r*w2 + u*h2;
+    corners[3] = centerN + r*w2 + u*h2;
+    corners[4] = centerF - r*W2 - u*H2;
+    corners[5] = centerF + r*W2 - u*H2;
+    corners[6] = centerF - r*W2 + u*H2;
+    corners[7] = centerF + r*W2 + u*H2;
 }
 
 void Camera::UpdateProjection()

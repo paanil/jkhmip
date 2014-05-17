@@ -3,8 +3,7 @@
 
 #version 140
 
-uniform mat4 Projection;
-uniform mat4 View;
+uniform mat4 ViewProj;
 uniform mat4 Model;
 
 in vec3 Position;
@@ -23,7 +22,7 @@ void main()
     texcoord = TexCoord;
     normal = mat3(Model) * Normal;
 
-    gl_Position = Projection * View * pos;
+    gl_Position = ViewProj * pos;
 }
 
 :Frag
@@ -88,23 +87,31 @@ float lightIntensity(int i, vec3 n)
     return max(dot(n, l), 0.0) * energy;
 }
 
+float fourSamples(float offs, vec4 shadowCoord, sampler2DShadow shadowMap)
+{
+    offs /= 2048.0;
+
+    vec4 coord0 = shadowCoord + vec4(-offs, -offs, 0.0, 0.0);
+    vec4 coord1 = shadowCoord + vec4( offs, -offs, 0.0, 0.0);
+    vec4 coord2 = shadowCoord + vec4( offs,  offs, 0.0, 0.0);
+    vec4 coord3 = shadowCoord + vec4(-offs,  offs, 0.0, 0.0);
+
+    vec4 depths;
+    depths.r = textureProj(shadowMap, coord0);
+    depths.g = textureProj(shadowMap, coord1);
+    depths.b = textureProj(shadowMap, coord2);
+    depths.a = textureProj(shadowMap, coord3);
+
+    return dot(depths, vec4(0.25));
+}
+
 float shadowValue(int i, vec3 n, sampler2DShadow shadowMap)
 {
-    vec4 light = LightPosition[i];
-    float mx = light.w > 0.0 ? 1.0 : 0.0;
+    float mx = LightPosition[i].w > 0.0 ? 1.0 : 0.0;
 
-    vec4 shadowCoord = (LightMatrix[i] * vec4(position, 1.0));
-//    float bias = 0.0025*tan(acos(max(dot(n, light.xyz), 0.0)));
-//    shadowCoord.z -= clamp(bias, 0.0, 0.005);
-    shadowCoord.z -= 0.0025;
+    vec4 shadowCoord = (LightMatrix[i] * vec4(position + n*0.1, 1.0));
 
-    float offs = 0.0005;
-    float value = textureProj(shadowMap, shadowCoord + vec4(-offs, -offs, 0.0, 0.0));
-    value += textureProj(shadowMap, shadowCoord + vec4(offs, -offs, 0.0, 0.0));
-    value += textureProj(shadowMap, shadowCoord + vec4(offs, offs, 0.0, 0.0));
-    value += textureProj(shadowMap, shadowCoord + vec4(-offs, offs, 0.0, 0.0));
-
-    return max(value / 4.0, mx);
+    return max(fourSamples(0.5, shadowCoord, shadowMap), mx);
 }
 
 vec3 lightningBolt(int i, vec3 n, sampler2DShadow shadowMap)
@@ -127,6 +134,7 @@ void main()
     light += lightningBolt(7, n, ShadowMap7);
     vec3 diffuse = texLinear(Diffuse, texcoord);
     fragColor = colorGamma(diffuse * light);
+//    fragColor = colorGamma(light);
 
 //    vec3 n = normalize(normal);
 ////    gl_FragColor = vec4(n, 1.0);

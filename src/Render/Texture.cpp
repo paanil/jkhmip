@@ -130,6 +130,12 @@ void Texture::GenMipmaps()
 {
     Bind(0);
     glGenerateMipmap(GL_TEXTURE_2D);
+    if (GLEW_EXT_texture_filter_anisotropic)
+    {
+        GLfloat max_anisotropy;
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &max_anisotropy);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, max_anisotropy);
+    }
 }
 
 void Texture::Bind(int textureUnit)

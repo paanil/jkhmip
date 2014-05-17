@@ -35,20 +35,23 @@ namespace Scene
     class Object : public Node
     {
     public:
-        /// Sets model to 0.
         Object();
 
         /// Sets model.
         void SetModel(Model *model);
 
-        /// Implements the virtual GetWorldAABB().
         const AABB &GetWorldAABB();
 
         /// Adds model to the list of render commands.
         void GetRenderCommands(RenderCommandList &commands);
 
+    protected:
+        void OnDirty();
+
     private:
         Model *model;
+        AABB worldAABB;
+        bool aabbDirty;
     };
 
     typedef std::vector<Object *> ObjectList;

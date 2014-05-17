@@ -33,8 +33,7 @@ Node::Node() :
     rotation(Matrix3::Identity()),
     scale(1.0f, 1.0f, 1.0f),
     worldTransform(Matrix4::Identity()),
-    worldDirty(false),
-    aabbDirty(false)
+    worldDirty(false)
 {
 }
 
@@ -153,21 +152,17 @@ Matrix4 Node::GetInverseWorldTransform()
     return GetWorldTransform().InverseTRS();
 }
 
-const AABB &Node::GetWorldAABB() const
-{
-    return worldAABB;
-}
-
 void Node::SetDirty()
 {
     if (!worldDirty)
     {
         worldDirty = true;
-        aabbDirty = true;
         for (Node *n : children)
         {
             n->SetDirty();
         }
+
+        OnDirty();
     }
 }
 

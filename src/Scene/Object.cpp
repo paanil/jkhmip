@@ -27,7 +27,8 @@ namespace Scene
 {
 
 Object::Object() :
-    model(0)
+    model(0),
+    aabbDirty(false)
 {
 }
 
@@ -43,6 +44,7 @@ const AABB &Object::GetWorldAABB()
     {
         const Matrix4 &M = GetWorldTransform();
         worldAABB = model->GetAABB().Transform(M);
+
         aabbDirty = false;
     }
 
@@ -53,6 +55,11 @@ void Object::GetRenderCommands(RenderCommandList &commands)
 {
     commands.SetModelMatrix(GetWorldTransform());
     model->GetRenderCommands(commands);
+}
+
+void Object::OnDirty()
+{
+    aabbDirty = true;
 }
 
 } // Scene
