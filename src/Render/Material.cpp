@@ -22,9 +22,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Material.h"
 
 Material::Material() :
-    shader(0),
-    texture(0)
+    shader(0)
 {
+    for (int i = 0; i < MAX_MATERIAL_TEXTURES; i++)
+        textures[i] = 0;
 }
 
 void Material::SetShader(Shader *shader)
@@ -37,12 +38,12 @@ Shader *Material::GetShader()
     return shader;
 }
 
-void Material::SetTexture(Texture *texture)
+void Material::SetTexture(int i, Texture *texture)
 {
-    this->texture = texture;
+    textures[i] = texture;
 }
 
-Texture *Material::GetTexture()
+Texture *Material::GetTexture(int i)
 {
-    return texture;
+    return textures[i];
 }

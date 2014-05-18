@@ -68,9 +68,11 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
 
         Scene::Node *node = 0;
 
-        if (as_node.type == 0)
+        if (as_node.type == 0) // DUMMY
+        {
             node = scene.CreateDummy();
-        else if (as_node.type == 1)
+        }
+        else if (as_node.type == 1) // OBJECT
         {
             f.read(mesh_name, name_size);
             String model_name(mesh_name);
@@ -78,19 +80,70 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
             ob->SetModel(modelCache->Get(model_name + ".obj"));
             node = ob;
         }
-        else if (as_node.type == 2)
+        else if (as_node.type == 2) // LIGHT
         {
+//            const uint light_size = 20;
+//
+//            struct Light
+//            {
+//                uint type;
+//                float color[3];
+//                float energy;
+//            };
+//
+//            assert(sizeof(Light) == light_size);
+//
+//            union
+//            {
+//                char as_char[light_size];
+//                Light as_light;
+//            };
+//
+//            f.read(as_char, light_size);
+//
+//            Scene::Light *light = 0;
+//            Vector4 color(as_light.color[0], as_light.color[1], as_light.color[2], as_light.energy);
+//
+//            if (as_light.type == 0) // DIRECTIONAL
+//            {
+//                light = scene.CreateDirLight();
+//            }
+//            else if (as_light.type == 1) // SPOT
+//            {
+//                light = scene.CreateSpotLight();
+//            }
+//            else if (as_light.type == 2) // POINT
+//            {
+//                light = scene.CreatePointLight();
+//            }
+//            else
+//            {
+//                LOG_ERROR("Invalid light type.");
+//                return false;
+//            }
+//
+//            light->SetColor(color);
+
             float radius;
-            Vector4 color;
+            Vector3 color;
+            float energy;
             f.read((char *)&radius, sizeof(float));
-            f.read((char *)&color.x, sizeof(Vector4));
+            f.read((char *)&color.x, sizeof(Vector3));
+            f.read((char *)&energy, sizeof(float));
             Scene::Light *light;
             if (radius > 0.0f)
+            {
                 light = scene.CreatePointLight();
+                light->SetType(Vector3(0.0f, 0.0f, 1.0f));
+            }
             else
+            {
                 light = scene.CreateDirLight();
+                light->SetType(Vector3(1.0f, 0.0f, 0.0f));
+            }
             light->SetRadius(radius);
             light->SetColor(color);
+            light->SetEnergy(energy);
             node = light;
         }
         else
@@ -117,6 +170,8 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
         node->SetRotation(rot);
         node->SetScale(Vector3(scale_x, scale_y, scale_z));
     }
+
+    f.close();
 
     return true;
 }

@@ -1,2 +1,4 @@
-default.shader
+terrain.shader
 terrain.tga
+grass.tga
+dirt.tga

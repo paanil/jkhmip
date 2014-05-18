@@ -24,6 +24,11 @@ class ExportMyScene(bpy.types.Operator, ExportHelper):
         'MESH': 1,
         'LAMP': 2}
 
+    lamp_types = {
+        'SUN': 0,
+        'SPOT': 1,
+        'POINT': 2}
+
     next_id = 1
 
     def get_ob_type(self, ob):
@@ -32,6 +37,13 @@ class ExportMyScene(bpy.types.Operator, ExportHelper):
             return ob_type
         except:
             return self.node_types['DUMMY']
+
+    def get_lamp_type(self, lamp):
+        try:
+            lamp_type = self.lamp_types[lamp.type]
+            return lamp_type
+        except:
+            return self.lamp_types['SUN']
 
     def get_next_id(self):
         next_id = self.next_id
@@ -43,6 +55,25 @@ class ExportMyScene(bpy.types.Operator, ExportHelper):
         f.write(pack("=4f", m[2][0], m[2][2], m[2][1], m[2][3]))
         f.write(pack("=4f", m[1][0], m[1][2], m[1][1], m[1][3]))
 
+    def write_lamp(self, f, lamp):
+        radius = -1
+        if lamp.type == 'POINT':
+            radius = lamp.distance
+        color = lamp.color
+        energy = lamp.energy
+        f.write(pack("=5f", radius, color.r, color.g, color.b, energy))
+
+#        lamp_type = self.get_lamp_type(lamp);
+#        color = lamp.color
+#        energy = lamp.energy
+#        f.write(pack("=i", lamp_type))
+#        f.write(pack("=4f", color.r, color.g, color.b, energy))
+#        if lamp_type == self.lamp_types['SPOT']:
+#            pass
+#        elif lamp_type == self.lamp_types['POINT']:
+#            radius = lamp.distance
+#            f.write(pack("=f", radius))
+
     def write_ob(self, f, ob, parent_id):
         ob_type = self.get_ob_type(ob)
         ob_id = self.get_next_id()
@@ -52,12 +83,7 @@ class ExportMyScene(bpy.types.Operator, ExportHelper):
             name = ob.data.name.encode()
             f.write(pack("31sc", name, b'\x00'))
         elif ob_type == self.node_types['LAMP']:
-            radius = -1
-            if ob.data.type == 'POINT':
-                radius = ob.data.distance
-            color = ob.data.color
-            energy = ob.data.energy
-            f.write(pack("=5f", radius, color.r, color.g, color.b, energy))
+            self.write_lamp(f, ob.data)
         for child in ob.children:
             self.write_ob(f, child, ob_id)
 

@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __VECTOR4_H__
 #define __VECTOR4_H__
 
+class Vector3;
+
 /// 4-Dimensional vector class.
 ///
 class Vector4
@@ -51,6 +53,8 @@ public:
 
     /// Returns dot product.
     float Dot(const Vector4 &v) const;
+    /// Dot product assuming v.w = 1.
+    float Dot(const Vector3 &v) const;
 
     /// Scales this with InvLength(xyz).
     void Normalize();

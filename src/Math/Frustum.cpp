@@ -36,14 +36,12 @@ bool Frustum::TestAABB(const AABB &aabb) const
     return true;
 }
 
-bool Frustum::TestSphere(const Vector4 &sphere) const
+bool Frustum::TestSphere(const Vector3 &center, float radius) const
 {
-    float dist;
-    Vector4 center(sphere.x, sphere.y, sphere.z, 1.0);
     for (int i = 0; i < 6; i++)
     {
-        dist = planes[i].Dot(center);
-        if (dist < -sphere.w) return false;
+        float dist = planes[i].Dot(center);
+        if (dist < -radius) return false;
     }
     return true;
 }

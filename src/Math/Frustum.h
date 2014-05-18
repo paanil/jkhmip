@@ -34,7 +34,7 @@ public:
     Vector4 planes[6];
 
     bool TestAABB(const AABB &aabb) const;
-    bool TestSphere(const Vector4 &sphere) const;
+    bool TestSphere(const Vector3 &center, float radius) const;
 
     static Frustum Extract(const Matrix4 &viewProj);
 };

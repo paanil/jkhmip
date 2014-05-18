@@ -42,6 +42,8 @@ void SceneRenderer::Init(Shader *depthShader)
 {
     this->depthShader = depthShader;
     shadowFBO.reset(new FrameBuffer());
+    lightsUBO.reset(new UniformBuffer());
+    lightsUBO->ReserveData(sizeof(RenderCommand::lights));
 }
 
 void SceneRenderer::SetViewport(int x, int y, int w, int h)
@@ -74,27 +76,27 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
     {
         if (light->GetRadius() > 0.0f) continue;
 
-        light->UpdateLightMatrix(visibleScene, wholeScene);
+        light->UpdateMatrix(visibleScene, wholeScene);
 
-        Matrix4 lightMatrix = light->GetLightMatrix();
+        Matrix4 lightMatrix = light->GetMatrix();
         Frustum frus = Frustum::Extract(lightMatrix);
         Texture *shadowMap = light->GetShadowMap();
         int w = shadowMap->GetWidth();
         int h = shadowMap->GetHeight();
 
-        Scene::ObjectList objects2;
-        scene.FrustumCull(frus, objects2);
+        objectsInLight.clear();
+        scene.FrustumCull(frus, objectsInLight);
 
         visibleScene = AABB::Degenerate();
         commands.Clear();
-        for (Scene::Object *object : objects2)
+        for (Scene::Object *object : objectsInLight)
         {
             visibleScene.Update(object->GetWorldAABB());
             object->GetRenderCommands(commands);
         }
 
-        light->UpdateLightMatrixNear(visibleScene);
-        lightMatrix = light->GetLightMatrix();
+        light->UpdateMatrixNear(visibleScene);
+        lightMatrix = light->GetMatrix();
 
         shadowFBO->AttachDepthTex2D(shadowMap);
         shadowFBO->Bind(true);
@@ -153,12 +155,14 @@ void SceneRenderer::Render(Scene::Scene &scene)
         Graphics::SetShader(shader);
         shader->SetUniform("ViewProj", viewProj);
         shader->SetUniform("Model", command.modelMatrix);
-        shader->SetUniform("LightPosition", MAX_LIGHTS, command.lightPosition);
-        shader->SetUniform("LightColor", MAX_LIGHTS, command.lightColor);
-        shader->SetUniform("LightMatrix", MAX_LIGHTS, command.lightMatrix);
+
+        lightsUBO->UpdateData(sizeof(RenderCommand::lights), command.lights);
+        lightsUBO->Bind(0);
+
         for (int i = 0; i < MAX_LIGHTS; i++)
-            Graphics::SetTexture(command.shadowMap[i], 1 + i);
-        Graphics::SetTexture(command.material->GetTexture(), 0);
+            Graphics::SetTexture(command.shadowMaps[i], 8 + i);
+        for (int i = 0; i < MAX_MATERIAL_TEXTURES; i++)
+            Graphics::SetTexture(command.material->GetTexture(i), i);
         Graphics::SetVertexBuffer(command.vbo);
         Graphics::SetIndexBuffer(command.ibo);
         Graphics::DrawTriangles(command.firstIndex, command.indexCount);

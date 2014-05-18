@@ -24,12 +24,79 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../Math/Frustum.h"
 #include "../Math/Math.h"
 
+
+
 namespace Scene
 {
+
+
+
+void Light::SetType(const Vector3 &type)
+{
+    this->type = type;
+}
 
 void Light::SetRadius(float radius)
 {
     this->radius = radius;
+}
+
+void Light::SetCutoff(float cutoff)
+{
+    this->cutoff = cutoff;
+}
+
+void Light::SetColor(const Vector3 &color)
+{
+    this->color = color;
+}
+
+void Light::SetEnergy(float energy)
+{
+    this->energy = energy;
+}
+
+void Light::UpdateMatrix(const AABB &visibleScene, const AABB &wholeScene)
+{
+    Matrix4 view = GetInverseWorldTransform();
+    lightAABB = visibleScene.Transform(view);
+    lightAABB.min.z = wholeScene.Transform(view).min.z;
+    Matrix4 proj = lightAABB.CreateOrthoProjection();
+    matrix = proj * view;
+}
+
+void Light::UpdateMatrixNear(const AABB &visibleScene)
+{
+    Matrix4 view = GetInverseWorldTransform();
+    lightAABB.min.z = visibleScene.Transform(view).min.z;
+    Matrix4 proj = lightAABB.CreateOrthoProjection();
+    matrix = proj * view;
+}
+
+void Light::CreateShadowMap(int w, int h)
+{
+
+    shadowMap.reset(new Texture());
+    shadowMap->CreateTex2D(w, h, TexFmt_DEPTH);
+}
+
+
+
+Vector3 Light::GetType() const
+{
+    return type;
+}
+
+Vector3 Light::GetPos()
+{
+    const Matrix4 &m = GetWorldTransform();
+    return Vector3(m.m14, m.m24, m.m34);
+}
+
+Vector3 Light::GetDir()
+{
+    const Matrix4 &m = GetWorldTransform();
+    return Vector3(-m.m13, -m.m23, -m.m33);
 }
 
 float Light::GetRadius() const
@@ -37,23 +104,32 @@ float Light::GetRadius() const
     return radius;
 }
 
-void Light::SetColor(const Vector4 &color)
+float Light::GetCutoff() const
 {
-    this->color = color;
+    return cutoff;
 }
 
-Vector4 Light::GetColor() const
+Vector3 Light::GetColor() const
 {
     return color;
 }
 
-Vector4 Light::GetLightPos()
+float Light::GetEnergy() const
 {
-    const Matrix4 &m = GetWorldTransform();
-    if (radius > 0.0f)
-        return Vector4(m.m14, m.m24, m.m34, radius);
-    return Vector4(-m.m13, -m.m23, -m.m33, radius);
+    return energy;
 }
+
+const Matrix4 &Light::GetMatrix() const
+{
+    return matrix;
+}
+
+Texture *Light::GetShadowMap() const
+{
+    return shadowMap.get();
+}
+
+
 
 bool Light::Affects(const AABB &aabb)
 {
@@ -72,51 +148,16 @@ bool Light::Affects(const AABB &aabb)
     return true; // Directional light affects always
 }
 
-void Light::UpdateLightMatrix(const AABB &visibleScene, const AABB &wholeScene)
-{
-    if (radius > 0.0f)
-    {
-        matrix = Matrix4::Identity();
-        return;
-    }
 
-    Matrix4 view = GetInverseWorldTransform();
-    lightAABB = visibleScene.Transform(view);
-    lightAABB.min.z = wholeScene.Transform(view).min.z;
-    Matrix4 proj = lightAABB.CreateOrthoProjection();
-    matrix = proj * view;
-}
-
-void Light::UpdateLightMatrixNear(const AABB &visibleScene)
-{
-    Matrix4 view = GetInverseWorldTransform();
-    lightAABB.min.z = visibleScene.Transform(view).min.z;
-    Matrix4 proj = lightAABB.CreateOrthoProjection();
-    matrix = proj * view;
-}
-
-const Matrix4 &Light::GetLightMatrix() const
-{
-    return matrix;
-}
-
-void Light::CreateShadowMap(int w, int h)
-{
-    shadowMap.reset(new Texture());
-    shadowMap->CreateTex2D(w, h, TexFmt_DEPTH);
-}
-
-Texture *Light::GetShadowMap() const
-{
-    return shadowMap.get();
-}
 
 void Light::OnDirty()
 {
-    if (radius <= 0.0f)
+    if (type.x > 0.0f)
     {
         SetPosition(Vector3(0.0f, 0.0f, 0.0f));
     }
 }
+
+
 
 } // Scene

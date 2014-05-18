@@ -36,10 +36,29 @@ class IndexBuffer;
 
 struct RenderCommand
 {
-    Vector4 lightPosition[MAX_LIGHTS];
-    Vector4 lightColor[MAX_LIGHTS];
-    Matrix4 lightMatrix[MAX_LIGHTS];
-    Texture *shadowMap[MAX_LIGHTS];
+    struct LightInfo
+    {
+        Vector3 type;
+        float       padd0;
+        Vector3 pos;
+        float       padd1;
+        Vector3 dir;
+        float   radius;
+        float   cutoff;
+        float       padd6;
+        float       padd7;
+        float       padd8;
+        Vector3 color;
+        float   energy;
+        Matrix4 matrix;
+        float   noShadows;
+        float       padd13;
+        float       padd14;
+        float       padd15;
+    };
+
+    LightInfo lights[MAX_LIGHTS];
+    Texture *shadowMaps[MAX_LIGHTS];
     Matrix4 modelMatrix;
     Material *material;
     VertexBuffer *vbo;
@@ -58,9 +77,8 @@ public:
         lightCount = 0;
         for (int i = 0; i < MAX_LIGHTS; i++)
         {
-            command.lightColor[i] = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-//            command.lightColor[i].w = 0.0f;
-            command.shadowMap[i] = 0;
+            command.lights[i].type = Vector3(0.0f, 0.0f, 0.0f);
+            command.shadowMaps[i] = 0;
         }
     }
 
@@ -69,12 +87,22 @@ public:
         if (lightCount < MAX_LIGHTS)
         {
             Matrix4 bias = Matrix4::Translation(0.5f, 0.5f, 0.5f) * Matrix4::Scale(0.5f);
+            Texture *shadowMap = light->GetShadowMap();
 
-            command.lightPosition[lightCount] = light->GetLightPos();
-            command.lightColor[lightCount] = light->GetColor();
-            command.lightMatrix[lightCount] = bias * light->GetLightMatrix();
-            command.shadowMap[lightCount] = light->GetShadowMap();
-            return (++lightCount >= MAX_LIGHTS);
+            int i = lightCount++;
+
+            command.lights[i].type = light->GetType();
+            command.lights[i].pos = light->GetPos();
+            command.lights[i].dir = light->GetDir();
+            command.lights[i].radius = light->GetRadius();
+            command.lights[i].cutoff = light->GetCutoff();
+            command.lights[i].color = light->GetColor();
+            command.lights[i].energy = light->GetEnergy();
+            command.lights[i].matrix = bias * light->GetMatrix();
+            command.lights[i].noShadows = shadowMap ? 0.0f : 1.0f;
+            command.shadowMaps[i] = shadowMap;
+
+            return (lightCount == MAX_LIGHTS);
         }
         return true;
     }

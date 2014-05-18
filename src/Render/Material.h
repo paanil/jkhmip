@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __MATERIAL_H__
 #define __MATERIAL_H__
 
+#define MAX_MATERIAL_TEXTURES 8
+
 class Shader;
 class Texture;
 
@@ -33,12 +35,12 @@ public:
     void SetShader(Shader *shader);
     Shader *GetShader();
 
-    void SetTexture(Texture *texture);
-    Texture *GetTexture();
+    void SetTexture(int i, Texture *texture);
+    Texture *GetTexture(int i);
 
 private:
     Shader *shader;
-    Texture *texture;
+    Texture *textures[MAX_MATERIAL_TEXTURES];
 };
 
 #endif // __MATERIAL_H__

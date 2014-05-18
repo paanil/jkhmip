@@ -51,7 +51,6 @@ Material *MaterialCache::Load(const String &filePath)
         LOG_INFO("Using debug material.");
         material = new Material();
         material->SetShader(shaderCache->Get("debug"));
-        material->SetTexture(textureCache->Get("debug"));
     }
 
     return material;
@@ -77,18 +76,20 @@ Material *MaterialCache::LoadMaterial(const String &file)
         return 0;
     }
 
+    Material *material = new Material();
+    material->SetShader(shaderCache->Get(shader));
+
     String texture;
 
-    if (!std::getline(f, texture))
+    for (int i = 0; i < MAX_MATERIAL_TEXTURES; i++)
     {
-        LOG_ERROR("Material needs a texture.");
-        return 0;
+        if (!std::getline(f, texture)) break;
+        Texture *tex = textureCache->Get(texture);
+        material->SetTexture(i, tex);
+        tex->SetFilterMode(TF_MIN_LINEAR_MIP_LINEAR, TF_MAG_LINEAR);
+        tex->SetWrapMode(TW_REPEAT, TW_REPEAT);
+        tex->GenMipmaps();
     }
-
-    Material *material = new Material();
-
-    material->SetShader(shaderCache->Get(shader));
-    material->SetTexture(textureCache->Get(texture));
 
     return material;
 }

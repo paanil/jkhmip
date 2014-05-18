@@ -50,6 +50,7 @@
 		<Unit filename="Data/Materials/terrain.material" />
 		<Unit filename="Data/Shaders/default.shader" />
 		<Unit filename="Data/Shaders/depth.shader" />
+		<Unit filename="Data/Shaders/terrain.shader" />
 		<Unit filename="Data/Shaders/text.shader" />
 		<Unit filename="src/Application.cpp" />
 		<Unit filename="src/Application.h" />
@@ -99,6 +100,8 @@
 		<Unit filename="src/Render/TextGeometry.h" />
 		<Unit filename="src/Render/Texture.cpp" />
 		<Unit filename="src/Render/Texture.h" />
+		<Unit filename="src/Render/UniformBuffer.cpp" />
+		<Unit filename="src/Render/UniformBuffer.h" />
 		<Unit filename="src/Render/VertexBuffer.cpp" />
 		<Unit filename="src/Render/VertexBuffer.h" />
 		<Unit filename="src/Resource/Font.cpp" />

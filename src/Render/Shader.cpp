@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Shader.h"
 #include "VertexBuffer.h"
+#include "RenderCommand.h"
 #include "../Logger.h"
 #include "../Math/Matrix4.h"
 
@@ -63,16 +64,36 @@ bool Shader::Compile(const String &vertSrc, const String &fragSrc)
     }
 
     Use();
-    SetUniform("Diffuse", 0);
+
+    SetUniform("DiffuseMap", 0);
+
+    SetUniform("TerrainMask", 0);
+    SetUniform("TerrainDiff0", 1);
+    SetUniform("TerrainDiff1", 2);
+    SetUniform("TerrainDiff2", 3);
+    SetUniform("TerrainDiff3", 4);
+
+    SetUniform("ShadowMap0", 8);
+    SetUniform("ShadowMap1", 9);
+    SetUniform("ShadowMap2", 10);
+    SetUniform("ShadowMap3", 11);
+    SetUniform("ShadowMap4", 12);
+    SetUniform("ShadowMap5", 13);
+    SetUniform("ShadowMap6", 14);
+    SetUniform("ShadowMap7", 15);
+
+    GLuint blockIndex = glGetUniformBlockIndex(prog, "LightsBlock");
+    if (blockIndex != GL_INVALID_INDEX)
+    {
+        glUniformBlockBinding(prog, blockIndex, 0);
+
+        GLint blockSize;
+        glGetActiveUniformBlockiv(prog, blockIndex,GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+
+        LOG_INFO("Block size: % RenderCommand::lights size: %", blockSize, sizeof(RenderCommand::lights));
+    }
+
     SetUniform("Font", 0);
-    SetUniform("ShadowMap0", 1);
-    SetUniform("ShadowMap1", 2);
-    SetUniform("ShadowMap2", 3);
-    SetUniform("ShadowMap3", 4);
-    SetUniform("ShadowMap4", 5);
-    SetUniform("ShadowMap5", 6);
-    SetUniform("ShadowMap6", 7);
-    SetUniform("ShadowMap7", 8);
 
     return true;
 }

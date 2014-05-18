@@ -195,10 +195,10 @@ void Application::Render()
 {
     renderer.Render(scene);
 
-//    String title;
-//    Format(title, "Objects: %  Lights: %  Draw Calls: %",
-//           renderer.GetObjectCount(), renderer.GetLightCount(), renderer.GetDrawCount());
-//    window.SetTitle(title);
+    String title;
+    Format(title, "Objects: %  Lights: %  Draw Calls: %",
+           renderer.GetObjectCount(), renderer.GetLightCount(), renderer.GetDrawCount());
+    window.SetTitle(title);
 
     // Render fps
     const TextGeometry &geometry = text.GetGeometry();
@@ -210,8 +210,8 @@ void Application::Render()
     Graphics::SetBlendMode(BM_MIX);
     Graphics::SetTexture(geometry.GetFontTexture(), 0);
     Graphics::SetShader(shader);
-    shader->SetUniform("Projection", proj2d);
-    shader->SetUniform("Translation", Vector3(pos.x, pos.y, 0.0f));
+    shader->SetUniform("Proj", proj2d);
+    shader->SetUniform("Trans", Vector3(pos.x, pos.y, 0.0f));
     shader->SetUniform("Color", text.GetColor());
     Graphics::SetVertexBuffer(geometry.GetVertexBuffer());
     Graphics::SetIndexBuffer(geometry.GetIndexBuffer());

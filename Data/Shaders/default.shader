@@ -29,7 +29,7 @@ void main()
 
 #version 140
 
-uniform sampler2D Diffuse;
+uniform sampler2D DiffuseMap;
 
 uniform sampler2DShadow ShadowMap0;
 uniform sampler2DShadow ShadowMap1;
@@ -40,9 +40,23 @@ uniform sampler2DShadow ShadowMap5;
 uniform sampler2DShadow ShadowMap6;
 uniform sampler2DShadow ShadowMap7;
 
-uniform vec4 LightPosition[8];
-uniform vec4 LightColor[8];
-uniform mat4 LightMatrix[8];
+struct LightInfo
+{
+    vec3  type;
+    vec3  pos;
+    vec3  dir;
+    float radius;
+    float cutoff;
+    vec3  color;
+    float energy;
+    mat4  matrix;
+    float noShadows;
+};
+
+uniform LightsBlock
+{
+    LightInfo lights[8];
+};
 
 in vec3 position;
 in vec2 texcoord;
@@ -50,41 +64,33 @@ in vec3 normal;
 
 out vec4 fragColor;
 
-vec3 texLinear(sampler2D tex, vec2 uv)
+vec3 n;
+
+float dirLight(int i)
 {
-    vec3 color = texture(tex, uv).rgb;
-    return color * (color * (color * 0.305306011 + 0.682171111) + 0.012522878);
+    return dot(n, lights[i].dir);
 }
 
-vec4 colorGamma(vec3 color)
+float spotLight(int i)
 {
-    vec3 s1 = sqrt(color);
-    vec3 s2 = sqrt(s1);
-    vec3 s3 = sqrt(s2);
-    vec3 srgb = 0.662002687 * s1 + 0.684122060 * s2 - 0.323583601 * s3 - 0.225411470 * color;
-    return vec4(srgb, 1.0);
-
-//    return vec4(pow(color, vec3(1.0/2.233333)), 1.0);
+    return 1.0;
 }
 
-float lightIntensity(int i, vec3 n)
+float pointLight(int i)
 {
-    vec4 light = LightPosition[i];
-    float energy = LightColor[i].a;
-    vec3 pos = light.xyz;
-    float radius = light.w;
-    if (radius > 0.0)
-    {
-        pos = pos - position;
-        float dist = length(pos);
-        float dist2 = dist * dist;
-        float d = dist2 / (radius * radius);
-        float f = max(1.0 - d * d, 0.0) / (dist2 + 1);
-        vec3 l = normalize(pos);
-        return max(dot(n, l) * f, 0.0) * energy;
-    }
-    vec3 l = normalize(pos);
-    return max(dot(n, l), 0.0) * energy;
+    vec3 posToLight = lights[i].pos - position;
+    vec3 lightDir = normalize(posToLight);
+    float dist = length(posToLight);
+    float radius = lights[i].radius;
+    float dist2 = dist*dist;
+    float d = dist2 / (radius*radius);
+    float f = (1.0 - d*d) / (dist2 + 1.0);
+    return f * dot(n, lightDir);
+}
+
+float lightIntensity(int i)
+{
+    return max(0.0, lights[i].energy * dot(lights[i].type, vec3(dirLight(i), spotLight(i), pointLight(i))));
 }
 
 float fourSamples(float offs, vec4 shadowCoord, sampler2DShadow shadowMap)
@@ -105,37 +111,51 @@ float fourSamples(float offs, vec4 shadowCoord, sampler2DShadow shadowMap)
     return dot(depths, vec4(0.25));
 }
 
-float shadowValue(int i, vec3 n, sampler2DShadow shadowMap)
+float shadowValue(int i, sampler2DShadow shadowMap)
 {
-    float mx = LightPosition[i].w > 0.0 ? 1.0 : 0.0;
-
-    vec4 shadowCoord = (LightMatrix[i] * vec4(position + n*0.1, 1.0));
-
-    return max(fourSamples(0.5, shadowCoord, shadowMap), mx);
+    vec4 shadowCoord = (lights[i].matrix * vec4(position + n*0.1, 1.0));
+    return max(fourSamples(0.5, shadowCoord, shadowMap), lights[i].noShadows);
 }
 
-vec3 lightningBolt(int i, vec3 n, sampler2DShadow shadowMap)
+vec3 calculateLight(int i, sampler2DShadow shadowMap)
 {
-    return LightColor[i].rgb * lightIntensity(i, n) * shadowValue(i, n, shadowMap);
+    return lights[i].color * lightIntensity(i) * shadowValue(i, shadowMap);
+}
+
+vec3 calculateLighting()
+{
+    vec3 light = vec3(0.1);
+    light += calculateLight(0, ShadowMap0);
+    light += calculateLight(1, ShadowMap1);
+    light += calculateLight(2, ShadowMap2);
+    light += calculateLight(3, ShadowMap3);
+    light += calculateLight(4, ShadowMap4);
+    light += calculateLight(5, ShadowMap5);
+    light += calculateLight(6, ShadowMap6);
+    light += calculateLight(7, ShadowMap7);
+    return light;
+}
+
+vec3 texLinear(sampler2D tex, vec2 uv)
+{
+    vec3 color = texture(tex, uv).rgb;
+    return color * (color * (color * 0.305306011 + 0.682171111) + 0.012522878);
+}
+
+vec4 colorGamma(vec3 color)
+{
+    vec3 s1 = sqrt(color);
+    vec3 s2 = sqrt(s1);
+    vec3 s3 = sqrt(s2);
+    vec3 srgb = 0.662002687 * s1 + 0.684122060 * s2 - 0.323583601 * s3 - 0.225411470 * color;
+    return vec4(srgb, 1.0);
+//    return vec4(pow(color, vec3(1.0/2.233333)), 1.0);
 }
 
 void main()
 {
-    vec3 ambient = vec3(0.1);
-    vec3 n = normalize(normal);
-    vec3 light = ambient;
-    light += lightningBolt(0, n, ShadowMap0);
-    light += lightningBolt(1, n, ShadowMap1);
-    light += lightningBolt(2, n, ShadowMap2);
-    light += lightningBolt(3, n, ShadowMap3);
-    light += lightningBolt(4, n, ShadowMap4);
-    light += lightningBolt(5, n, ShadowMap5);
-    light += lightningBolt(6, n, ShadowMap6);
-    light += lightningBolt(7, n, ShadowMap7);
-    vec3 diffuse = texLinear(Diffuse, texcoord);
+    n = normalize(normal);
+    vec3 light = calculateLighting();
+    vec3 diffuse = texLinear(DiffuseMap, texcoord);
     fragColor = colorGamma(diffuse * light);
-//    fragColor = colorGamma(light);
-
-//    vec3 n = normalize(normal);
-////    gl_FragColor = vec4(n, 1.0);
 }

@@ -39,32 +39,39 @@ namespace Scene
         typedef std::unique_ptr<Texture> TexturePtr;
 
     public:
+        void SetType(const Vector3 &type);
         void SetRadius(float radius);
+        void SetCutoff(float cutoff);
+        void SetColor(const Vector3 &color);
+        void SetEnergy(float energy);
+        void UpdateMatrix(const AABB &visibleScene, const AABB &wholeScene);
+        void UpdateMatrixNear(const AABB &visibleScene);
+        void CreateShadowMap(int w, int h);
+
+        Vector3 GetType() const;
+        Vector3 GetPos();
+        Vector3 GetDir();
         float GetRadius() const;
-
-        void SetColor(const Vector4 &color);
-        Vector4 GetColor() const;
-
-        Vector4 GetLightPos();
+        float GetCutoff() const;
+        Vector3 GetColor() const;
+        float GetEnergy() const;
+        const Matrix4 &GetMatrix() const;
+        Texture *GetShadowMap() const;
 
         bool Affects(const AABB &aabb);
-
-        void UpdateLightMatrix(const AABB &visibleScene, const AABB &wholeScene);
-        void UpdateLightMatrixNear(const AABB &visibleScene);
-        const Matrix4 &GetLightMatrix() const;
-
-        void CreateShadowMap(int w, int h);
-        Texture *GetShadowMap() const;
 
     protected:
         void OnDirty();
 
     private:
-        float radius;
-        Vector4 color;
-        AABB lightAABB;
-        Matrix4 matrix;
-        TexturePtr shadowMap;
+        Vector3     type;
+        float       radius;
+        float       cutoff;
+        Vector3     color;
+        float       energy;
+        Matrix4     matrix;
+        AABB        lightAABB;
+        TexturePtr  shadowMap;
     };
 
     typedef std::vector<Light *> LightList;

@@ -88,7 +88,7 @@ void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList *
 
         for (Light *light : pointLights)
         {
-            if ( frustum.TestSphere(light->GetLightPos()) )
+            if ( frustum.TestSphere(light->GetPos(), light->GetRadius()) )
                 lights->push_back(light);
         }
     }

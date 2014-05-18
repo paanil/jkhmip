@@ -55,6 +55,9 @@ namespace Scene
 
         void FrustumCull(const Frustum &frustum, ObjectList &objects, LightList *lights = 0);
 
+        size_t GetNodeCount() const { return nodes.size(); }
+        size_t GetObjectCount() const { return objects.size(); }
+
     private:
         /// Adds a scene node to the node list.
         void AddNode(Node *node);

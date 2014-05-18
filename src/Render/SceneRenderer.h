@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "RenderCommand.h"
 #include "FrameBuffer.h"
+#include "UniformBuffer.h"
 #include "../Scene/Object.h"
 #include "../Scene/Light.h"
 
@@ -40,6 +41,7 @@ class Shader;
 class SceneRenderer
 {
     typedef std::unique_ptr<FrameBuffer> FrameBufferPtr;
+    typedef std::unique_ptr<UniformBuffer> UniformBufferPtr;
 
 public:
     SceneRenderer();
@@ -58,13 +60,14 @@ public:
 
 private:
     int vpX, vpY, vpW, vpH;
-    Scene::Camera *camera;
-    Shader *depthShader;
-    FrameBufferPtr shadowFBO;
-    Vector3 corners[8];
+    Scene::Camera *   camera;
+    Shader *          depthShader;
+    FrameBufferPtr    shadowFBO;
+    UniformBufferPtr  lightsUBO;
 
     Scene::ObjectList objects;
-    Scene::LightList lights;
+    Scene::LightList  lights;
+    Scene::ObjectList objectsInLight;
     RenderCommandList commands;
 };
 

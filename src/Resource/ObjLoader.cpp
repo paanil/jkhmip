@@ -311,10 +311,6 @@ bool ObjLoader::BuildModel(Model &model, MaterialCache *materialCache)
     {
         const SubMesh &submesh = submeshes[i];
         Material *material = materialCache->Get(submesh.material + ".material");
-        Texture *texture = material->GetTexture();
-        texture->SetFilterMode(TF_MIN_LINEAR_MIP_LINEAR, TF_MAG_LINEAR);
-        texture->SetWrapMode(TW_REPEAT, TW_REPEAT);
-        texture->GenMipmaps();
         model.AddSubMesh(submesh.firstIndex, submesh.indexCount, material);
     }
 

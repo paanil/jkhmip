@@ -17,13 +17,19 @@ Copyright (c) 2014 Ilari Paananen
 
 ------------------------------------------------------------
 
+File: ./Models/mill.obj
+
+Copyright (c) 2014 Ilari Paananen
+
+------------------------------------------------------------
+
 Files: ./Models/barrel.obj, ./Textures/barrel.tga
 
 Copyright (c) 2014 Ilari Paananen
 
 ------------------------------------------------------------
 
-File: ./Textures/terrain.tga
+Files: ./Textures/grass.tga, ./Textures/dirt.tga
 
 Downloaded from: http://seamless-pixels.blogspot.fi/
 
