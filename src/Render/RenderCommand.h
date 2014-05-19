@@ -78,6 +78,8 @@ public:
         for (int i = 0; i < MAX_LIGHTS; i++)
         {
             command.lights[i].type = Vector3(0.0f, 0.0f, 0.0f);
+//            command.lights[i].color = Vector3(0.0f, 0.0f, 0.0f);
+//            command.lights[i].energy = 0.0f;
             command.shadowMaps[i] = 0;
         }
     }

@@ -31,6 +31,20 @@ namespace Scene
 
 
 
+Light::Light() :
+    type(1.0f, 0.0f, 0.0f),
+    radius(5.0f),
+    cutoff(Math::PI/2.0f),
+    color(1.0f, 1.0f, 1.0f),
+    energy(1.0f),
+    matrix(),
+    lightAABB(),
+    shadowMap()
+{
+}
+
+
+
 void Light::SetType(const Vector3 &type)
 {
     this->type = type;
@@ -75,7 +89,6 @@ void Light::UpdateMatrixNear(const AABB &visibleScene)
 
 void Light::CreateShadowMap(int w, int h)
 {
-
     shadowMap.reset(new Texture());
     shadowMap->CreateTex2D(w, h, TexFmt_DEPTH);
 }
@@ -133,19 +146,20 @@ Texture *Light::GetShadowMap() const
 
 bool Light::Affects(const AABB &aabb)
 {
-    if (radius > 0.0f) // Point light
-    {
-        const Matrix4 &m = GetWorldTransform();
-        Vector3 pos = Vector3(m.m14, m.m24, m.m34);
+    if (type.x > 0.0f) // Directional light
+        return true;
+    if (type.y > 0.0f) // Spot light
+        return false;
 
-        pos.x = Math::Clamp(pos.x, aabb.min.x, aabb.max.x) - pos.x;
-        pos.y = Math::Clamp(pos.y, aabb.min.y, aabb.max.y) - pos.y;
-        pos.z = Math::Clamp(pos.z, aabb.min.z, aabb.max.z) - pos.z;
+    // Point light
+    const Matrix4 &m = GetWorldTransform();
+    Vector3 pos = Vector3(m.m14, m.m24, m.m34);
 
-        return pos.Length() < radius;
-    }
+    pos.x = Math::Clamp(pos.x, aabb.min.x, aabb.max.x) - pos.x;
+    pos.y = Math::Clamp(pos.y, aabb.min.y, aabb.max.y) - pos.y;
+    pos.z = Math::Clamp(pos.z, aabb.min.z, aabb.max.z) - pos.z;
 
-    return true; // Directional light affects always
+    return pos.Length() < radius;
 }
 
 
@@ -154,7 +168,8 @@ void Light::OnDirty()
 {
     if (type.x > 0.0f)
     {
-        SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+        // We don't want any translation for a directional light.
+        position = Vector3(0.0f, 0.0f, 0.0f);
     }
 }
 

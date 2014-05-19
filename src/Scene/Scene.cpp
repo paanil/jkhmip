@@ -51,8 +51,18 @@ Object *Scene::CreateObject()
 Light *Scene::CreateDirLight()
 {
     Light *light = new Light();
+    light->SetType(Vector3(1.0f, 0.0f, 0.0f));
     light->CreateShadowMap(2048, 2048);
     dirLights.push_back(light);
+    AddNode(light);
+    return light;
+}
+
+Light *Scene::CreateSpotLight()
+{
+    Light *light = new Light();
+    light->SetType(Vector3(0.0f, 1.0f, 0.0f));
+    spotLights.push_back(light);
     AddNode(light);
     return light;
 }
@@ -60,6 +70,7 @@ Light *Scene::CreateDirLight()
 Light *Scene::CreatePointLight()
 {
     Light *light = new Light();
+    light->SetType(Vector3(0.0f, 0.0f, 1.0f));
     pointLights.push_back(light);
     AddNode(light);
     return light;

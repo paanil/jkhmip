@@ -74,13 +74,16 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
 
     for (Scene::Light *light : lights)
     {
-        if (light->GetRadius() > 0.0f) continue;
+        Texture *shadowMap = light->GetShadowMap();
+
+        if (shadowMap == 0) continue;
+
+
 
         light->UpdateMatrix(visibleScene, wholeScene);
 
         Matrix4 lightMatrix = light->GetMatrix();
         Frustum frus = Frustum::Extract(lightMatrix);
-        Texture *shadowMap = light->GetShadowMap();
         int w = shadowMap->GetWidth();
         int h = shadowMap->GetHeight();
 
@@ -138,9 +141,10 @@ void SceneRenderer::Render(Scene::Scene &scene)
         commands.ResetLights();
         for (Scene::Light *light : lights)
         {
-            if (light->Affects(object->GetWorldAABB()) &&
-                commands.AddLight(light))
-                break;
+            if ( light->Affects(object->GetWorldAABB()) )
+            {
+                if (commands.AddLight(light)) break;
+            }
         }
         object->GetRenderCommands(commands);
     }
@@ -151,6 +155,7 @@ void SceneRenderer::Render(Scene::Scene &scene)
     for (RenderCommand &command : commands)
     {
         Graphics::ResetState();
+
         Shader *shader = command.material->GetShader();
         Graphics::SetShader(shader);
         shader->SetUniform("ViewProj", viewProj);
@@ -163,6 +168,7 @@ void SceneRenderer::Render(Scene::Scene &scene)
             Graphics::SetTexture(command.shadowMaps[i], 8 + i);
         for (int i = 0; i < MAX_MATERIAL_TEXTURES; i++)
             Graphics::SetTexture(command.material->GetTexture(i), i);
+
         Graphics::SetVertexBuffer(command.vbo);
         Graphics::SetIndexBuffer(command.ibo);
         Graphics::DrawTriangles(command.firstIndex, command.indexCount);

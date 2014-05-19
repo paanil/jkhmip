@@ -49,14 +49,12 @@ namespace Scene
         Object *CreateObject();
 
         Light *CreateDirLight();
+        Light *CreateSpotLight();
         Light *CreatePointLight();
 
         AABB GetBoundingBox() const;
 
         void FrustumCull(const Frustum &frustum, ObjectList &objects, LightList *lights = 0);
-
-        size_t GetNodeCount() const { return nodes.size(); }
-        size_t GetObjectCount() const { return objects.size(); }
 
     private:
         /// Adds a scene node to the node list.
@@ -66,6 +64,7 @@ namespace Scene
         NodeList nodes;
         ObjectList objects;
         LightList dirLights;
+        LightList spotLights;
         LightList pointLights;
     };
 

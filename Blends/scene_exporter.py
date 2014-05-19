@@ -56,23 +56,21 @@ class ExportMyScene(bpy.types.Operator, ExportHelper):
         f.write(pack("=4f", m[1][0], m[1][2], m[1][1], m[1][3]))
 
     def write_lamp(self, f, lamp):
-        radius = -1
-        if lamp.type == 'POINT':
+        lamp_type = self.get_lamp_type(lamp);
+        radius = 0.0;
+        cutoff = 0.0;
+        if lamp_type == self.lamp_types['POINT']:
             radius = lamp.distance
+        elif lamp_type == self.lamp_types['SPOT']:
+            radius = lamp.distance
+            cutoff = lamp.spot_size
         color = lamp.color
         energy = lamp.energy
-        f.write(pack("=5f", radius, color.r, color.g, color.b, energy))
-
-#        lamp_type = self.get_lamp_type(lamp);
-#        color = lamp.color
-#        energy = lamp.energy
-#        f.write(pack("=i", lamp_type))
-#        f.write(pack("=4f", color.r, color.g, color.b, energy))
-#        if lamp_type == self.lamp_types['SPOT']:
-#            pass
-#        elif lamp_type == self.lamp_types['POINT']:
-#            radius = lamp.distance
-#            f.write(pack("=f", radius))
+        f.write(pack("=i", lamp_type))
+        f.write(pack("=f", radius))
+        f.write(pack("=f", cutoff))
+        f.write(pack("=3f", color.r, color.g, color.b))
+        f.write(pack("=f", energy))
 
     def write_ob(self, f, ob, parent_id):
         ob_type = self.get_ob_type(ob)

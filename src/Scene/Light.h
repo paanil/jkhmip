@@ -39,6 +39,8 @@ namespace Scene
         typedef std::unique_ptr<Texture> TexturePtr;
 
     public:
+        Light();
+
         void SetType(const Vector3 &type);
         void SetRadius(float radius);
         void SetCutoff(float cutoff);

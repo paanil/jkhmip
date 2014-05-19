@@ -82,15 +82,20 @@ float pointLight(int i)
     vec3 lightDir = normalize(posToLight);
     float dist = length(posToLight);
     float radius = lights[i].radius;
-    float dist2 = dist*dist;
-    float d = dist2 / (radius*radius);
+    float dist2 = dist*dist + 0.01;
+    float d = dist2 / (radius*radius + 0.01);
     float f = (1.0 - d*d) / (dist2 + 1.0);
     return f * dot(n, lightDir);
 }
 
 float lightIntensity(int i)
 {
-    return max(0.0, lights[i].energy * dot(lights[i].type, vec3(dirLight(i), spotLight(i), pointLight(i))));
+    vec3 light;
+    light.r = dirLight(i);
+    light.g = spotLight(i);
+    light.b = pointLight(i);
+    float intensity = dot(lights[i].type, light) * lights[i].energy;
+    return max(intensity, 0.0);
 }
 
 float fourSamples(float offs, vec4 shadowCoord, sampler2DShadow shadowMap)
