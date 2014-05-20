@@ -40,12 +40,13 @@ struct RenderCommand
     {
         Vector3 type;
         Vector3 pos;
-        Vector3 dir;
         float   radius;
+        Vector3 dir;
         float   cutoff;
         Vector3 color;
         float   energy;
         Matrix4 matrix;
+        float   shadowRes;
         float   noShadows;
     };
 
@@ -87,6 +88,7 @@ public:
             command.lights[i].color = light->GetColor();
             command.lights[i].energy = light->GetEnergy();
             command.lights[i].matrix = (bias * light->GetMatrix()).Transposed();
+            command.lights[i].shadowRes = light->GetShadowRes();
             command.lights[i].noShadows = shadowMap ? 0.0f : 1.0f;
             command.shadowMaps[i] = shadowMap;
 

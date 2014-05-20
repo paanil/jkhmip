@@ -29,12 +29,11 @@ Shader *ShaderCache::Load(const String &filePath)
 {
     static const String debugVertSrc =
         "#version 140\n"
-        "uniform mat4 Projection;"
-        "uniform mat4 View;"
+        "uniform mat4 ViewProj;"
         "uniform mat4 Model;"
         "in vec3 Position;"
         "void main() {"
-        "gl_Position = Projection * View * Model * vec4(Position, 1.0);"
+        "gl_Position = ViewProj * Model * vec4(Position, 1.0);"
         "}";
 
     static const String debugFragSrc =

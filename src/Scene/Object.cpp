@@ -32,6 +32,16 @@ Object::Object() :
 {
 }
 
+void Object::SetCastShadows(bool castShadows)
+{
+    this->castShadows = castShadows;
+}
+
+bool Object::GetCastShadows() const
+{
+    return castShadows;
+}
+
 void Object::SetModel(Model *model)
 {
     this->model = model;

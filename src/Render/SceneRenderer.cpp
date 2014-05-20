@@ -43,33 +43,40 @@ void SceneRenderer::Init(Shader *depthShader, Shader *shadowShader)
     this->depthShader = depthShader;
     shadowFBO.reset(new FrameBuffer());
 
-    lightsUBO.reset(new UniformBuffer());
-    lightsUBO->ReserveData(shadowShader->GetUniformBlockSize("LightBlock"));
+    int blockSize = shadowShader->GetUniformBlockSize("LightBlock");
 
-    const char *fmts[9] =
+    LOG_INFO("LightBlock size: %", blockSize);
+
+    lightsUBO.reset(new UniformBuffer());
+    lightsUBO->ReserveData(blockSize);
+
+    const int paramCount = 10;
+
+    const char *fmts[paramCount] =
     {
-        "lights[%].type",
-        "lights[%].pos",
-        "lights[%].dir",
-        "lights[%].radius",
-        "lights[%].cutoff",
-        "lights[%].color",
-        "lights[%].energy",
-        "lights[%].matrix",
-        "lights[%].noShadows"
+        "light%.type",
+        "light%.pos",
+        "light%.radius",
+        "light%.dir",
+        "light%.cutoff",
+        "light%.color",
+        "light%.energy",
+        "light%.matrix",
+        "light%.shadowRes",
+        "light%.noShadows"
     };
 
-    const int uniformCount = MAX_LIGHTS * 9;
+    const int uniformCount = MAX_LIGHTS * paramCount;
 
     String str_names[uniformCount];
     const char *names[uniformCount];
 
     for (int i = 0; i < MAX_LIGHTS; i++)
     {
-        for (int j = 0; j < 9; j++)
+        for (int j = 0; j < paramCount; j++)
         {
-            Format(str_names[i*9 + j], fmts[j], i);
-            names[i*9 + j] = str_names[i*9 + j].c_str();
+            Format(str_names[i*paramCount + j], fmts[j], i);
+            names[i*paramCount + j] = str_names[i*paramCount + j].c_str();
         }
     }
 
@@ -117,7 +124,7 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
         Frustum frus = Frustum::Extract(lightMatrix);
 
         objectsInLight.clear();
-        scene.FrustumCull(frus, objectsInLight);
+        scene.FrustumCullForShadowMap(frus, objectsInLight);
 
         visibleScene = AABB::Degenerate();
         commands.Clear();
@@ -135,7 +142,8 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
         shadowFBO->AttachDepthTex2D(shadowMap);
         shadowFBO->Bind(true);
 
-        Graphics::SetViewport(0, 0, shadowMap->GetWidth(), shadowMap->GetHeight());
+        int shadowRes = light->GetShadowRes();
+        Graphics::SetViewport(0, 0, shadowRes, shadowRes);
         Graphics::Clear(CLEAR_DEPTH);
 
         Graphics::ResetState();
@@ -158,12 +166,14 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
 
 void SceneRenderer::Render(Scene::Scene &scene)
 {
-    Matrix4 viewProj = camera->GetProjection() * camera->GetInverseWorldTransform();
+    Matrix4 proj = camera->GetProjection();
+    Matrix4 view = camera->GetInverseWorldTransform();
+    Matrix4 viewProj = proj * view;
     Frustum frus = Frustum::Extract(viewProj);
 
     objects.clear();
     lights.clear();
-    scene.FrustumCull(frus, objects, &lights);
+    scene.FrustumCull(frus, objects, lights);
 
     UpdateShadowMaps(scene);
 
@@ -188,27 +198,34 @@ void SceneRenderer::Render(Scene::Scene &scene)
     {
         Graphics::ResetState();
 
-        Shader *shader = command.material->GetShader();
-        Graphics::SetShader(shader);
-        shader->SetUniform("ViewProj", viewProj);
-        shader->SetUniform("Model", command.modelMatrix);
-
         lightsUBO->ZeroData();
+
+        const int paramCount = 10;
 
         for (int i = 0; i < command.lightCount; i++)
         {
-            lightsUBO->SetUniform(i*9 + 0, command.lights[i].type);
-            lightsUBO->SetUniform(i*9 + 1, command.lights[i].pos);
-            lightsUBO->SetUniform(i*9 + 2, command.lights[i].dir);
-            lightsUBO->SetUniform(i*9 + 3, command.lights[i].radius);
-            lightsUBO->SetUniform(i*9 + 4, command.lights[i].cutoff);
-            lightsUBO->SetUniform(i*9 + 5, command.lights[i].color);
-            lightsUBO->SetUniform(i*9 + 6, command.lights[i].energy);
-            lightsUBO->SetUniform(i*9 + 7, command.lights[i].matrix);
-            lightsUBO->SetUniform(i*9 + 8, command.lights[i].noShadows);
+            int j = i*paramCount;
+            lightsUBO->SetUniform(j + 0, command.lights[i].type);
+            lightsUBO->SetUniform(j + 1, command.lights[i].pos);
+            lightsUBO->SetUniform(j + 2, command.lights[i].radius);
+            lightsUBO->SetUniform(j + 3, command.lights[i].dir);
+            lightsUBO->SetUniform(j + 4, command.lights[i].cutoff);
+            lightsUBO->SetUniform(j + 5, command.lights[i].color);
+            lightsUBO->SetUniform(j + 6, command.lights[i].energy);
+            lightsUBO->SetUniform(j + 7, command.lights[i].matrix);
+            lightsUBO->SetUniform(j + 8, command.lights[i].shadowRes);
+            lightsUBO->SetUniform(j + 9, command.lights[i].noShadows);
         }
 
         lightsUBO->Bind(0);
+
+        Shader *shader = command.material->GetShader();
+
+        Graphics::SetShader(shader);
+        shader->SetUniform("View", view);
+        shader->SetUniform("Proj", proj);
+        shader->SetUniform("ViewProj", viewProj);
+        shader->SetUniform("Model", command.modelMatrix);
 
         for (int i = 0; i < command.lightCount; i++)
             Graphics::SetTexture(command.shadowMaps[i], 8 + i);
@@ -220,6 +237,4 @@ void SceneRenderer::Render(Scene::Scene &scene)
         Graphics::SetIndexBuffer(command.ibo);
         Graphics::DrawTriangles(command.firstIndex, command.indexCount);
     }
-
-    lightsUBO->Unbind();
 }

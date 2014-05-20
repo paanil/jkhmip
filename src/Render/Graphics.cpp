@@ -242,6 +242,11 @@ struct State
 
 void InitState()
 {
+    if (GLEW_ARB_seamless_cube_map)
+    {
+        glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+    }
+
     for (int i = 0; i < MAX_TEXTURES; i++)
         state.textures[i].SetUnit(i);
 

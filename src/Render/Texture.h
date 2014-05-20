@@ -70,15 +70,11 @@ public:
     /// Releases the gl texture resource.
     ~Texture();
 
-    int GetWidth()  const { return w; }
-    int GetHeight() const { return h; }
-
     void CreateTex2D(int w, int h, TexFmt fmt);
 
-//    void CreateTexCube(int w, int h, TexFmt fmt);
-
-    /// Uploads the texture image to the GPU.
-    void SetTexImage(int w, int h, int bpp, const void *image);
+    /// Uploads texture image to the GPU.
+    void SetTexImage2D(int w, int h, int bpp, const void *image);
+    void SetTexImageCube(int side, int w, int h, int bpp, const void *image);
 
     /// Sets texture filtering modes.
     void SetFilterMode(TexFilterMin minFilter, TexFilterMag magFilter);
@@ -94,7 +90,7 @@ public:
 private:
     /// GL texture id.
     uint texture;
-    int w, h;
+    uint target;
 
     friend class FrameBuffer;
 };

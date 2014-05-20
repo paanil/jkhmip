@@ -48,18 +48,26 @@ struct LightInfo
 {
     vec3  type;
     vec3  pos;
-    vec3  dir;
     float radius;
+    vec3  dir;
     float cutoff;
     vec3  color;
     float energy;
     mat4  matrix;
+    float shadowRes;
     float noShadows;
 };
 
 layout(row_major) uniform LightBlock
 {
-    LightInfo lights[8];
+    LightInfo light0;
+    LightInfo light1;
+    LightInfo light2;
+    LightInfo light3;
+    LightInfo light4;
+    LightInfo light5;
+    LightInfo light6;
+    LightInfo light7;
 };
 
 in vec3 position;
@@ -70,9 +78,8 @@ out vec4 fragColor;
 
 vec3 n;
 
-float dirLight(int i)
+float dirLight(vec3 L)
 {
-    vec3 L = lights[i].dir;
     return max(dot(n, L), 0.0);
 }
 
@@ -83,49 +90,44 @@ float attenuation(float dist, float radius)
     return (1.0 - d*d) / (dist2 + 1.0);
 }
 
-float spotLight(int i)
+float spotLight(LightInfo light)
 {
-    vec3 L = lights[i].pos - position;
+    vec3 L = light.pos - position;
     float dist = length(L);
     L = normalize(L);
 
-    float radius = lights[i].radius;
+    float radius = light.radius;
     float f = attenuation(dist, radius);
 
-    float cosDir = dot(L, lights[i].dir);
-    float cosOuter = cos(lights[i].cutoff);
-    float cosInner = cos(lights[i].cutoff*0.9f);
+    float cosDir = dot(L, light.dir);
+    float cosOuter = cos(light.cutoff);
+    float cosInner = cos(light.cutoff*0.9f);
     float k = smoothstep(cosOuter, cosInner, cosDir);
 
     return max(dot(n, L), 0.0) * f * k * 10.0;
 }
 
-float pointLight(int i)
+float pointLight(vec3 pos, float radius)
 {
-    vec3 L = lights[i].pos - position;
+    vec3 L = pos - position;
     float dist = length(L);
     L = normalize(L);
-
-    float radius = lights[i].radius;
     float f = attenuation(dist, radius);
-
     return max(dot(n, L), 0.0) * f * 10.0;
 }
 
-float lightIntensity(int i)
+float lightIntensity(LightInfo light)
 {
-    vec3 light;
-    light.r = dirLight(i);
-    light.g = spotLight(i);
-    light.b = pointLight(i);
-    float intensity = dot(lights[i].type, light) * lights[i].energy;
+    vec3 lights;
+    lights.r = dirLight(light.dir);
+    lights.g = spotLight(light);
+    lights.b = pointLight(light.pos, light.radius);
+    float intensity = dot(light.type, lights) * light.energy;
     return max(intensity, 0.0);
 }
 
 float fourSamples(float offs, vec4 shadowCoord, sampler2DShadow shadowMap)
 {
-    offs /= 2048.0;
-
     vec4 coord0 = shadowCoord + vec4(-offs, -offs, 0.0, 0.0);
     vec4 coord1 = shadowCoord + vec4( offs, -offs, 0.0, 0.0);
     vec4 coord2 = shadowCoord + vec4( offs,  offs, 0.0, 0.0);
@@ -140,28 +142,29 @@ float fourSamples(float offs, vec4 shadowCoord, sampler2DShadow shadowMap)
     return dot(depths, vec4(0.25));
 }
 
-float shadowValue(int i, sampler2DShadow shadowMap)
+float shadowValue(LightInfo light, sampler2DShadow shadowMap)
 {
-    vec4 shadowCoord = (lights[i].matrix * vec4(position + n*0.1, 1.0));
-    return max(fourSamples(0.5, shadowCoord, shadowMap), lights[i].noShadows);
+    vec4 shadowCoord = (light.matrix * vec4(position + n*0.1, 1.0));
+    float value = fourSamples(0.5 / light.shadowRes, shadowCoord, shadowMap);
+    return max(clamp(value, 0.0, 1.0), light.noShadows);
 }
 
-vec3 calculateLight(int i, sampler2DShadow shadowMap)
+vec3 calculateLight(LightInfo light, sampler2DShadow shadowMap)
 {
-    return lights[i].color * lightIntensity(i) * shadowValue(i, shadowMap);
+    return light.color * lightIntensity(light) * shadowValue(light, shadowMap);
 }
 
 vec3 calculateLighting()
 {
     vec3 light = vec3(0.1);
-    light += calculateLight(0, ShadowMap0);
-    light += calculateLight(1, ShadowMap1);
-    light += calculateLight(2, ShadowMap2);
-    light += calculateLight(3, ShadowMap3);
-    light += calculateLight(4, ShadowMap4);
-    light += calculateLight(5, ShadowMap5);
-    light += calculateLight(6, ShadowMap6);
-    light += calculateLight(7, ShadowMap7);
+    light += calculateLight(light0, ShadowMap0);
+    light += calculateLight(light1, ShadowMap1);
+    light += calculateLight(light2, ShadowMap2);
+    light += calculateLight(light3, ShadowMap3);
+    light += calculateLight(light4, ShadowMap4);
+    light += calculateLight(light5, ShadowMap5);
+    light += calculateLight(light6, ShadowMap6);
+    light += calculateLight(light7, ShadowMap7);
     return light;
 }
 
@@ -176,6 +179,7 @@ vec4 colorGamma(vec3 color)
     vec3 s1 = sqrt(color);
     vec3 s2 = sqrt(s1);
     vec3 s3 = sqrt(s2);
+    color = min(color, vec3(4.0));
     vec3 srgb = 0.662002687 * s1 + 0.684122060 * s2 - 0.323583601 * s3 - 0.225411470 * color;
     return vec4(srgb, 1.0);
 }
@@ -198,7 +202,7 @@ vec3 terrainDiffuse()
 void main()
 {
     n = normalize(normal);
-    vec3 light = calculateLighting();
+    vec3 lighting = calculateLighting();
     vec3 diffuse = terrainDiffuse();
-    fragColor = colorGamma(diffuse * light);
+    fragColor = colorGamma(diffuse * lighting);
 }

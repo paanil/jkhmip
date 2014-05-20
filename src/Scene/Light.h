@@ -48,7 +48,7 @@ namespace Scene
         void SetEnergy(float energy);
         void UpdateMatrix(const AABB &visibleScene, const AABB &wholeScene);
         void UpdateMatrixNear(const AABB &visibleScene);
-        void CreateShadowMap(int w, int h);
+        void CreateShadowMap(int shadowRes);
 
         Vector3 GetType() const;
         Vector3 GetPos();
@@ -58,6 +58,7 @@ namespace Scene
         Vector3 GetColor() const;
         float GetEnergy() const;
         const Matrix4 &GetMatrix() const;
+        int GetShadowRes() const;
         Texture *GetShadowMap() const;
 
         bool Affects(const AABB &aabb);
@@ -73,6 +74,7 @@ namespace Scene
         float       energy;
         Matrix4     matrix;
         AABB        lightAABB;
+        int         shadowRes;
         TexturePtr  shadowMap;
     };
 

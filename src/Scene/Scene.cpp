@@ -52,7 +52,7 @@ Light *Scene::CreateDirLight()
 {
     Light *light = new Light();
     light->SetType(Vector3(1.0f, 0.0f, 0.0f));
-    light->CreateShadowMap(1024, 1024);
+    light->CreateShadowMap(2048);
     dirLights.push_back(light);
     AddNode(light);
     return light;
@@ -62,7 +62,7 @@ Light *Scene::CreateSpotLight()
 {
     Light *light = new Light();
     light->SetType(Vector3(0.0f, 1.0f, 0.0f));
-    light->CreateShadowMap(512, 512);
+    light->CreateShadowMap(512);
     spotLights.push_back(light);
     AddNode(light);
     return light;
@@ -85,27 +85,33 @@ AABB Scene::GetBoundingBox() const
     return boundBox;
 }
 
-void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList *lights)
+void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList &lights)
 {
     for (Object *object : this->objects)
     {
-        if ( frustum.TestAABB(object->GetWorldAABB()) )
+        if ( frustum.TestAABB(object->GetWorldAABB()) || !object->GetCastShadows() )
             objects.push_back(object);
     }
 
-    if (lights)
+    for (Light *light : dirLights)
+        lights.push_back(light);
+
+    for (Light *light : spotLights)
+        lights.push_back(light);
+
+    for (Light *light : pointLights)
     {
-        for (Light *light : dirLights)
-            lights->push_back(light);
+        if ( frustum.TestSphere(light->GetPos(), light->GetRadius()) )
+            lights.push_back(light);
+    }
+}
 
-        for (Light *light : spotLights)
-            lights->push_back(light);
-
-        for (Light *light : pointLights)
-        {
-            if ( frustum.TestSphere(light->GetPos(), light->GetRadius()) )
-                lights->push_back(light);
-        }
+void Scene::FrustumCullForShadowMap(const Frustum &frustum, ObjectList &objects)
+{
+    for (Object *object : this->objects)
+    {
+        if ( object->GetCastShadows() && frustum.TestAABB(object->GetWorldAABB()) )
+            objects.push_back(object);
     }
 }
 

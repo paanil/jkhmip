@@ -35,6 +35,7 @@ void UniformBuffer::ZeroData()
 
 void UniformBuffer::SetUniformOffsets(int count, int *offsets)
 {
+    this->offsets.clear();
     for (int i = 0; i < count; i++)
     {
         this->offsets.push_back(offsets[i]);
@@ -48,21 +49,23 @@ void UniformBuffer::SetUniform(int i, float v)
 
 void UniformBuffer::SetUniform(int i, const Vector3 &v)
 {
-    memcpy(data + offsets[i], &v, sizeof(Vector3));
+    memcpy(data + offsets[i], &v.x, sizeof(Vector3));
 }
 
 void UniformBuffer::SetUniform(int i, const Matrix4 &v)
 {
-    memcpy(data + offsets[i], &v, sizeof(Matrix4));
+    memcpy(data + offsets[i], v.data, sizeof(Matrix4));
 }
 
 void UniformBuffer::Bind(uint index)
 {
-    glBindBufferBase(GL_UNIFORM_BUFFER, index, buffer);
+    glBindBuffer(GL_UNIFORM_BUFFER, buffer);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, dataSize, data);
+    glBindBufferBase(GL_UNIFORM_BUFFER, index, buffer);
 }
 
-void UniformBuffer::Unbind()
+void UniformBuffer::Unbind(uint index)
 {
-    glBindBufferBase(GL_UNIFORM_BUFFER, 0, 0);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    glBindBufferBase(GL_UNIFORM_BUFFER, index, 0);
 }

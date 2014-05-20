@@ -78,6 +78,11 @@ class ExportMyScene(bpy.types.Operator, ExportHelper):
         f.write(pack("=3i", ob_type, ob_id, parent_id))
         self.write_mat(f, ob.matrix_local)
         if ob_type == self.node_types['MESH']:
+            cast_shadows = ob.active_material.use_cast_buffer_shadows
+            if cast_shadows:
+                f.write(pack("=i", 1))
+            else:
+                f.write(pack("=i", 0))
             name = ob.data.name.encode()
             f.write(pack("31sc", name, b'\x00'))
         elif ob_type == self.node_types['LAMP']:

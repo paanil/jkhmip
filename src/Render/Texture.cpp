@@ -49,8 +49,10 @@ void Texture::CreateTex2D(int w, int h, TexFmt fmt)
         GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_FLOAT
     };
 
+    target = GL_TEXTURE_2D;
+
     Bind(0);
-    glTexImage2D(GL_TEXTURE_2D, 0, internal_formats[fmt], w, h, 0, formats[fmt], types[fmt], 0);
+    glTexImage2D(target, 0, internal_formats[fmt], w, h, 0, formats[fmt], types[fmt], 0);
 
     SetFilterMode(TF_MIN_NEAREST, TF_MAG_NEAREST);
     SetWrapMode(TW_CLAMP, TW_CLAMP);
@@ -58,44 +60,44 @@ void Texture::CreateTex2D(int w, int h, TexFmt fmt)
     if (fmt == TexFmt_DEPTH)
     {
         SetFilterMode(TF_MIN_LINEAR, TF_MAG_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+        glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+        glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     }
-
-    this->w = w;
-    this->h = h;
 }
 
-void Texture::SetTexImage(int w, int h, int bpp, const void *image)
+void SetTexImage(GLenum target, int w, int h, int bpp, const void *image)
 {
     GLint format = 0;
     switch (bpp)
     {
-    case 1:
-        format = GL_RED;
-        break;
-
-    case 3:
-        format = GL_RGB;
-        break;
-
-    case 4:
-        format = GL_RGBA;
-        break;
+    case 1: format = GL_RED; break;
+    case 3: format = GL_RGB; break;
+    case 4: format = GL_RGBA;break;
 
     default:
         LOG_ERROR("Texture: Only gray scale, RGB and RGBA images are supported.");
         return;
     }
 
-    Bind(0);
-    glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format, GL_UNSIGNED_BYTE, image);
+    glTexImage2D(target, 0, format, w, h, 0, format, GL_UNSIGNED_BYTE, image);
+}
 
+void Texture::SetTexImage2D(int w, int h, int bpp, const void *image)
+{
+    target = GL_TEXTURE_2D;
+    Bind(0);
+    SetTexImage(target, w, h, bpp, image);
     SetFilterMode(TF_MIN_NEAREST, TF_MAG_NEAREST);
     SetWrapMode(TW_CLAMP, TW_CLAMP);
+}
 
-    this->w = w;
-    this->h = h;
+void Texture::SetTexImageCube(int side, int w, int h, int bpp, const void *image)
+{
+    target = GL_TEXTURE_CUBE_MAP;
+    Bind(0);
+    SetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + side, w, h, bpp, image);
+    SetFilterMode(TF_MIN_NEAREST, TF_MAG_NEAREST);
+    SetWrapMode(TW_CLAMP, TW_CLAMP);
 }
 
 void Texture::SetFilterMode(TexFilterMin minFilter, TexFilterMag magFilter)
@@ -110,8 +112,8 @@ void Texture::SetFilterMode(TexFilterMin minFilter, TexFilterMag magFilter)
     };
 
     Bind(0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterModes[minFilter]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterModes[magFilter]);
+    glTexParameteri(target, GL_TEXTURE_MIN_FILTER, filterModes[minFilter]);
+    glTexParameteri(target, GL_TEXTURE_MAG_FILTER, filterModes[magFilter]);
 }
 
 void Texture::SetWrapMode(TexWrap wrapS, TexWrap wrapT)
@@ -122,24 +124,24 @@ void Texture::SetWrapMode(TexWrap wrapS, TexWrap wrapT)
     };
 
     Bind(0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapModes[wrapS]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapModes[wrapT]);
+    glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapModes[wrapS]);
+    glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapModes[wrapT]);
 }
 
 void Texture::GenMipmaps()
 {
     Bind(0);
-    glGenerateMipmap(GL_TEXTURE_2D);
+    glGenerateMipmap(target);
     if (GLEW_EXT_texture_filter_anisotropic)
     {
         GLfloat max_anisotropy;
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &max_anisotropy);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, max_anisotropy);
+        glTexParameterf(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, max_anisotropy);
     }
 }
 
 void Texture::Bind(int textureUnit)
 {
     glActiveTexture(GL_TEXTURE0 + textureUnit);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(target, texture);
 }

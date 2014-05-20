@@ -37,6 +37,9 @@ namespace Scene
     public:
         Object();
 
+        void SetCastShadows(bool castShadows);
+        bool GetCastShadows() const;
+
         /// Sets model.
         void SetModel(Model *model);
 
@@ -52,6 +55,7 @@ namespace Scene
         Model *model;
         AABB worldAABB;
         bool aabbDirty;
+        bool castShadows;
     };
 
     typedef std::vector<Object *> ObjectList;

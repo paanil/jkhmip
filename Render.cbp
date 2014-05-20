@@ -47,11 +47,14 @@
 		<Unit filename="Data/Materials/house_roof.material" />
 		<Unit filename="Data/Materials/house_wall.material" />
 		<Unit filename="Data/Materials/house_wood_parts.material" />
+		<Unit filename="Data/Materials/sky_sunny_day.material" />
 		<Unit filename="Data/Materials/terrain.material" />
 		<Unit filename="Data/Shaders/default.shader" />
 		<Unit filename="Data/Shaders/depth.shader" />
+		<Unit filename="Data/Shaders/sky.shader" />
 		<Unit filename="Data/Shaders/terrain.shader" />
 		<Unit filename="Data/Shaders/text.shader" />
+		<Unit filename="Data/Textures/sunny_day.cube" />
 		<Unit filename="src/Application.cpp" />
 		<Unit filename="src/Application.h" />
 		<Unit filename="src/CameraController.cpp" />

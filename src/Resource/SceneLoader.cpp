@@ -38,8 +38,8 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
 
     std::map<uint, Scene::Node *> node_by_id;
 
+
     const uint node_size = 60;
-    const uint name_size = 32;
 
     struct Node
     {
@@ -57,8 +57,6 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
         Node as_node;
     };
 
-    char mesh_name[name_size];
-
     while (f.good())
     {
         f.read(as_char, node_size);
@@ -74,10 +72,27 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
         }
         else if (as_node.type == 1) // OBJECT
         {
-            f.read(mesh_name, name_size);
+            const uint object_size = 36;
+
+            struct Object
+            {
+                uint cast_shadows;
+                char mesh_name[32];
+            };
+
+            assert(sizeof(Object) == object_size);
+
+            union
+            {
+                char as_char[object_size];
+                Object as_object;
+            };
+
+            f.read(as_char, object_size);
 
             Scene::Object *ob = scene.CreateObject();
-            ob->SetModel(modelCache->Get(String(mesh_name) + ".obj"));
+            ob->SetCastShadows(as_object.cast_shadows);
+            ob->SetModel(modelCache->Get(String(as_object.mesh_name) + ".obj"));
 
             node = ob;
         }
@@ -132,7 +147,6 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
                 m[i][1] =  as_node.mat[i][2];
                 m[i][2] = -as_node.mat[i][1];
             }
-
             for (int i = 0; i < 3; i++)
             {
                 as_node.mat[i][0] = m[i][0];

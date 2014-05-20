@@ -56,22 +56,22 @@ bool LoadTGA(const String &file, Image &image);
 
 bool Image::Load(const String &file)
 {
-    LOG_INFO("Loading image '%'...", file);
-
-    size_t pos = file.find_last_of('.');
-
-    if (pos != String::npos)
-    {
-        String ext = file.substr(pos + 1);
-
-        if (StrIEquals(ext, "tga"))
-        {
+//    LOG_INFO("Loading image '%'...", file);
+//
+//    size_t pos = file.find_last_of('.');
+//
+//    if (pos != String::npos)
+//    {
+//        String ext = file.substr(pos + 1);
+//
+//        if (StrIEquals(ext, "tga"))
+//        {
             return LoadTGA(file, *this);
-        }
-    }
-
-    LOG_ERROR("Unknown image format.");
-    return false;
+//        }
+//    }
+//
+//    LOG_ERROR("Unknown image format.");
+//    return false;
 }
 
 int Image::GetWidth() const

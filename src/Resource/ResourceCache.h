@@ -52,6 +52,11 @@ public:
         directory = dir;
     }
 
+    const String &GetDirectory() const
+    {
+        return directory;
+    }
+
     /// Gets a resource identified by the file name.
     /// The resource is loaded if it's not in the cache.
     /// The file name is expected to be relative to the 'directory'.

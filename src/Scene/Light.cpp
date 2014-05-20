@@ -96,10 +96,11 @@ void Light::UpdateMatrixNear(const AABB &visibleScene)
     matrix = proj * view;
 }
 
-void Light::CreateShadowMap(int w, int h)
+void Light::CreateShadowMap(int shadowRes)
 {
     shadowMap.reset(new Texture());
-    shadowMap->CreateTex2D(w, h, TexFmt_DEPTH);
+    shadowMap->CreateTex2D(shadowRes, shadowRes, TexFmt_DEPTH);
+    this->shadowRes = shadowRes;
 }
 
 
@@ -146,6 +147,11 @@ const Matrix4 &Light::GetMatrix() const
     return matrix;
 }
 
+int Light::GetShadowRes() const
+{
+    return shadowRes;
+}
+
 Texture *Light::GetShadowMap() const
 {
     return shadowMap.get();
@@ -157,6 +163,7 @@ bool Light::Affects(const AABB &aabb)
 {
     if (type.x > 0.0f) // Directional light
         return true;
+
     if (type.y > 0.0f) // Spot light
     {
         UpdateMatrix(AABB(), AABB());

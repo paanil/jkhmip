@@ -63,6 +63,10 @@ bool Shader::Compile(const String &vertSrc, const String &fragSrc)
         return false;
     }
 
+    GLuint blockIndex = glGetUniformBlockIndex(prog, "LightBlock");
+    if (blockIndex != GL_INVALID_INDEX)
+        glUniformBlockBinding(prog, blockIndex, 0);
+
     Use();
 
     SetUniform("DiffuseMap", 0);
@@ -81,10 +85,6 @@ bool Shader::Compile(const String &vertSrc, const String &fragSrc)
     SetUniform("ShadowMap5", 13);
     SetUniform("ShadowMap6", 14);
     SetUniform("ShadowMap7", 15);
-
-    GLuint blockIndex = glGetUniformBlockIndex(prog, "LightBlock");
-    if (blockIndex != GL_INVALID_INDEX)
-        glUniformBlockBinding(prog, blockIndex, 0);
 
     SetUniform("Font", 0);
 

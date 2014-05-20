@@ -63,9 +63,9 @@ void CameraController::Update(float dt)
     if (keys[SDL_SCANCODE_D])
         dir += right;
     if (keys[SDL_SCANCODE_SPACE])
-        dir += up;
+        dir += Vector3(0.0f, 1.0f, 0.0f);
     if (keys[SDL_SCANCODE_LCTRL])
-        dir -= up;
+        dir -= Vector3(0.0f, 1.0f, 0.0f);
 
     float speedup = 1.0f;
     if (keys[SDL_SCANCODE_LSHIFT])

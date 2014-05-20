@@ -54,7 +54,8 @@ namespace Scene
 
         AABB GetBoundingBox() const;
 
-        void FrustumCull(const Frustum &frustum, ObjectList &objects, LightList *lights = 0);
+        void FrustumCull(const Frustum &frustum, ObjectList &objects, LightList &lights);
+        void FrustumCullForShadowMap(const Frustum &frustum, ObjectList &objects);
 
     private:
         /// Adds a scene node to the node list.

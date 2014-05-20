@@ -26,7 +26,7 @@ public:
 
     void Bind(uint index);
 
-    void Unbind();
+    void Unbind(uint index);
 
 private:
     uint buffer;
