@@ -82,16 +82,9 @@ bool Shader::Compile(const String &vertSrc, const String &fragSrc)
     SetUniform("ShadowMap6", 14);
     SetUniform("ShadowMap7", 15);
 
-    GLuint blockIndex = glGetUniformBlockIndex(prog, "LightsBlock");
+    GLuint blockIndex = glGetUniformBlockIndex(prog, "LightBlock");
     if (blockIndex != GL_INVALID_INDEX)
-    {
         glUniformBlockBinding(prog, blockIndex, 0);
-
-        GLint blockSize;
-        glGetActiveUniformBlockiv(prog, blockIndex,GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
-
-        LOG_INFO("Block size: % RenderCommand::lights size: %", blockSize, sizeof(RenderCommand::lights));
-    }
 
     SetUniform("Font", 0);
 
@@ -143,6 +136,22 @@ void Shader::SetUniform(const String &name, int count, const Matrix4 *values)
 {
     GLint loc = glGetUniformLocation(prog, name.c_str());
     glUniformMatrix4fv(loc, count, GL_FALSE, values[0].data);
+}
+
+int Shader::GetUniformBlockSize(const char *name)
+{
+    GLint blockSize;
+    GLuint blockIndex = glGetUniformBlockIndex(prog, name);
+    glGetActiveUniformBlockiv(prog, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+    return blockSize;
+}
+
+void Shader::GetUniformOffsets(const int count, const char **names, int *offsets)
+{
+    GLuint indices[count];
+
+    glGetUniformIndices(prog, count, names, indices);
+    glGetActiveUniformsiv(prog, count, indices, GL_UNIFORM_OFFSET, offsets);
 }
 
 /* Free functions */

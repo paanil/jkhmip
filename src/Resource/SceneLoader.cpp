@@ -124,6 +124,21 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
             light->SetEnergy(as_light.energy);
 
             node = light;
+
+            float m[3][3];
+            for (int i = 0; i < 3; i++)
+            {
+                m[i][0] =  as_node.mat[i][0];
+                m[i][1] =  as_node.mat[i][2];
+                m[i][2] = -as_node.mat[i][1];
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                as_node.mat[i][0] = m[i][0];
+                as_node.mat[i][1] = m[i][1];
+                as_node.mat[i][2] = m[i][2];
+            }
         }
         else
         {

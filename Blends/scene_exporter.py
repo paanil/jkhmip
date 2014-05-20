@@ -63,7 +63,7 @@ class ExportMyScene(bpy.types.Operator, ExportHelper):
             radius = lamp.distance
         elif lamp_type == self.lamp_types['SPOT']:
             radius = lamp.distance
-            cutoff = lamp.spot_size
+            cutoff = lamp.spot_size / 2.0;
         color = lamp.color
         energy = lamp.energy
         f.write(pack("=i", lamp_type))

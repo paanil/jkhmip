@@ -39,24 +39,17 @@ struct RenderCommand
     struct LightInfo
     {
         Vector3 type;
-        float       padd0;
         Vector3 pos;
-        float       padd1;
         Vector3 dir;
         float   radius;
         float   cutoff;
-        float       padd6;
-        float       padd7;
-        float       padd8;
         Vector3 color;
         float   energy;
         Matrix4 matrix;
         float   noShadows;
-        float       padd13;
-        float       padd14;
-        float       padd15;
     };
 
+    int lightCount;
     LightInfo lights[MAX_LIGHTS];
     Texture *shadowMaps[MAX_LIGHTS];
     Matrix4 modelMatrix;
@@ -74,24 +67,17 @@ class RenderCommandList
 public:
     void ResetLights()
     {
-        lightCount = 0;
-        for (int i = 0; i < MAX_LIGHTS; i++)
-        {
-            command.lights[i].type = Vector3(0.0f, 0.0f, 0.0f);
-//            command.lights[i].color = Vector3(0.0f, 0.0f, 0.0f);
-//            command.lights[i].energy = 0.0f;
-            command.shadowMaps[i] = 0;
-        }
+        command.lightCount = 0;
     }
 
     bool AddLight(Scene::Light *light)
     {
-        if (lightCount < MAX_LIGHTS)
+        if (command.lightCount < MAX_LIGHTS)
         {
             Matrix4 bias = Matrix4::Translation(0.5f, 0.5f, 0.5f) * Matrix4::Scale(0.5f);
             Texture *shadowMap = light->GetShadowMap();
 
-            int i = lightCount++;
+            int i = command.lightCount++;
 
             command.lights[i].type = light->GetType();
             command.lights[i].pos = light->GetPos();
@@ -100,11 +86,11 @@ public:
             command.lights[i].cutoff = light->GetCutoff();
             command.lights[i].color = light->GetColor();
             command.lights[i].energy = light->GetEnergy();
-            command.lights[i].matrix = bias * light->GetMatrix();
+            command.lights[i].matrix = (bias * light->GetMatrix()).Transposed();
             command.lights[i].noShadows = shadowMap ? 0.0f : 1.0f;
             command.shadowMaps[i] = shadowMap;
 
-            return (lightCount == MAX_LIGHTS);
+            return (command.lightCount == MAX_LIGHTS);
         }
         return true;
     }
@@ -128,7 +114,6 @@ public:
     CommandList::iterator end() { return commands.end(); }
 
 private:
-    int lightCount;
     RenderCommand command;
     CommandList commands;
 };

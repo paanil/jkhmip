@@ -21,5 +21,6 @@ out vec4 fragColor;
 
 void main()
 {
+//    float v = gl_FragCoord.z;
     fragColor = vec4(1.0);
 }

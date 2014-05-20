@@ -38,12 +38,45 @@ SceneRenderer::SceneRenderer() :
 {
 }
 
-void SceneRenderer::Init(Shader *depthShader)
+void SceneRenderer::Init(Shader *depthShader, Shader *shadowShader)
 {
     this->depthShader = depthShader;
     shadowFBO.reset(new FrameBuffer());
+
     lightsUBO.reset(new UniformBuffer());
-    lightsUBO->ReserveData(sizeof(RenderCommand::lights));
+    lightsUBO->ReserveData(shadowShader->GetUniformBlockSize("LightBlock"));
+
+    const char *fmts[9] =
+    {
+        "lights[%].type",
+        "lights[%].pos",
+        "lights[%].dir",
+        "lights[%].radius",
+        "lights[%].cutoff",
+        "lights[%].color",
+        "lights[%].energy",
+        "lights[%].matrix",
+        "lights[%].noShadows"
+    };
+
+    const int uniformCount = MAX_LIGHTS * 9;
+
+    String str_names[uniformCount];
+    const char *names[uniformCount];
+
+    for (int i = 0; i < MAX_LIGHTS; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            Format(str_names[i*9 + j], fmts[j], i);
+            names[i*9 + j] = str_names[i*9 + j].c_str();
+        }
+    }
+
+    int offsets[uniformCount];
+
+    shadowShader->GetUniformOffsets(uniformCount, names, offsets);
+    lightsUBO->SetUniformOffsets(uniformCount, offsets);
 }
 
 void SceneRenderer::SetViewport(int x, int y, int w, int h)
@@ -78,14 +111,10 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
 
         if (shadowMap == 0) continue;
 
-
-
         light->UpdateMatrix(visibleScene, wholeScene);
 
         Matrix4 lightMatrix = light->GetMatrix();
         Frustum frus = Frustum::Extract(lightMatrix);
-        int w = shadowMap->GetWidth();
-        int h = shadowMap->GetHeight();
 
         objectsInLight.clear();
         scene.FrustumCull(frus, objectsInLight);
@@ -98,14 +127,17 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
             object->GetRenderCommands(commands);
         }
 
-        light->UpdateMatrixNear(visibleScene);
+        if (light->GetType().x > 0.0f)
+            light->UpdateMatrixNear(visibleScene);
+
         lightMatrix = light->GetMatrix();
 
         shadowFBO->AttachDepthTex2D(shadowMap);
         shadowFBO->Bind(true);
 
-        Graphics::SetViewport(0, 0, w, h);
+        Graphics::SetViewport(0, 0, shadowMap->GetWidth(), shadowMap->GetHeight());
         Graphics::Clear(CLEAR_DEPTH);
+
         Graphics::ResetState();
         Graphics::SetShader(depthShader);
         depthShader->SetUniform("LightMatrix", lightMatrix);
@@ -161,11 +193,26 @@ void SceneRenderer::Render(Scene::Scene &scene)
         shader->SetUniform("ViewProj", viewProj);
         shader->SetUniform("Model", command.modelMatrix);
 
-        lightsUBO->UpdateData(sizeof(RenderCommand::lights), command.lights);
+        lightsUBO->ZeroData();
+
+        for (int i = 0; i < command.lightCount; i++)
+        {
+            lightsUBO->SetUniform(i*9 + 0, command.lights[i].type);
+            lightsUBO->SetUniform(i*9 + 1, command.lights[i].pos);
+            lightsUBO->SetUniform(i*9 + 2, command.lights[i].dir);
+            lightsUBO->SetUniform(i*9 + 3, command.lights[i].radius);
+            lightsUBO->SetUniform(i*9 + 4, command.lights[i].cutoff);
+            lightsUBO->SetUniform(i*9 + 5, command.lights[i].color);
+            lightsUBO->SetUniform(i*9 + 6, command.lights[i].energy);
+            lightsUBO->SetUniform(i*9 + 7, command.lights[i].matrix);
+            lightsUBO->SetUniform(i*9 + 8, command.lights[i].noShadows);
+        }
+
         lightsUBO->Bind(0);
 
-        for (int i = 0; i < MAX_LIGHTS; i++)
+        for (int i = 0; i < command.lightCount; i++)
             Graphics::SetTexture(command.shadowMaps[i], 8 + i);
+
         for (int i = 0; i < MAX_MATERIAL_TEXTURES; i++)
             Graphics::SetTexture(command.material->GetTexture(i), i);
 
@@ -173,4 +220,6 @@ void SceneRenderer::Render(Scene::Scene &scene)
         Graphics::SetIndexBuffer(command.ibo);
         Graphics::DrawTriangles(command.firstIndex, command.indexCount);
     }
+
+    lightsUBO->Unbind();
 }

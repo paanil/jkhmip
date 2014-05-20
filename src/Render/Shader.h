@@ -53,6 +53,9 @@ public:
     void SetUniform(const String &name, int count, const Vector4 *values);
     void SetUniform(const String &name, int count, const Matrix4 *values);
 
+    int GetUniformBlockSize(const char *name);
+    void GetUniformOffsets(const int count, const char **names, int *offsets);
+
 private:
     /// GL ids.
     uint vert;

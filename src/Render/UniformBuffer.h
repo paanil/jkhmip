@@ -4,6 +4,11 @@
 
 #include "../Types.h"
 
+#include <vector>
+
+class Vector3;
+class Matrix4;
+
 class UniformBuffer
 {
 public:
@@ -11,12 +16,23 @@ public:
     ~UniformBuffer();
 
     void ReserveData(uint dataSize);
-    void UpdateData(uint dataSize, const void *data);
+
+    void ZeroData();
+
+    void SetUniformOffsets(int count, int *offsets);
+    void SetUniform(int i, float v);
+    void SetUniform(int i, const Vector3 &v);
+    void SetUniform(int i, const Matrix4 &v);
 
     void Bind(uint index);
 
+    void Unbind();
+
 private:
     uint buffer;
+    uint dataSize;
+    byte *data;
+    std::vector<int> offsets;
 };
 
 #endif // __UNIFORMBUFFER_H__

@@ -72,11 +72,20 @@ void Light::SetEnergy(float energy)
 
 void Light::UpdateMatrix(const AABB &visibleScene, const AABB &wholeScene)
 {
-    Matrix4 view = GetInverseWorldTransform();
-    lightAABB = visibleScene.Transform(view);
-    lightAABB.min.z = wholeScene.Transform(view).min.z;
-    Matrix4 proj = lightAABB.CreateOrthoProjection();
-    matrix = proj * view;
+    if (type.x > 0.0f)
+    {
+        Matrix4 view = GetInverseWorldTransform();
+        lightAABB = visibleScene.Transform(view);
+        lightAABB.min.z = wholeScene.Transform(view).min.z;
+        Matrix4 proj = lightAABB.CreateOrthoProjection();
+        matrix = proj * view;
+    }
+    else if (type.y > 0.0f)
+    {
+        Matrix4 view = GetInverseWorldTransform();
+        Matrix4 proj = Matrix4::Perspective(2.0f * cutoff * Math::RAD_TO_DEG, 1.0f, radius * 0.001f, radius);
+        matrix = proj * view;
+    }
 }
 
 void Light::UpdateMatrixNear(const AABB &visibleScene)
@@ -149,7 +158,11 @@ bool Light::Affects(const AABB &aabb)
     if (type.x > 0.0f) // Directional light
         return true;
     if (type.y > 0.0f) // Spot light
-        return false;
+    {
+        UpdateMatrix(AABB(), AABB());
+        Frustum frus = Frustum::Extract(matrix);
+        return frus.TestAABB(aabb);
+    }
 
     // Point light
     const Matrix4 &m = GetWorldTransform();

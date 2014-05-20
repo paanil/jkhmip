@@ -46,7 +46,7 @@ class SceneRenderer
 public:
     SceneRenderer();
 
-    void Init(Shader *depthShader);
+    void Init(Shader *depthShader, Shader *shadowShader);
 
     void SetViewport(int x, int y, int w, int h);
     void SetCamera(Scene::Camera *camera);

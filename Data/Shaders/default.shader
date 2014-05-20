@@ -53,7 +53,7 @@ struct LightInfo
     float noShadows;
 };
 
-uniform LightsBlock
+layout(row_major) uniform LightBlock
 {
     LightInfo lights[8];
 };
@@ -68,24 +68,44 @@ vec3 n;
 
 float dirLight(int i)
 {
-    return dot(n, lights[i].dir);
+    vec3 L = lights[i].dir;
+    return max(dot(n, L), 0.0);
+}
+
+float attenuation(float dist, float radius)
+{
+    float dist2 = dist*dist;
+    float d = dist2 / (radius*radius + 0.01);
+    return (1.0 - d*d) / (dist2 + 1.0);
 }
 
 float spotLight(int i)
 {
-    return 1.0;
+    vec3 L = lights[i].pos - position;
+    float dist = length(L);
+    L = normalize(L);
+
+    float radius = lights[i].radius;
+    float f = attenuation(dist, radius);
+
+    float cosDir = dot(L, lights[i].dir);
+    float cosOuter = cos(lights[i].cutoff);
+    float cosInner = cos(lights[i].cutoff*0.9f);
+    float k = smoothstep(cosOuter, cosInner, cosDir);
+
+    return max(dot(n, L), 0.0) * f * k * 10.0;
 }
 
 float pointLight(int i)
 {
-    vec3 posToLight = lights[i].pos - position;
-    vec3 lightDir = normalize(posToLight);
-    float dist = length(posToLight);
+    vec3 L = lights[i].pos - position;
+    float dist = length(L);
+    L = normalize(L);
+
     float radius = lights[i].radius;
-    float dist2 = dist*dist + 0.01;
-    float d = dist2 / (radius*radius + 0.01);
-    float f = (1.0 - d*d) / (dist2 + 1.0);
-    return f * dot(n, lightDir);
+    float f = attenuation(dist, radius);
+
+    return max(dot(n, L), 0.0) * f * 10.0;
 }
 
 float lightIntensity(int i)
@@ -98,9 +118,9 @@ float lightIntensity(int i)
     return max(intensity, 0.0);
 }
 
-float fourSamples(float offs, vec4 shadowCoord, sampler2DShadow shadowMap)
+float fourSamples(float offset, vec4 shadowCoord, sampler2DShadow shadowMap)
 {
-    offs /= 2048.0;
+    float offs = offset / 2048.0;
 
     vec4 coord0 = shadowCoord + vec4(-offs, -offs, 0.0, 0.0);
     vec4 coord1 = shadowCoord + vec4( offs, -offs, 0.0, 0.0);
@@ -119,7 +139,8 @@ float fourSamples(float offs, vec4 shadowCoord, sampler2DShadow shadowMap)
 float shadowValue(int i, sampler2DShadow shadowMap)
 {
     vec4 shadowCoord = (lights[i].matrix * vec4(position + n*0.1, 1.0));
-    return max(fourSamples(0.5, shadowCoord, shadowMap), lights[i].noShadows);
+    float value = fourSamples(0.5, shadowCoord, shadowMap);
+    return max(clamp(value, 0.0, 1.0), lights[i].noShadows);
 }
 
 vec3 calculateLight(int i, sampler2DShadow shadowMap)
@@ -154,7 +175,6 @@ vec4 colorGamma(vec3 color)
     vec3 s3 = sqrt(s2);
     vec3 srgb = 0.662002687 * s1 + 0.684122060 * s2 - 0.323583601 * s3 - 0.225411470 * color;
     return vec4(srgb, 1.0);
-//    return vec4(pow(color, vec3(1.0/2.233333)), 1.0);
 }
 
 void main()

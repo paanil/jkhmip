@@ -52,7 +52,7 @@ Light *Scene::CreateDirLight()
 {
     Light *light = new Light();
     light->SetType(Vector3(1.0f, 0.0f, 0.0f));
-    light->CreateShadowMap(2048, 2048);
+    light->CreateShadowMap(1024, 1024);
     dirLights.push_back(light);
     AddNode(light);
     return light;
@@ -62,6 +62,7 @@ Light *Scene::CreateSpotLight()
 {
     Light *light = new Light();
     light->SetType(Vector3(0.0f, 1.0f, 0.0f));
+    light->CreateShadowMap(512, 512);
     spotLights.push_back(light);
     AddNode(light);
     return light;
@@ -95,6 +96,9 @@ void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList *
     if (lights)
     {
         for (Light *light : dirLights)
+            lights->push_back(light);
+
+        for (Light *light : spotLights)
             lights->push_back(light);
 
         for (Light *light : pointLights)

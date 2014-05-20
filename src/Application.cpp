@@ -74,7 +74,7 @@ bool Application::Init(const String &title)
     // Initialize resource manager.
     resources.Init();
     // Initialize scene renderer.
-    renderer.Init(resources.GetShader("depth.shader"));
+    renderer.Init(resources.GetShader("depth.shader"), resources.GetShader("default.shader"));
 
     // All good, we can allow running of the app.
     running = true;
