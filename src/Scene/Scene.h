@@ -41,6 +41,8 @@ namespace Scene
         typedef std::vector<NodePtr> NodeList;
 
     public:
+        Scene();
+
         /// Creates a dummy node.
         Node *CreateDummy();
         /// Creates a camera node.
@@ -52,10 +54,14 @@ namespace Scene
         Light *CreateSpotLight();
         Light *CreatePointLight();
 
+        Object *CreateSky();
+
         AABB GetBoundingBox() const;
 
         void FrustumCull(const Frustum &frustum, ObjectList &objects, LightList &lights);
         void FrustumCullForShadowMap(const Frustum &frustum, ObjectList &objects);
+
+        Object *GetSky() const;
 
     private:
         /// Adds a scene node to the node list.
@@ -67,6 +73,7 @@ namespace Scene
         LightList dirLights;
         LightList spotLights;
         LightList pointLights;
+        Object *sky;
     };
 
 } // Scene

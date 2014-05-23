@@ -22,7 +22,7 @@ void main()
 
 #version 140
 
-uniform samplerCube SkyMap;
+uniform samplerCube Sky;
 
 in vec3 position;
 
@@ -30,6 +30,6 @@ out vec4 fragColor;
 
 void main()
 {
-    fragColor = texture(SkyMap, position);
+    fragColor = texture(Sky, position);
     gl_FragDepth = 1.0;
 }

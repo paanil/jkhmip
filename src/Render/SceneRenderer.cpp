@@ -45,8 +45,6 @@ void SceneRenderer::Init(Shader *depthShader, Shader *shadowShader)
 
     int blockSize = shadowShader->GetUniformBlockSize("LightBlock");
 
-    LOG_INFO("LightBlock size: %", blockSize);
-
     lightsUBO.reset(new UniformBuffer());
     lightsUBO->ReserveData(blockSize);
 
@@ -105,6 +103,17 @@ void SceneRenderer::SetCamera(Scene::Camera *camera)
         camera->SetAspectRatio( float(vpW)/float(vpH) );
 }
 
+void SceneRenderer::DoFrustumCull(Scene::Scene &scene)
+{
+    const Matrix4 proj = camera->GetProjection();
+    const Matrix4 view = camera->GetInverseWorldTransform();
+    const Frustum frus = Frustum::Extract(proj * view);
+
+    objects.clear();
+    lights.clear();
+    scene.FrustumCull(frus, objects, lights);
+}
+
 void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
 {
     AABB wholeScene = scene.GetBoundingBox();
@@ -115,6 +124,7 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
     for (Scene::Light *light : lights)
     {
         Texture *shadowMap = light->GetShadowMap();
+        int shadowRes = light->GetShadowRes();
 
         if (shadowMap == 0) continue;
 
@@ -126,30 +136,25 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
         objectsInLight.clear();
         scene.FrustumCullForShadowMap(frus, objectsInLight);
 
-        visibleScene = AABB::Degenerate();
         commands.Clear();
+        visibleScene = AABB::Degenerate();
         for (Scene::Object *object : objectsInLight)
         {
-            visibleScene.Update(object->GetWorldAABB());
             object->GetRenderCommands(commands);
+            visibleScene.Update(object->GetWorldAABB());
         }
 
-        if (light->GetType().x > 0.0f)
-            light->UpdateMatrixNear(visibleScene);
-
+        light->UpdateMatrixNear(visibleScene);
         lightMatrix = light->GetMatrix();
 
         shadowFBO->AttachDepthTex2D(shadowMap);
         shadowFBO->Bind(true);
 
-        int shadowRes = light->GetShadowRes();
         Graphics::SetViewport(0, 0, shadowRes, shadowRes);
         Graphics::Clear(CLEAR_DEPTH);
-
         Graphics::ResetState();
         Graphics::SetShader(depthShader);
         depthShader->SetUniform("LightMatrix", lightMatrix);
-
         for (RenderCommand &command : commands)
         {
             depthShader->SetUniform("Model", command.modelMatrix);
@@ -157,26 +162,13 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
             Graphics::SetIndexBuffer(command.ibo);
             Graphics::DrawTriangles(command.firstIndex, command.indexCount);
         }
-
-        shadowFBO->AttachDepthTex2D(0);
     }
 
     shadowFBO->Unbind();
 }
 
-void SceneRenderer::Render(Scene::Scene &scene)
+void SceneRenderer::RenderObjects()
 {
-    Matrix4 proj = camera->GetProjection();
-    Matrix4 view = camera->GetInverseWorldTransform();
-    Matrix4 viewProj = proj * view;
-    Frustum frus = Frustum::Extract(viewProj);
-
-    objects.clear();
-    lights.clear();
-    scene.FrustumCull(frus, objects, lights);
-
-    UpdateShadowMaps(scene);
-
     commands.Clear();
     for (Scene::Object *object : objects)
     {
@@ -191,6 +183,10 @@ void SceneRenderer::Render(Scene::Scene &scene)
         object->GetRenderCommands(commands);
     }
 
+    const Matrix4 proj = camera->GetProjection();
+    const Matrix4 view = camera->GetInverseWorldTransform();
+    const Matrix4 viewProj = proj * view;
+
     Graphics::SetViewport(vpX, vpY, vpW, vpH);
     Graphics::Clear(CLEAR_COLOR_AND_DEPTH);
 
@@ -201,7 +197,6 @@ void SceneRenderer::Render(Scene::Scene &scene)
         lightsUBO->ZeroData();
 
         const int paramCount = 10;
-
         for (int i = 0; i < command.lightCount; i++)
         {
             int j = i*paramCount;
@@ -222,8 +217,6 @@ void SceneRenderer::Render(Scene::Scene &scene)
         Shader *shader = command.material->GetShader();
 
         Graphics::SetShader(shader);
-        shader->SetUniform("View", view);
-        shader->SetUniform("Proj", proj);
         shader->SetUniform("ViewProj", viewProj);
         shader->SetUniform("Model", command.modelMatrix);
 
@@ -237,4 +230,48 @@ void SceneRenderer::Render(Scene::Scene &scene)
         Graphics::SetIndexBuffer(command.ibo);
         Graphics::DrawTriangles(command.firstIndex, command.indexCount);
     }
+}
+
+void SceneRenderer::RenderSky(Scene::Object *sky)
+{
+    if (sky)
+    {
+        const Matrix4 proj = camera->GetProjection();
+        const Matrix4 view = camera->GetInverseWorldTransform();
+
+        size_t beg = commands.Size();
+        sky->GetRenderCommands(commands);
+        size_t end = commands.Size();
+
+        for (size_t i = beg; i < end; i++)
+        {
+            RenderCommand &command = commands[i];
+
+            Graphics::ResetState();
+
+            Shader *shader = command.material->GetShader();
+
+            Graphics::SetShader(shader);
+            shader->SetUniform("View", view);
+            shader->SetUniform("Proj", proj);
+            shader->SetUniform("Model", command.modelMatrix);
+
+            for (int i = 0; i < MAX_MATERIAL_TEXTURES; i++)
+                Graphics::SetTexture(command.material->GetTexture(i), i);
+
+            Graphics::SetVertexBuffer(command.vbo);
+            Graphics::SetIndexBuffer(command.ibo);
+            Graphics::DrawTriangles(command.firstIndex, command.indexCount);
+        }
+    }
+}
+
+void SceneRenderer::Render(Scene::Scene &scene)
+{
+    DoFrustumCull(scene);
+
+    UpdateShadowMaps(scene);
+
+    RenderObjects();
+    RenderSky(scene.GetSky());
 }

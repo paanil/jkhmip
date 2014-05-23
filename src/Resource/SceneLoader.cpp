@@ -70,7 +70,7 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
         {
             node = scene.CreateDummy();
         }
-        else if (as_node.type == 1) // OBJECT
+        else if (as_node.type == 1 || as_node.type == 3) // OBJECT or SKY
         {
             const uint object_size = 36;
 
@@ -90,7 +90,13 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
 
             f.read(as_char, object_size);
 
-            Scene::Object *ob = scene.CreateObject();
+            Scene::Object *ob = 0;
+
+            if (as_node.type == 1)
+                ob = scene.CreateObject();
+            else
+                ob = scene.CreateSky();
+
             ob->SetCastShadows(as_object.cast_shadows);
             ob->SetModel(modelCache->Get(String(as_object.mesh_name) + ".obj"));
 

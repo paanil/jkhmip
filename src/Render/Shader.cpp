@@ -86,6 +86,8 @@ bool Shader::Compile(const String &vertSrc, const String &fragSrc)
     SetUniform("ShadowMap6", 14);
     SetUniform("ShadowMap7", 15);
 
+    SetUniform("Sky", 0);
+
     SetUniform("Font", 0);
 
     return true;
@@ -140,9 +142,10 @@ void Shader::SetUniform(const String &name, int count, const Matrix4 *values)
 
 int Shader::GetUniformBlockSize(const char *name)
 {
-    GLint blockSize;
+    GLint blockSize = 0;
     GLuint blockIndex = glGetUniformBlockIndex(prog, name);
-    glGetActiveUniformBlockiv(prog, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+    if (blockIndex != GL_INVALID_INDEX)
+        glGetActiveUniformBlockiv(prog, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
     return blockSize;
 }
 

@@ -51,7 +51,13 @@ public:
     void SetViewport(int x, int y, int w, int h);
     void SetCamera(Scene::Camera *camera);
 
+private:
+    void DoFrustumCull(Scene::Scene &scene);
     void UpdateShadowMaps(Scene::Scene &scene);
+    void RenderObjects();
+    void RenderSky(Scene::Object *sky);
+
+public:
     void Render(Scene::Scene &scene);
 
     size_t GetObjectCount() const { return objects.size(); }

@@ -26,6 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace Scene
 {
 
+Scene::Scene() :
+    sky(0)
+{
+}
+
 Node *Scene::CreateDummy()
 {
     Node *node = new Node();
@@ -77,6 +82,13 @@ Light *Scene::CreatePointLight()
     return light;
 }
 
+Object *Scene::CreateSky()
+{
+    sky = new Object();
+    AddNode(sky);
+    return sky;
+}
+
 AABB Scene::GetBoundingBox() const
 {
     AABB boundBox = AABB::Degenerate();
@@ -89,7 +101,7 @@ void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList &
 {
     for (Object *object : this->objects)
     {
-        if ( frustum.TestAABB(object->GetWorldAABB()) || !object->GetCastShadows() )
+        if ( frustum.TestAABB(object->GetWorldAABB()) )
             objects.push_back(object);
     }
 
@@ -97,7 +109,10 @@ void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList &
         lights.push_back(light);
 
     for (Light *light : spotLights)
-        lights.push_back(light);
+    {
+        if ( frustum.TestAABB(light->GetLightAABB()) )
+            lights.push_back(light);
+    }
 
     for (Light *light : pointLights)
     {
@@ -113,6 +128,11 @@ void Scene::FrustumCullForShadowMap(const Frustum &frustum, ObjectList &objects)
         if ( object->GetCastShadows() && frustum.TestAABB(object->GetWorldAABB()) )
             objects.push_back(object);
     }
+}
+
+Object *Scene::GetSky() const
+{
+    return sky;
 }
 
 void Scene::AddNode(Node *node)

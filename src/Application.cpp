@@ -84,12 +84,10 @@ bool Application::Init(const String &title)
 
 void Application::Run()
 {
-    OnWindowResize(Config::getInt("mainScreen_Width"), Config::getInt("mainScreen_Height"));
-
     resources.LoadScene(scene, "test.scene");
 
     Scene::Camera *camera = scene.CreateCamera();
-    camera->SetParameters(50.0f, 0.1f, 100.0f);
+    camera->SetParameters(50.0f, 0.1f, 250.0f);
     camera->SetPosition(Vector3(0.0f, 1.8f, 0.0f));
     renderer.SetCamera(camera);
     cam.SetCamera(camera);
@@ -151,8 +149,15 @@ void Application::HandleEvents()
                 break;
 
             case SDL_WINDOWEVENT_RESIZED:
-                OnWindowResize(e.window.data1, e.window.data2);
+            {
+                int w = e.window.data1;
+                int h = e.window.data2;
+                Config::setInt("mainScreen_Width",w);
+                Config::setInt("mainScreen_Heigth",h);
+                renderer.SetViewport(0, 0, w, h);
+                proj2d = Matrix4::Ortho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
                 break;
+            }
 
             default:
                 break;
@@ -175,15 +180,6 @@ void Application::HandleEvents()
             break;
         }
     }
-}
-
-void Application::OnWindowResize(int w, int h)
-{
-    Config::setInt("mainScreen_Width",w);
-    Config::setInt("mainScreen_Heigth",h);
-
-    renderer.SetViewport(0, 0, w, h);
-    proj2d = Matrix4::Ortho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
 }
 
 void Application::Update(float dt)
@@ -219,5 +215,4 @@ void Application::Render()
 
     // Draw screen
     window.SwapBuffers();
-//    SDL_Delay(10); //TODO: remove
 }

@@ -82,7 +82,7 @@ namespace Config
         op.setInt("mainScreen_Width", 1280);
         op.setInt("mainScreen_Height", 720);
         op.setBool("mainScreen_FullScreen", false);
-        op.setBool("mainScreen_vsync", true);
+        op.setBool("mainScreen_vsync", false);
 
         /// File locations
         op.setString("Shader_location", "Data/Shaders/");

@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Camera.h"
 #include "../Math/Frustum.h"
 #include "../Math/Math.h"
+#include "../Logger.h"
 
 
 
@@ -38,8 +39,8 @@ Light::Light() :
     color(1.0f, 1.0f, 1.0f),
     energy(1.0f),
     matrix(),
-    lightAABB(),
-    shadowMap()
+    shadowMap(),
+    lightAABB()
 {
 }
 
@@ -90,10 +91,22 @@ void Light::UpdateMatrix(const AABB &visibleScene, const AABB &wholeScene)
 
 void Light::UpdateMatrixNear(const AABB &visibleScene)
 {
-    Matrix4 view = GetInverseWorldTransform();
-    lightAABB.min.z = visibleScene.Transform(view).min.z;
-    Matrix4 proj = lightAABB.CreateOrthoProjection();
-    matrix = proj * view;
+    if (type.x > 0.0f)
+    {
+        Matrix4 view = GetInverseWorldTransform();
+        lightAABB.min.z = visibleScene.Transform(view).min.z;
+        Matrix4 proj = lightAABB.CreateOrthoProjection();
+        matrix = proj * view;
+    }
+//    else if (type.y > 0.0f)
+//    {
+//        Matrix4 view = GetInverseWorldTransform();
+//        float min_z = visibleScene.Transform(view).min.z;
+//        float zNear = Math::Max(radius * 0.001f, min_z - radius * 0.001f);
+//        LOG_DEBUG("min_z: % zNear: %", min_z, zNear);
+//        Matrix4 proj = Matrix4::Perspective(2.0f * cutoff * Math::RAD_TO_DEG, 1.0f, zNear, radius);
+//        matrix = proj * view;
+//    }
 }
 
 void Light::CreateShadowMap(int shadowRes)
@@ -155,6 +168,31 @@ int Light::GetShadowRes() const
 Texture *Light::GetShadowMap() const
 {
     return shadowMap.get();
+}
+
+const AABB &Light::GetLightAABB()
+{
+    if (type.y > 0.0f)
+    {
+        const Matrix4 &m = GetWorldTransform();
+
+        Vector3 r(m.m11, m.m21, m.m31);
+        Vector3 u(m.m12, m.m22, m.m32);
+        Vector3 l(m.m13, m.m23, m.m33);
+        Vector3 p(m.m14, m.m24, m.m34);
+
+        Vector3 center = p + l * radius;
+
+        float s = Math::Tan(cutoff) * radius;
+
+        lightAABB = AABB::Degenerate();
+        lightAABB.Update(p);
+        lightAABB.Update(center - r*s - u*s);
+        lightAABB.Update(center + r*s - u*s);
+        lightAABB.Update(center - r*s + u*s);
+        lightAABB.Update(center + r*s + u*s);
+    }
+    return lightAABB;
 }
 
 

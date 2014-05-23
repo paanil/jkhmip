@@ -110,6 +110,14 @@ bool Window::Create(const String &title, int w, int h, bool fullscreen, bool vsy
 
     LOG_INFO("GL Version: %", glGetString(GL_VERSION));
 
+    SDL_Event e;
+    e.type = SDL_WINDOWEVENT;
+    e.window.event = SDL_WINDOWEVENT_RESIZED;
+    e.window.windowID = SDL_GetWindowID(window);
+    e.window.data1 = w;
+    e.window.data2 = h;
+    SDL_PushEvent(&e);
+
     return true;
 }
 

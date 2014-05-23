@@ -112,6 +112,8 @@ public:
     size_t Size() const { return commands.size(); }
     void Clear() { commands.clear(); }
 
+    RenderCommand &operator[](int i) { return commands[i]; }
+
     CommandList::iterator begin() { return commands.begin(); }
     CommandList::iterator end() { return commands.end(); }
 

@@ -32,6 +32,8 @@ class ExportMyScene(bpy.types.Operator, ExportHelper):
     next_id = 1
 
     def get_ob_type(self, ob):
+        if ob.name == "sky":
+            return 3
         try:
             ob_type = self.node_types[ob.type]
             return ob_type
@@ -77,7 +79,7 @@ class ExportMyScene(bpy.types.Operator, ExportHelper):
         ob_id = self.get_next_id()
         f.write(pack("=3i", ob_type, ob_id, parent_id))
         self.write_mat(f, ob.matrix_local)
-        if ob_type == self.node_types['MESH']:
+        if ob_type == self.node_types['MESH'] or ob_type == 3:
             cast_shadows = ob.active_material.use_cast_buffer_shadows
             if cast_shadows:
                 f.write(pack("=i", 1))

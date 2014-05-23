@@ -60,6 +60,22 @@ Shader *ShaderCache::Load(const String &filePath)
     return shader;
 }
 
+bool ReadLines(const String &file, String &dst)
+{
+    std::ifstream f(file.c_str());
+    if (!f.is_open()) return false;
+
+    String line;
+    while (std::getline(f, line))
+    {
+        dst.append(line);
+        dst.push_back('\n');
+    }
+
+    f.close();
+    return true;
+}
+
 bool ShaderCache::LoadSourceFile(const String &file, String &vertSrc, String &fragSrc)
 {
     LOG_INFO("Loading shader '%'...", file);
@@ -72,43 +88,54 @@ bool ShaderCache::LoadSourceFile(const String &file, String &vertSrc, String &fr
         return false;
     }
 
-    int dst = 0;
     String line;
+    String *dst = 0;
 
     while (std::getline(f, line))
     {
         if (!line.empty())
         {
-            if (StrIEquals(line, ":vert"))
+            if (line[0] == ':')
             {
-                if (dst & 1)
+                String first, second;
+                size_t pos = line.find_first_of(' ');
+                if (pos == String::npos)
+                    first = line;
+                else
                 {
-                    LOG_ERROR("Multiple vertex shaders in one file.");
+                    first = line.substr(0, pos);
+                    second = line.substr(pos+1);
+                }
+
+                if (StrIEquals(first, ":vert"))
+                    dst = &vertSrc;
+                else if (StrIEquals(first, ":frag"))
+                    dst = &fragSrc;
+                else if (first == ":include")
+                {
+                    if (dst == 0)
+                    {
+                        LOG_ERROR("Include before selecting vert or frag.");
+                        return false;
+                    }
+                    if (!ReadLines(GetDirectory() + second, *dst))
+                    {
+                        LOG_ERROR("Couldn't include file '%'.", second);
+                        return false;
+                    }
+                }
+                else
+                {
+                    LOG_ERROR("Invalid line starting with ':'.");
                     return false;
                 }
-                dst = (dst & 3) | 0x11;
             }
-            else if (StrIEquals(line, ":frag"))
+            else if (dst)
             {
-                if (dst & 2)
-                {
-                    LOG_ERROR("Multiple fragment shaders in one file.");
-                    return false;
-                }
-                dst = (dst & 3) | 0x22;
-            }
-            else
-            {
-                if (dst & 0x10)
-                    vertSrc.append(line);
-                else if (dst & 0x20)
-                    fragSrc.append(line);
+                dst->append(line);
+                dst->push_back('\n');
             }
         }
-        if (!(dst & 1) || (dst & 0x10))
-            vertSrc.push_back('\n');
-        if (!(dst & 2) || (dst & 0x20))
-            fragSrc.push_back('\n');
     }
 
     return true;

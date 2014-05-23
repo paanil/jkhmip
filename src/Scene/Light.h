@@ -60,6 +60,7 @@ namespace Scene
         const Matrix4 &GetMatrix() const;
         int GetShadowRes() const;
         Texture *GetShadowMap() const;
+        const AABB &GetLightAABB();
 
         bool Affects(const AABB &aabb);
 
@@ -73,9 +74,9 @@ namespace Scene
         Vector3     color;
         float       energy;
         Matrix4     matrix;
-        AABB        lightAABB;
         int         shadowRes;
         TexturePtr  shadowMap;
+        AABB        lightAABB;
     };
 
     typedef std::vector<Light *> LightList;

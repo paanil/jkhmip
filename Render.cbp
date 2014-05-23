@@ -51,6 +51,9 @@
 		<Unit filename="Data/Materials/terrain.material" />
 		<Unit filename="Data/Shaders/default.shader" />
 		<Unit filename="Data/Shaders/depth.shader" />
+		<Unit filename="Data/Shaders/gamma.glsl" />
+		<Unit filename="Data/Shaders/shadows.glsl" />
+		<Unit filename="Data/Shaders/shadows_vert.glsl" />
 		<Unit filename="Data/Shaders/sky.shader" />
 		<Unit filename="Data/Shaders/terrain.shader" />
 		<Unit filename="Data/Shaders/text.shader" />
