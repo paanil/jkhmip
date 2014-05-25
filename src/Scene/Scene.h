@@ -56,6 +56,7 @@ namespace Scene
 
         Object *CreateSky();
 
+        void CalcBoundingBox();
         AABB GetBoundingBox() const;
 
         void FrustumCull(const Frustum &frustum, ObjectList &objects, LightList &lights);

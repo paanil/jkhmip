@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Application.h"
 #include "Render/Graphics.h"
+#include "Logic/CameraController.h"
 #include "Logger.h"
 #include "Conf.h"
 
@@ -84,13 +85,15 @@ bool Application::Init(const String &title)
 
 void Application::Run()
 {
-    resources.LoadScene(scene, "test.scene");
+    resources.LoadScene(scene, logic, "test.scene");
 
     Scene::Camera *camera = scene.CreateCamera();
     camera->SetParameters(50.0f, 0.1f, 250.0f);
     camera->SetPosition(Vector3(0.0f, 1.8f, 0.0f));
     renderer.SetCamera(camera);
-    cam.SetCamera(camera);
+
+    LogicBase *cam = logic.CreateCameraController();
+    cam->SetNode(camera);
 
 
     text.SetRelativePosition(Vector2(10.0f, 10.0f));
@@ -184,7 +187,7 @@ void Application::HandleEvents()
 
 void Application::Update(float dt)
 {
-    cam.Update(dt);
+    logic.Update(dt);
 }
 
 void Application::Render()

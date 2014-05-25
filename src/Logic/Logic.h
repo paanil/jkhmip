@@ -19,36 +19,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __RESOURCEMANAGER_H__
-#define __RESOURCEMANAGER_H__
+#ifndef __LOGIC_H__
+#define __LOGIC_H__
 
-#include "TextureCache.h"
-#include "ShaderCache.h"
-#include "MaterialCache.h"
-#include "ModelCache.h"
-#include "FontCache.h"
-#include "SceneLoader.h"
+#include "LogicBase.h"
 
-class ResourceManager
+#include <memory>
+#include <vector>
+
+class CameraController;
+class Rotator;
+
+class Logic
 {
+    typedef std::unique_ptr<LogicBase> LogicPtr;
+    typedef std::vector<LogicPtr> LogicList;
 public:
-    void Init();
 
-    Texture *   GetTexture(const String &file);
-    Shader *    GetShader(const String &file);
-    Material *  GetMaterial(const String &file);
-    Model *     GetModel(const String &file);
-    Font *      GetFont(const String &file);
+    CameraController *CreateCameraController();
+    Rotator *CreateRotator();
 
-    void LoadScene(Scene::Scene &scene, Logic &logic, const String &file);
+    void Update(float dt);
 
 private:
-    TextureCache    textureCache;
-    ShaderCache     shaderCache;
-    MaterialCache   materialCache;
-    ModelCache      modelCache;
-    FontCache       fontCache;
-    SceneLoader     sceneLoader;
+    void AddLogic(LogicBase *logic);
+
+private:
+    LogicList logics;
 };
 
-#endif // __RESOURCEMANAGER_H__
+#endif // __LOGIC_H__

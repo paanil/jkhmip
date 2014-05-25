@@ -28,7 +28,9 @@ namespace Scene
 
 Object::Object() :
     model(0),
-    aabbDirty(false)
+    worldAABB(AABB::Degenerate()),
+    aabbDirty(false),
+    castShadows(false)
 {
 }
 
@@ -53,7 +55,7 @@ const AABB &Object::GetWorldAABB()
     if (aabbDirty)
     {
         const Matrix4 &M = GetWorldTransform();
-        worldAABB = model->GetAABB().Transform(M);
+        worldAABB.Update(model->GetAABB().Transform(M));
 
         aabbDirty = false;
     }

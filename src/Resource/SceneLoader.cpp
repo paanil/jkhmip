@@ -2,6 +2,8 @@
 #include "SceneLoader.h"
 #include "ModelCache.h"
 #include "../Scene/Scene.h"
+#include "../Logic/Logic.h"
+#include "../Logic/Rotator.h"
 #include "../Logger.h"
 
 #include <fstream>
@@ -23,7 +25,7 @@ void SceneLoader::SetModelCache(ModelCache &modelCache)
     this->modelCache = &modelCache;
 }
 
-bool SceneLoader::Load(Scene::Scene &scene, const String &file)
+bool SceneLoader::Load(Scene::Scene &scene, Logic &logic, const String &file)
 {
     String filePath = directory + file;
     LOG_INFO("Loading scene '%'...", filePath);
@@ -38,9 +40,6 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
 
     std::map<uint, Scene::Node *> node_by_id;
 
-
-    const uint node_size = 60;
-
     struct Node
     {
         uint type;
@@ -49,22 +48,48 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
         float mat[3][4];
     };
 
+    const uint node_size = 60;
     assert(sizeof(Node) == node_size);
+
+    struct Object
+    {
+        uint cast_shadows;
+        char mesh_name[32];
+    };
+
+    const uint object_size = 36;
+    assert(sizeof(Object) == object_size);
+
+    struct Light
+    {
+        uint type;
+        float radius;
+        float cutoff;
+        float color[3];
+        float energy;
+    };
+
+    const uint light_size = 28;
+    assert(sizeof(Light) == light_size);
 
     union
     {
-        char as_char[node_size];
-        Node as_node;
+        char as_char[4];
+        uint count;
     };
 
-    while (f.good())
-    {
-        f.read(as_char, node_size);
+    f.read(as_char, 4);
 
-        if (f.eof())
-            break;
+    for (uint i = 0; i < count; i++)
+    {
+        union
+        {
+            char as_char[node_size];
+            Node as_node;
+        };
 
         Scene::Node *node = 0;
+        f.read(as_char, node_size);
 
         if (as_node.type == 0) // DUMMY
         {
@@ -72,25 +97,14 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
         }
         else if (as_node.type == 1 || as_node.type == 3) // OBJECT or SKY
         {
-            const uint object_size = 36;
-
-            struct Object
-            {
-                uint cast_shadows;
-                char mesh_name[32];
-            };
-
-            assert(sizeof(Object) == object_size);
-
             union
             {
                 char as_char[object_size];
                 Object as_object;
             };
 
-            f.read(as_char, object_size);
-
             Scene::Object *ob = 0;
+            f.read(as_char, object_size);
 
             if (as_node.type == 1)
                 ob = scene.CreateObject();
@@ -104,28 +118,14 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
         }
         else if (as_node.type == 2) // LIGHT
         {
-            const uint light_size = 28;
-
-            struct Light
-            {
-                uint type;
-                float radius;
-                float cutoff;
-                float color[3];
-                float energy;
-            };
-
-            assert(sizeof(Light) == light_size);
-
             union
             {
                 char as_char[light_size];
                 Light as_light;
             };
 
-            f.read(as_char, light_size);
-
             Scene::Light *light = 0;
+            f.read(as_char, light_size);
 
             if (as_light.type == 0) // DIRECTIONAL
                 light = scene.CreateDirLight();
@@ -185,6 +185,53 @@ bool SceneLoader::Load(Scene::Scene &scene, const String &file)
         node->SetPosition(Vector3(m[0][3], m[1][3], m[2][3]));
         node->SetRotation(rot);
         node->SetScale(Vector3(scale_x, scale_y, scale_z));
+    }
+
+    struct Prop
+    {
+        uint node;
+        uint type;
+        float value;
+    };
+
+    const uint prop_size = 12;
+    assert(sizeof(Prop) == prop_size);
+
+    f.read(as_char, 4);
+
+    for (uint i = 0; i < count; i++)
+    {
+        union
+        {
+            char as_char[prop_size];
+            Prop prop;
+        };
+
+        f.read(as_char, prop_size);
+
+        Scene::Node *node = node_by_id[prop.node];
+
+        if (prop.type == 0)
+        {
+            Rotator *rot = logic.CreateRotator();
+            rot->SetNode(node);
+            rot->SetAxis(Vector3(1.0f, 0.0f, 0.0f));
+            rot->SetAngularVelocity(prop.value);
+        }
+        else if (prop.type == 1)
+        {
+            Rotator *rot = logic.CreateRotator();
+            rot->SetNode(node);
+            rot->SetAxis(Vector3(0.0f, 1.0f, 0.0f));
+            rot->SetAngularVelocity(prop.value);
+        }
+        else if (prop.type == 2)
+        {
+            Rotator *rot = logic.CreateRotator();
+            rot->SetNode(node);
+            rot->SetAxis(Vector3(0.0f, 0.0f, 1.0f));
+            rot->SetAngularVelocity(prop.value);
+        }
     }
 
     f.close();

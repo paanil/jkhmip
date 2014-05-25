@@ -9,6 +9,7 @@ namespace Scene
     class Scene;
 }
 
+class Logic;
 class ModelCache;
 
 class SceneLoader
@@ -20,7 +21,7 @@ public:
 
     void SetModelCache(ModelCache &modelCache);
 
-    bool Load(Scene::Scene &scene, const String &file);
+    bool Load(Scene::Scene &scene, Logic &logic, const String &file);
 
 private:
     String directory;

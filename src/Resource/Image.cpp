@@ -177,7 +177,7 @@ bool LoadTGA(const String &file, Image &image)
 
     if (header[17] & 0x20)
     {
-        // flip -> origin to upper left
+        // flip -> origin to top left
         int line = w*bpp;
         char *tmp = new char[line];
         char *p1 = &data[0];

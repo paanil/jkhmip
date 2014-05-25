@@ -19,36 +19,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __RESOURCEMANAGER_H__
-#define __RESOURCEMANAGER_H__
+#ifndef __LOGICBASE_H__
+#define __LOGICBASE_H__
 
-#include "TextureCache.h"
-#include "ShaderCache.h"
-#include "MaterialCache.h"
-#include "ModelCache.h"
-#include "FontCache.h"
-#include "SceneLoader.h"
+namespace Scene
+{
+    class Node;
+}
 
-class ResourceManager
+class LogicBase
 {
 public:
-    void Init();
+    LogicBase() : node(0) {}
+    virtual ~LogicBase() {}
 
-    Texture *   GetTexture(const String &file);
-    Shader *    GetShader(const String &file);
-    Material *  GetMaterial(const String &file);
-    Model *     GetModel(const String &file);
-    Font *      GetFont(const String &file);
+    void SetNode(Scene::Node *node) { this->node = node; }
 
-    void LoadScene(Scene::Scene &scene, Logic &logic, const String &file);
+    virtual void Update(float dt) = 0;
 
-private:
-    TextureCache    textureCache;
-    ShaderCache     shaderCache;
-    MaterialCache   materialCache;
-    ModelCache      modelCache;
-    FontCache       fontCache;
-    SceneLoader     sceneLoader;
+protected:
+    Scene::Node *node;
 };
 
-#endif // __RESOURCEMANAGER_H__
+#endif // __LOGICBASE_H__

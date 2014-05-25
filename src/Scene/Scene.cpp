@@ -57,7 +57,7 @@ Light *Scene::CreateDirLight()
 {
     Light *light = new Light();
     light->SetType(Vector3(1.0f, 0.0f, 0.0f));
-    light->CreateShadowMap(2048);
+    light->CreateShadowMap(4096);
     dirLights.push_back(light);
     AddNode(light);
     return light;
@@ -91,10 +91,10 @@ Object *Scene::CreateSky()
 
 AABB Scene::GetBoundingBox() const
 {
-    AABB boundBox = AABB::Degenerate();
+    AABB bounds = AABB::Degenerate();
     for (Object *object : this->objects)
-        boundBox.Update(object->GetWorldAABB());
-    return boundBox;
+        bounds.Update(object->GetWorldAABB());
+    return bounds;
 }
 
 void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList &lights)

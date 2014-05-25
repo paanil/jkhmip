@@ -19,28 +19,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __CAMERACONTROLLER_H__
-#define __CAMERACONTROLLER_H__
+#include "Rotator.h"
+#include "../Scene/Node.h"
 
-#include "Math/Vector3.h"
-
-namespace Scene
+void Rotator::SetAxis(const Vector3 &axis)
 {
-    class Camera;
+    this->axis = axis;
 }
 
-class CameraController
+void Rotator::SetAngularVelocity(float degPerSec)
 {
-public:
-    CameraController();
+    angVel = degPerSec;
+}
 
-    void SetCamera(Scene::Camera *camera);
+void Rotator::Update(float dt)
+{
+    if (node == 0)
+        return;
 
-    void Update(float dt);
-
-private:
-    Scene::Camera *camera;
-    Vector3 cameraAngles;
-};
-
-#endif // __CAMERACONTROLLER_H__
+    const Matrix3 &rot = node->GetRotation();
+    node->SetRotation(rot * Matrix3::Rotation(axis, angVel * dt));
+}

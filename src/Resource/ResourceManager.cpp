@@ -67,7 +67,7 @@ Font *ResourceManager::GetFont(const String &file)
     return fontCache.Get(file);
 }
 
-void ResourceManager::LoadScene(Scene::Scene &scene, const String &file)
+void ResourceManager::LoadScene(Scene::Scene &scene, Logic &logic, const String &file)
 {
-    sceneLoader.Load(scene, file);
+    sceneLoader.Load(scene, logic, file);
 }

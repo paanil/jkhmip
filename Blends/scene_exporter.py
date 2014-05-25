@@ -1,20 +1,20 @@
 bl_info = {
-    'name': 'MyScene exporter (.scene)',
+    'name': 'TheScene exporter (.scene)',
     'author': 'Ilari Paananen',
     'version': (1, 0, 0),
     'blender': (2, 5, 7),
     'api': 34786,
     'location': "File > Export",
-    'description': 'Export MyScene',
+    'description': 'Export TheScene',
     'category': 'Import-Export'}
 
 import bpy
 from bpy_extras.io_utils import ExportHelper
 from struct import pack
 
-class ExportMyScene(bpy.types.Operator, ExportHelper):
-    bl_idname = "my_scene.export"
-    bl_label = "Export MyScene (.scene)"
+class ExportTheScene(bpy.types.Operator, ExportHelper):
+    bl_idname = "the_scene.export"
+    bl_label = "Export TheScene (.scene)"
 
     filename_ext = ".scene"
     filepath = bpy.props.StringProperty(subtype="FILE_PATH")
@@ -29,7 +29,22 @@ class ExportMyScene(bpy.types.Operator, ExportHelper):
         'SPOT': 1,
         'POINT': 2}
 
+    prop_names = {
+        0: 'rotate_x',
+        1: 'rotate_y',
+        2: 'rotate_z'}
+
+    num_prop_types = 3
+
     next_id = 1
+
+    class Prop:
+        def __init__(self, ob_id, prop, val):
+            self.ob = ob_id
+            self.prop = prop
+            self.val = val
+
+    props = []
 
     def get_ob_type(self, ob):
         if ob.name == "sky":
@@ -74,6 +89,19 @@ class ExportMyScene(bpy.types.Operator, ExportHelper):
         f.write(pack("=3f", color.r, color.g, color.b))
         f.write(pack("=f", energy))
 
+    def try_append_prop(self, ob, ob_id, prop_type):
+        try:
+            prop_name = self.prop_names[prop_type]
+            prop_val = ob[prop_name]
+            prop = ExportTheScene.Prop(ob_id, prop_type, prop_val)
+            self.props.append(prop)
+        except:
+            pass
+
+    def append_custom_props(self, ob, ob_id):
+        for i in range(0, self.num_prop_types):
+            self.try_append_prop(ob, ob_id, i)
+
     def write_ob(self, f, ob, parent_id):
         ob_type = self.get_ob_type(ob)
         ob_id = self.get_next_id()
@@ -89,15 +117,25 @@ class ExportMyScene(bpy.types.Operator, ExportHelper):
             f.write(pack("31sc", name, b'\x00'))
         elif ob_type == self.node_types['LAMP']:
             self.write_lamp(f, ob.data)
+        self.append_custom_props(ob, ob_id)
         for child in ob.children:
             self.write_ob(f, child, ob_id)
 
+    def write_custom_props(self, f):
+        f.write(pack("=i", len(self.props)))
+        for p in self.props:
+            f.write(pack("=2i", p.ob, p.prop))
+            f.write(pack("=f", p.val))
+
     def execute(self, context):
+        self.props = []
         f = open(self.filepath, "wb")
         sce = context.scene
+        f.write(pack("=i", len(sce.objects)))
         for ob in sce.objects:
             if ob.parent == None:
                 self.write_ob(f, ob, 0)
+        self.write_custom_props(f)
         f.close()
         return {"FINISHED"}
 
@@ -106,7 +144,7 @@ class ExportMyScene(bpy.types.Operator, ExportHelper):
         return {"RUNNING_MODAL"}
 
 def menu_func(self, context):
-    self.layout.operator(ExportMyScene.bl_idname, text="MyScene (.scene)...")
+    self.layout.operator(ExportMyScene.bl_idname, text="TheScene (.scene)...")
 
 def register():
     bpy.utils.register_module(__name__)

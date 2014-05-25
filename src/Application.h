@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Resource/ResourceManager.h"
 #include "Render/SceneRenderer.h"
 #include "Scene/Scene.h"
-#include "CameraController.h"
+#include "Logic/Logic.h"
 #include "UI/Text.h"
 
 /// Application class. There should be only one instance at a time.
@@ -71,7 +71,7 @@ private:
     Scene::Scene scene;
     SceneRenderer renderer;
 
-    CameraController cam;
+    Logic logic;
 
     Matrix4 proj2d;
     UI::Text text;

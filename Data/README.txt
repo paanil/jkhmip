@@ -17,7 +17,7 @@ Copyright (c) 2014 Ilari Paananen
 
 ------------------------------------------------------------
 
-File: ./Models/mill.obj
+Files: ./Models/mill.obj, ./Models/mill_sails.obj
 
 Copyright (c) 2014 Ilari Paananen
 
@@ -29,7 +29,7 @@ Copyright (c) 2014 Ilari Paananen
 
 ------------------------------------------------------------
 
-Files: ./Textures/grass.tga, ./Textures/dirt.tga
+File: ./Textures/dirt.tga
 
 Downloaded from: http://seamless-pixels.blogspot.fi/
 

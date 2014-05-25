@@ -162,8 +162,6 @@ bool ObjLoader::ParseNormal(const String &line)
         LOG_ERROR("Invalid vertex normal.");
         return false;
     }
-//    normal.x *= -1.0f;
-//    normal.y *= -1.0f;
     normal.z *= -1.0f;
     normals.push_back(normal);
     return true;

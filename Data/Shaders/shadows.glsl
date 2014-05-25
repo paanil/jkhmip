@@ -102,13 +102,16 @@ float shadowValue(LightInfo light, sampler2DShadow shadowMap, vec3 n)
 {
     vec4 shadowCoord = light.matrix * vec4(position + n*0.1, 1.0);
     float value = fourSamples(0.5 / light.shadowRes, shadowCoord, shadowMap);
+//    float value = textureProj(shadowMap, shadowCoord);
     return max(clamp(value, 0.0, 1.0), light.noShadows);
 }
+
+const float PI = 3.141592;
 
 vec3 calculateLighting()
 {
     vec3 n = normalize(normal);
-    vec3 lighting = vec3(0.1);
+    vec3 lighting = vec3(0.0);
     lighting += light0.color * lightIntensity(light0, n) * shadowValue(light0, ShadowMap0, n);
     lighting += light1.color * lightIntensity(light1, n) * shadowValue(light1, ShadowMap1, n);
     lighting += light2.color * lightIntensity(light2, n) * shadowValue(light2, ShadowMap2, n);
@@ -117,5 +120,5 @@ vec3 calculateLighting()
     lighting += light5.color * lightIntensity(light5, n) * shadowValue(light5, ShadowMap5, n);
     lighting += light6.color * lightIntensity(light6, n) * shadowValue(light6, ShadowMap6, n);
     lighting += light7.color * lightIntensity(light7, n) * shadowValue(light7, ShadowMap7, n);
-    return lighting;
+    return vec3(0.08, 0.08, 0.15) + lighting / PI;
 }

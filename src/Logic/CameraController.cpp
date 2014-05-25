@@ -20,25 +20,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "CameraController.h"
-#include "Scene/Camera.h"
-#include "Math/Math.h"
+#include "../Scene/Node.h"
+#include "../Math/Math.h"
 
 #include <SDL2/SDL.h>
 
 CameraController::CameraController() :
-    camera(0),
     cameraAngles(0.0f, 0.0f, 0.0f)
 {
 }
 
-void CameraController::SetCamera(Scene::Camera *camera)
-{
-    this->camera = camera;
-}
-
 void CameraController::Update(float dt)
 {
-    if (camera == 0)
+    if (node == 0)
         return;
 
     const Uint8 *keys = SDL_GetKeyboardState(0);
@@ -48,9 +42,9 @@ void CameraController::Update(float dt)
 
     // Camera movement
 
-    Vector3 pos = camera->GetPosition();
+    Vector3 pos = node->GetPosition();
     Vector3 right, up, look;
-    camera->GetBasisVectors(right, up, look);
+    node->GetBasisVectors(right, up, look);
 
     Vector3 dir(0.0f, 0.0f, 0.0f);
 
@@ -74,7 +68,7 @@ void CameraController::Update(float dt)
     dir.SafeNormalize();
     pos += dir * (speed * speedup * dt);
 
-    camera->SetPosition(pos);
+    node->SetPosition(pos);
 
     // Camera rotation
 
@@ -89,7 +83,7 @@ void CameraController::Update(float dt)
         cameraAngles.x = Math::Clamp(cameraAngles.x, -90.0f, 90.0f);
 
         Matrix3 rot = Matrix3::RotationYXZ(cameraAngles);
-        camera->SetRotation(rot);
+        node->SetRotation(rot);
     }
     else
     {

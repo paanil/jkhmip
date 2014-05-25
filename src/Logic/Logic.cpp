@@ -19,36 +19,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __RESOURCEMANAGER_H__
-#define __RESOURCEMANAGER_H__
+#include "Logic.h"
+#include "CameraController.h"
+#include "Rotator.h"
 
-#include "TextureCache.h"
-#include "ShaderCache.h"
-#include "MaterialCache.h"
-#include "ModelCache.h"
-#include "FontCache.h"
-#include "SceneLoader.h"
-
-class ResourceManager
+CameraController *Logic::CreateCameraController()
 {
-public:
-    void Init();
+    CameraController *cameraController = new CameraController();
+    AddLogic(cameraController);
+    return cameraController;
+}
 
-    Texture *   GetTexture(const String &file);
-    Shader *    GetShader(const String &file);
-    Material *  GetMaterial(const String &file);
-    Model *     GetModel(const String &file);
-    Font *      GetFont(const String &file);
+Rotator *Logic::CreateRotator()
+{
+    Rotator *rotator = new Rotator();
+    AddLogic(rotator);
+    return rotator;
+}
 
-    void LoadScene(Scene::Scene &scene, Logic &logic, const String &file);
+void Logic::Update(float dt)
+{
+    for (LogicPtr &logic : logics)
+    {
+        logic->Update(dt);
+    }
+}
 
-private:
-    TextureCache    textureCache;
-    ShaderCache     shaderCache;
-    MaterialCache   materialCache;
-    ModelCache      modelCache;
-    FontCache       fontCache;
-    SceneLoader     sceneLoader;
-};
-
-#endif // __RESOURCEMANAGER_H__
+void Logic::AddLogic(LogicBase *logic)
+{
+    logics.push_back(LogicPtr(logic));
+}
