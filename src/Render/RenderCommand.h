@@ -45,13 +45,13 @@ struct RenderCommand
         float   cutoff;
         Vector3 color;
         float   energy;
-        Matrix4 matrix;
         float   shadowRes;
         float   noShadows;
     };
 
     int lightCount;
     LightInfo lights[MAX_LIGHTS];
+    Matrix4 lightMatrix[MAX_LIGHTS];
     Texture *shadowMaps[MAX_LIGHTS];
     Matrix4 modelMatrix;
     Material *material;
@@ -87,9 +87,9 @@ public:
             command.lights[i].cutoff = light->GetCutoff();
             command.lights[i].color = light->GetColor();
             command.lights[i].energy = light->GetEnergy();
-            command.lights[i].matrix = (bias * light->GetMatrix()).Transposed();
             command.lights[i].shadowRes = light->GetShadowRes();
             command.lights[i].noShadows = shadowMap ? 0.0f : 1.0f;
+            command.lightMatrix[i] = bias * light->GetMatrix();
             command.shadowMaps[i] = shadowMap;
 
             return (command.lightCount == MAX_LIGHTS);

@@ -48,7 +48,7 @@ void SceneRenderer::Init(Shader *depthShader, Shader *shadowShader)
     lightsUBO.reset(new UniformBuffer());
     lightsUBO->ReserveData(blockSize);
 
-    const int paramCount = 10;
+    const int paramCount = 9;
 
     const char *fmts[paramCount] =
     {
@@ -59,7 +59,6 @@ void SceneRenderer::Init(Shader *depthShader, Shader *shadowShader)
         "light%.cutoff",
         "light%.color",
         "light%.energy",
-        "light%.matrix",
         "light%.shadowRes",
         "light%.noShadows"
     };
@@ -196,7 +195,7 @@ void SceneRenderer::RenderObjects()
 
         lightsUBO->ZeroData();
 
-        const int paramCount = 10;
+        const int paramCount = 9;
         for (int i = 0; i < command.lightCount; i++)
         {
             int j = i*paramCount;
@@ -207,9 +206,8 @@ void SceneRenderer::RenderObjects()
             lightsUBO->SetUniform(j + 4, command.lights[i].cutoff);
             lightsUBO->SetUniform(j + 5, command.lights[i].color);
             lightsUBO->SetUniform(j + 6, command.lights[i].energy);
-            lightsUBO->SetUniform(j + 7, command.lights[i].matrix);
-            lightsUBO->SetUniform(j + 8, command.lights[i].shadowRes);
-            lightsUBO->SetUniform(j + 9, command.lights[i].noShadows);
+            lightsUBO->SetUniform(j + 7, command.lights[i].shadowRes);
+            lightsUBO->SetUniform(j + 8, command.lights[i].noShadows);
         }
 
         lightsUBO->Bind(0);
@@ -219,6 +217,7 @@ void SceneRenderer::RenderObjects()
         Graphics::SetShader(shader);
         shader->SetUniform("ViewProj", viewProj);
         shader->SetUniform("Model", command.modelMatrix);
+        shader->SetUniform("LightMatrix", 8, command.lightMatrix);
 
         for (int i = 0; i < command.lightCount; i++)
             Graphics::SetTexture(command.shadowMaps[i], 8 + i);

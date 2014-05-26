@@ -8,6 +8,15 @@ uniform sampler2DShadow ShadowMap5;
 uniform sampler2DShadow ShadowMap6;
 uniform sampler2DShadow ShadowMap7;
 
+in vec4 shadowCoord0;
+in vec4 shadowCoord1;
+in vec4 shadowCoord2;
+in vec4 shadowCoord3;
+in vec4 shadowCoord4;
+in vec4 shadowCoord5;
+in vec4 shadowCoord6;
+in vec4 shadowCoord7;
+
 struct LightInfo
 {
     vec3  type;
@@ -17,7 +26,6 @@ struct LightInfo
     float cutoff;
     vec3  color;
     float energy;
-    mat4  matrix;
     float shadowRes;
     float noShadows;
 };
@@ -84,6 +92,8 @@ float lightIntensity(LightInfo light, vec3 n)
 
 float fourSamples(float offs, vec4 shadowCoord, sampler2DShadow shadowMap)
 {
+    offs *= shadowCoord.w;
+
     vec4 coord0 = shadowCoord + vec4(-offs, -offs, 0.0, 0.0);
     vec4 coord1 = shadowCoord + vec4( offs, -offs, 0.0, 0.0);
     vec4 coord2 = shadowCoord + vec4( offs,  offs, 0.0, 0.0);
@@ -98,11 +108,10 @@ float fourSamples(float offs, vec4 shadowCoord, sampler2DShadow shadowMap)
     return dot(depths, vec4(0.25));
 }
 
-float shadowValue(LightInfo light, sampler2DShadow shadowMap, vec3 n)
+float shadowValue(LightInfo light, vec4 shadowCoord, sampler2DShadow shadowMap, vec3 n)
 {
-    vec4 shadowCoord = light.matrix * vec4(position + n*0.1, 1.0);
-    float value = fourSamples(0.5 / light.shadowRes, shadowCoord, shadowMap);
-//    float value = textureProj(shadowMap, shadowCoord);
+    float value = fourSamples(0.5 / light.shadowRes, shadowCoord, shadowMap) * (4.0/9.0);
+    value += fourSamples(1.5 / light.shadowRes, shadowCoord, shadowMap) * (5.0/9.0);
     return max(clamp(value, 0.0, 1.0), light.noShadows);
 }
 
@@ -112,13 +121,13 @@ vec3 calculateLighting()
 {
     vec3 n = normalize(normal);
     vec3 lighting = vec3(0.0);
-    lighting += light0.color * lightIntensity(light0, n) * shadowValue(light0, ShadowMap0, n);
-    lighting += light1.color * lightIntensity(light1, n) * shadowValue(light1, ShadowMap1, n);
-    lighting += light2.color * lightIntensity(light2, n) * shadowValue(light2, ShadowMap2, n);
-    lighting += light3.color * lightIntensity(light3, n) * shadowValue(light3, ShadowMap3, n);
-    lighting += light4.color * lightIntensity(light4, n) * shadowValue(light4, ShadowMap4, n);
-    lighting += light5.color * lightIntensity(light5, n) * shadowValue(light5, ShadowMap5, n);
-    lighting += light6.color * lightIntensity(light6, n) * shadowValue(light6, ShadowMap6, n);
-    lighting += light7.color * lightIntensity(light7, n) * shadowValue(light7, ShadowMap7, n);
+    lighting += light0.color * lightIntensity(light0, n) * shadowValue(light0, shadowCoord0, ShadowMap0, n);
+    lighting += light1.color * lightIntensity(light1, n) * shadowValue(light1, shadowCoord1, ShadowMap1, n);
+    lighting += light2.color * lightIntensity(light2, n) * shadowValue(light2, shadowCoord2, ShadowMap2, n);
+    lighting += light3.color * lightIntensity(light3, n) * shadowValue(light3, shadowCoord3, ShadowMap3, n);
+    lighting += light4.color * lightIntensity(light4, n) * shadowValue(light4, shadowCoord4, ShadowMap4, n);
+    lighting += light5.color * lightIntensity(light5, n) * shadowValue(light5, shadowCoord5, ShadowMap5, n);
+    lighting += light6.color * lightIntensity(light6, n) * shadowValue(light6, shadowCoord6, ShadowMap6, n);
+    lighting += light7.color * lightIntensity(light7, n) * shadowValue(light7, shadowCoord7, ShadowMap7, n);
     return vec3(0.08, 0.08, 0.15) + lighting / PI;
 }
