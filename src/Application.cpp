@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Application.h"
 #include "Render/Graphics.h"
 #include "Logic/CameraController.h"
+#include "Math/Math.h"
 #include "Logger.h"
 #include "Conf.h"
 
@@ -87,13 +88,11 @@ void Application::Run()
 {
     resources.LoadScene(scene, logic, "test.scene");
 
-    Scene::Camera *camera = scene.CreateCamera();
+    camera = scene.CreateCamera();
     camera->SetParameters(50.0f, 0.1f, 250.0f);
     camera->SetPosition(Vector3(0.0f, 1.8f, 0.0f));
     renderer.SetCamera(camera);
-
-    LogicBase *cam = logic.CreateCameraController();
-    cam->SetNode(camera);
+    logic.CreateCameraController()->SetNode(camera);
 
 
     text.SetRelativePosition(Vector2(10.0f, 10.0f));
@@ -172,6 +171,76 @@ void Application::HandleEvents()
             {
             case SDL_SCANCODE_ESCAPE:
                 running = false;
+                break;
+
+            case SDL_SCANCODE_1:
+            {
+                Scene::Light *light = scene.CreateDirLight();
+                light->SetRotation(camera->GetRotation());
+                light->SetColor(Vector3(1.0f, 1.0f, 1.0f));
+                light->SetEnergy(10.0f);
+                break;
+            }
+            case SDL_SCANCODE_2:
+            {
+                std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+                float r = dist(rd);
+                float g = dist(rd);
+                float b = dist(rd);
+                float m = Math::Max(Math::Max(r, g), b);
+                Vector3 color(r/m, g/m, b/m);
+                float e = 30.0f + dist(rd) * 20.0f;
+
+                Scene::Light *light = scene.CreateSpotLight();
+                light->SetPosition(camera->GetPosition());
+                light->SetRotation(camera->GetRotation());
+                light->SetRadius(20.0f);
+                light->SetCutoff(45.0f * Math::DEG_TO_RAD);
+                light->SetColor(color);
+                light->SetEnergy(e);
+                break;
+            }
+            case SDL_SCANCODE_3:
+            {
+                std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+                float r = dist(rd);
+                float g = dist(rd);
+                float b = dist(rd);
+                float m = Math::Max(Math::Max(r, g), b);
+                Vector3 color(r/m, g/m, b/m);
+                float e = 30.0f + dist(rd) * 20.0f;
+
+                Scene::Light *light = scene.CreatePointLight();
+                light->SetPosition(camera->GetPosition());
+                light->SetRadius(20.0f);
+                light->SetColor(color);
+                light->SetEnergy(e);
+                break;
+            }
+            case SDL_SCANCODE_F1:
+            {
+                scene.ClearLights();
+                scene.GetSky()->SetModel(resources.GetModel("sky.obj"));
+                Scene::Light *light = scene.CreateDirLight();
+                Vector3 angles(18.9f, 19.4f, 0.0f);
+                light->SetRotation(Matrix3::RotationYXZ(angles));
+                light->SetColor(Vector3(1.0f, 1.0f, 1.0f));
+                light->SetEnergy(10.0f);
+                break;
+            }
+            case SDL_SCANCODE_F2:
+            {
+                scene.ClearLights();
+                scene.GetSky()->SetModel(resources.GetModel("sky_full_moon.obj"));
+                Scene::Light *light = scene.CreateDirLight();
+                Vector3 angles(19.0f, -70.6f, 0.0f);
+                light->SetRotation(Matrix3::RotationYXZ(angles));
+                light->SetColor(Vector3(0.7f, 0.7f, 1.0f));
+                light->SetEnergy(0.5f);
+                break;
+            }
+            case SDL_SCANCODE_X:
+                scene.ClearLights();
                 break;
 
             default:

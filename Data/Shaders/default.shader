@@ -23,6 +23,6 @@ out vec4 fragColor;
 void main()
 {
     vec3 lighting = calculateLighting();
-    vec3 diffuse = texLinear(DiffuseMap, texcoord);
+    vec3 diffuse = texLinear(DiffuseMap, texcoord).rgb;
     fragColor = colorGamma(diffuse * lighting);
 }

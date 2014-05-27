@@ -60,37 +60,12 @@ Shader *ShaderCache::Load(const String &filePath)
     return shader;
 }
 
-bool ReadLines(const String &file, String &dst)
+bool ReadLines(const String &file, String &vertSrc, String &fragSrc, String *dst, const String &dir)
 {
     std::ifstream f(file.c_str());
     if (!f.is_open()) return false;
 
     String line;
-    while (std::getline(f, line))
-    {
-        dst.append(line);
-        dst.push_back('\n');
-    }
-
-    f.close();
-    return true;
-}
-
-bool ShaderCache::LoadSourceFile(const String &file, String &vertSrc, String &fragSrc)
-{
-    LOG_INFO("Loading shader '%'...", file);
-
-    std::ifstream f(file.c_str());
-
-    if (!f.is_open())
-    {
-        LOG_ERROR("Couldn't open file.");
-        return false;
-    }
-
-    String line;
-    String *dst = 0;
-
     while (std::getline(f, line))
     {
         if (!line.empty())
@@ -118,7 +93,7 @@ bool ShaderCache::LoadSourceFile(const String &file, String &vertSrc, String &fr
                         LOG_ERROR("Include before selecting vert or frag.");
                         return false;
                     }
-                    if (!ReadLines(GetDirectory() + second, *dst))
+                    if (!ReadLines(dir + second, vertSrc, fragSrc, dst, dir))
                     {
                         LOG_ERROR("Couldn't include file '%'.", second);
                         return false;
@@ -136,6 +111,20 @@ bool ShaderCache::LoadSourceFile(const String &file, String &vertSrc, String &fr
                 dst->push_back('\n');
             }
         }
+    }
+
+    f.close();
+    return true;
+}
+
+bool ShaderCache::LoadSourceFile(const String &file, String &vertSrc, String &fragSrc)
+{
+    LOG_INFO("Loading shader '%'...", file);
+
+    if (!ReadLines(file, vertSrc, fragSrc, 0, GetDirectory()))
+    {
+        LOG_ERROR("Couldn't open file.");
+        return false;
     }
 
     return true;

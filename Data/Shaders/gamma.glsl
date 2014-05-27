@@ -1,8 +1,10 @@
 
-vec3 texLinear(sampler2D tex, vec2 uv)
+vec4 texLinear(sampler2D tex, vec2 uv)
 {
-    vec3 color = texture(tex, uv).rgb;
-    return color * (color * (color * 0.305306011 + 0.682171111) + 0.012522878);
+    vec4 color = texture(tex, uv);
+    vec3 rgb = color.rgb;
+    rgb = rgb * (rgb * (rgb * 0.305306011 + 0.682171111) + 0.012522878);
+    return vec4(rgb, color.a);
 }
 
 vec4 colorGamma(vec3 color)

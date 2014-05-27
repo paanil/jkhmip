@@ -38,9 +38,13 @@ public:
     void SetTexture(int i, Texture *texture);
     Texture *GetTexture(int i);
 
+    void SetDoubleSided(bool doubleSided);
+    bool IsDoubleSided() const;
+
 private:
     Shader *shader;
     Texture *textures[MAX_MATERIAL_TEXTURES];
+    bool doubleSided;
 };
 
 #endif // __MATERIAL_H__

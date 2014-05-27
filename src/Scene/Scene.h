@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Light.h"
 
 #include <memory>
+#include <algorithm>
 
 class Frustum;
 
@@ -39,6 +40,8 @@ namespace Scene
     {
         typedef std::unique_ptr<Node> NodePtr;
         typedef std::vector<NodePtr> NodeList;
+        typedef std::unique_ptr<Light> LightPtr;
+        typedef std::vector<LightPtr> LightPtrList;
 
     public:
         Scene();
@@ -64,6 +67,13 @@ namespace Scene
 
         Object *GetSky() const;
 
+        void ClearLights()
+        {
+            dirLights.clear();
+            spotLights.clear();
+            pointLights.clear();
+        }
+
     private:
         /// Adds a scene node to the node list.
         void AddNode(Node *node);
@@ -71,9 +81,9 @@ namespace Scene
     private:
         NodeList nodes;
         ObjectList objects;
-        LightList dirLights;
-        LightList spotLights;
-        LightList pointLights;
+        LightPtrList dirLights;
+        LightPtrList spotLights;
+        LightPtrList pointLights;
         Object *sky;
     };
 

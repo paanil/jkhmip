@@ -58,8 +58,7 @@ Light *Scene::CreateDirLight()
     Light *light = new Light();
     light->SetType(Vector3(1.0f, 0.0f, 0.0f));
     light->CreateShadowMap(4096);
-    dirLights.push_back(light);
-    AddNode(light);
+    dirLights.push_back(LightPtr(light));
     return light;
 }
 
@@ -68,8 +67,7 @@ Light *Scene::CreateSpotLight()
     Light *light = new Light();
     light->SetType(Vector3(0.0f, 1.0f, 0.0f));
     light->CreateShadowMap(512);
-    spotLights.push_back(light);
-    AddNode(light);
+    spotLights.push_back(LightPtr(light));
     return light;
 }
 
@@ -77,8 +75,7 @@ Light *Scene::CreatePointLight()
 {
     Light *light = new Light();
     light->SetType(Vector3(0.0f, 0.0f, 1.0f));
-    pointLights.push_back(light);
-    AddNode(light);
+    pointLights.push_back(LightPtr(light));
     return light;
 }
 
@@ -105,19 +102,19 @@ void Scene::FrustumCull(const Frustum &frustum, ObjectList &objects, LightList &
             objects.push_back(object);
     }
 
-    for (Light *light : dirLights)
-        lights.push_back(light);
+    for (LightPtr &light : dirLights)
+        lights.push_back(light.get());
 
-    for (Light *light : spotLights)
+    for (LightPtr &light : spotLights)
     {
         if ( frustum.TestAABB(light->GetLightAABB()) )
-            lights.push_back(light);
+            lights.push_back(light.get());
     }
 
-    for (Light *light : pointLights)
+    for (LightPtr &light : pointLights)
     {
         if ( frustum.TestSphere(light->GetPos(), light->GetRadius()) )
-            lights.push_back(light);
+            lights.push_back(light.get());
     }
 }
 

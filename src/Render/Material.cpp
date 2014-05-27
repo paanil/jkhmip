@@ -22,7 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Material.h"
 
 Material::Material() :
-    shader(0)
+    shader(0),
+    doubleSided(false)
 {
     for (int i = 0; i < MAX_MATERIAL_TEXTURES; i++)
         textures[i] = 0;
@@ -46,4 +47,14 @@ void Material::SetTexture(int i, Texture *texture)
 Texture *Material::GetTexture(int i)
 {
     return textures[i];
+}
+
+void Material::SetDoubleSided(bool doubleSided)
+{
+    this->doubleSided = doubleSided;
+}
+
+bool Material::IsDoubleSided() const
+{
+    return doubleSided;
 }

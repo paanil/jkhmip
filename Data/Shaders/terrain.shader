@@ -31,10 +31,10 @@ vec3 terrainDiffuse()
     vec4 mask = texture(TerrainMask, texcoord);
     mask /= dot(mask, vec4(1.0));
 
-    vec3 diffuse0 = texLinear(TerrainDiff0, uv) * mask.r;
-    vec3 diffuse1 = texLinear(TerrainDiff1, uv) * mask.g;
-    vec3 diffuse2 = texLinear(TerrainDiff2, uv) * mask.b;
-    vec3 diffuse3 = texLinear(TerrainDiff3, uv) * mask.a;
+    vec3 diffuse0 = texLinear(TerrainDiff0, uv).rgb * mask.r;
+    vec3 diffuse1 = texLinear(TerrainDiff1, uv).rgb * mask.g;
+    vec3 diffuse2 = texLinear(TerrainDiff2, uv).rgb * mask.b;
+    vec3 diffuse3 = texLinear(TerrainDiff3, uv).rgb * mask.a;
 
     return diffuse0 + diffuse1 + diffuse2 + diffuse3;
 }

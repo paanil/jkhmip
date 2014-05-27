@@ -1,4 +1,6 @@
 terrain.shader
+
 terrain.tga
-grass.tga
 dirt.tga
+grass.tga
+cliff.tga

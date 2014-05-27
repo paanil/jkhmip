@@ -170,17 +170,19 @@ bool SceneLoader::Load(Scene::Scene &scene, Logic &logic, const String &file)
         if (as_node.parent)
             node->SetParent(node_by_id[as_node.parent]);
 
-        Matrix3 rot;
         float (*m)[4] = as_node.mat;
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-                rot.mat[i][j] = m[j][i];
-        }
 
         float scale_x = Vector3(m[0][0], m[1][0], m[2][0]).Length();
         float scale_y = Vector3(m[0][1], m[1][1], m[2][1]).Length();
         float scale_z = Vector3(m[0][2], m[1][2], m[2][2]).Length();
+
+        Matrix3 rot;
+        for (int i = 0; i < 3; i++)
+        {
+            rot.mat[0][i] = m[i][0] / scale_x;
+            rot.mat[1][i] = m[i][1] / scale_y;
+            rot.mat[2][i] = m[i][2] / scale_z;
+        }
 
         node->SetPosition(Vector3(m[0][3], m[1][3], m[2][3]));
         node->SetRotation(rot);

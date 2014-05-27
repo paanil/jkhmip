@@ -156,7 +156,13 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
         depthShader->SetUniform("LightMatrix", lightMatrix);
         for (RenderCommand &command : commands)
         {
+            if (command.material->IsDoubleSided())
+                Graphics::SetCullFace(CULL_NONE);
+            else
+                Graphics::SetCullFace(CULL_BACK);
+
             depthShader->SetUniform("Model", command.modelMatrix);
+            Graphics::SetTexture(command.material->GetTexture(0), 0);
             Graphics::SetVertexBuffer(command.vbo);
             Graphics::SetIndexBuffer(command.ibo);
             Graphics::DrawTriangles(command.firstIndex, command.indexCount);
@@ -192,6 +198,9 @@ void SceneRenderer::RenderObjects()
     for (RenderCommand &command : commands)
     {
         Graphics::ResetState();
+
+        if (command.material->IsDoubleSided())
+            Graphics::SetCullFace(CULL_NONE);
 
         lightsUBO->ZeroData();
 

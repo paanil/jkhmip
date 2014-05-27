@@ -29,13 +29,44 @@ Copyright (c) 2014 Ilari Paananen
 
 ------------------------------------------------------------
 
-File: ./Textures/dirt.tga
+File: ./Models/rock.obj
+
+Copyright (c) 2014 Ilari Paananen
+
+------------------------------------------------------------
+
+File: ./Models/tree.obj
+
+Copyright (c) 2014 Ilari Paananen
+
+------------------------------------------------------------
+
+File: ./Textures/tree_leaves.tga
+
+Provided by Nobiax.
+
+	CC0 1.0 Universal (CC0 1.0)
+	Public Domain Dedication
+	No Copyright
+	This license is acceptable for Free Cultural Works
+	
+	The person who associated a work with this deed has dedicated
+	the work to the public domain by waiving all of his or her
+	rights to the work worldwide under copyright law, including
+	all related and neighboring rights, to the extent allowed by law.
+	
+	You can copy, modify, distribute and perform the work, even
+	for commercial purposes, all without asking permission.
+
+------------------------------------------------------------
+
+File: ./Textures/dirt.tga, ./Textures/cliff.tga
 
 Downloaded from: http://seamless-pixels.blogspot.fi/
 
 ------------------------------------------------------------
 
-Files: ./Textures/TropicalSunnyDay/*
+Files: ./Textures/TropicalSunnyDay/*, ./Textures/FullMoon/*
 
 SkyboxSet by Heiko Irrgang ( http://gamvas.com ) is licensed under
 the Creative Commons Attribution-ShareAlike 3.0 Unported License.

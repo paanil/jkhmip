@@ -94,7 +94,8 @@ void Light::UpdateMatrixNear(const AABB &visibleScene)
     if (type.x > 0.0f)
     {
         Matrix4 view = GetInverseWorldTransform();
-        lightAABB.min.z = visibleScene.Transform(view).min.z;
+//        lightAABB.min.z = visibleScene.Transform(view).min.z;
+        lightAABB = visibleScene.Transform(view);
         Matrix4 proj = lightAABB.CreateOrthoProjection();
         matrix = proj * view;
     }

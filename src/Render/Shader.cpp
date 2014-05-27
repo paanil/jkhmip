@@ -87,6 +87,7 @@ bool Shader::Compile(const String &vertSrc, const String &fragSrc)
     SetUniform("ShadowMap7", 15);
 
     SetUniform("Sky", 0);
+    SetUniform("Mask", 0);
 
     SetUniform("Font", 0);
 

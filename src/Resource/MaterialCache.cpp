@@ -68,23 +68,27 @@ Material *MaterialCache::LoadMaterial(const String &file)
         return 0;
     }
 
-    String shader;
+    String line;
 
-    if (!std::getline(f, shader))
+    if (!std::getline(f, line))
     {
         LOG_ERROR("Material needs a shader.");
         return 0;
     }
 
     Material *material = new Material();
-    material->SetShader(shaderCache->Get(shader));
+    material->SetShader(shaderCache->Get(line));
 
-    String texture;
+    if (std::getline(f, line))
+    {
+        if (line == "double_sided")
+            material->SetDoubleSided(true);
+    }
 
     for (int i = 0; i < MAX_MATERIAL_TEXTURES; i++)
     {
-        if (!std::getline(f, texture)) break;
-        Texture *tex = textureCache->Get(texture);
+        if (!std::getline(f, line)) break;
+        Texture *tex = textureCache->Get(line);
         material->SetTexture(i, tex);
         tex->SetFilterMode(TF_MIN_LINEAR_MIP_LINEAR, TF_MAG_LINEAR);
         tex->SetWrapMode(TW_REPEAT, TW_REPEAT);

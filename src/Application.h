@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Logic/Logic.h"
 #include "UI/Text.h"
 
+#include <random>
+
 /// Application class. There should be only one instance at a time.
 ///
 class Application
@@ -69,12 +71,15 @@ private:
     ResourceManager resources;
 
     Scene::Scene scene;
+    Scene::Camera *camera;
     SceneRenderer renderer;
 
     Logic logic;
 
     Matrix4 proj2d;
     UI::Text text;
+
+    std::random_device rd;
 };
 
 #endif // __APPLICATION_H__
