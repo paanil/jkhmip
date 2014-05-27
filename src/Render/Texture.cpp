@@ -38,7 +38,7 @@ void Texture::CreateTex2D(int w, int h, TexFmt fmt)
 {
     static const GLint internal_formats[] =
     {
-        GL_RED, GL_RG,  GL_RGB, GL_RGBA, GL_DEPTH_COMPONENT32
+        GL_RED, GL_RG,  GL_RGB, GL_RGBA, GL_DEPTH_COMPONENT24
     };
     static const GLenum formats[] =
     {
