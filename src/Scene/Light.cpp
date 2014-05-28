@@ -33,6 +33,7 @@ namespace Scene
 
 
 Light::Light() :
+    ready(false),
     type(1.0f, 0.0f, 0.0f),
     radius(5.0f),
     cutoff(Math::PI/2.0f),

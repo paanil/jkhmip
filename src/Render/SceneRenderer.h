@@ -53,12 +53,12 @@ public:
 
 private:
     void DoFrustumCull(Scene::Scene &scene);
-    void UpdateShadowMaps(Scene::Scene &scene);
+    void UpdateShadowMaps(Scene::Scene &scene, bool dynamic);
     void RenderObjects();
     void RenderSky(Scene::Object *sky);
 
 public:
-    void Render(Scene::Scene &scene);
+    void Render(Scene::Scene &scene, bool dynamicShadows);
 
     size_t GetObjectCount() const { return objects.size(); }
     size_t GetLightCount() const { return lights.size(); }

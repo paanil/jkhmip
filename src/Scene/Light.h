@@ -64,6 +64,8 @@ namespace Scene
 
         bool Affects(const AABB &aabb);
 
+        bool ready;
+
     protected:
         void OnDirty();
 

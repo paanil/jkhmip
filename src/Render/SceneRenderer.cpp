@@ -113,7 +113,7 @@ void SceneRenderer::DoFrustumCull(Scene::Scene &scene)
     scene.FrustumCull(frus, objects, lights);
 }
 
-void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
+void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene, bool dynamic)
 {
     AABB wholeScene = scene.GetBoundingBox();
     AABB visibleScene = AABB::Degenerate();
@@ -126,6 +126,7 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
         int shadowRes = light->GetShadowRes();
 
         if (shadowMap == 0) continue;
+        if (!dynamic && light->ready) continue;
 
         light->UpdateMatrix(visibleScene, wholeScene);
 
@@ -167,6 +168,8 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
             Graphics::SetIndexBuffer(command.ibo);
             Graphics::DrawTriangles(command.firstIndex, command.indexCount);
         }
+
+        light->ready = true;
     }
 
     shadowFBO->Unbind();
@@ -274,11 +277,11 @@ void SceneRenderer::RenderSky(Scene::Object *sky)
     }
 }
 
-void SceneRenderer::Render(Scene::Scene &scene)
+void SceneRenderer::Render(Scene::Scene &scene, bool dynamicShadows)
 {
     DoFrustumCull(scene);
 
-    UpdateShadowMaps(scene);
+    UpdateShadowMaps(scene, dynamicShadows);
 
     RenderObjects();
     RenderSky(scene.GetSky());

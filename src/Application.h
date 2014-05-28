@@ -80,6 +80,7 @@ private:
     UI::Text text;
 
     std::random_device rd;
+    bool dynamicShadows;
 };
 
 #endif // __APPLICATION_H__

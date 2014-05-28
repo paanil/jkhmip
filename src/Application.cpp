@@ -101,6 +101,9 @@ void Application::Run()
     text.SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 
 
+    dynamicShadows = true;
+
+
     Uint32 lastTicks = 0;
 
     // Variables for fps counter
@@ -242,6 +245,9 @@ void Application::HandleEvents()
             case SDL_SCANCODE_X:
                 scene.ClearLights();
                 break;
+            case SDL_SCANCODE_K:
+                dynamicShadows = !dynamicShadows;
+                break;
 
             default:
                 break;
@@ -261,7 +267,7 @@ void Application::Update(float dt)
 
 void Application::Render()
 {
-    renderer.Render(scene);
+    renderer.Render(scene, dynamicShadows);
 
     String title;
     Format(title, "Objects: %  Lights: %  Draw Calls: %",
