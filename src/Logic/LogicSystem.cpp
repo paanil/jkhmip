@@ -19,26 +19,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __LOGICBASE_H__
-#define __LOGICBASE_H__
+#include "LogicSystem.h"
+#include "CameraController.h"
+#include "Rotator.h"
 
-namespace Scene
+CameraController *LogicSystem::CreateCameraController()
 {
-    class Node;
+    CameraController *cameraController = new CameraController();
+    AddComponent(cameraController);
+    return cameraController;
 }
 
-class LogicBase
+Rotator *LogicSystem::CreateRotator()
 {
-public:
-    LogicBase() : node(0) {}
-    virtual ~LogicBase() {}
+    Rotator *rotator = new Rotator();
+    AddComponent(rotator);
+    return rotator;
+}
 
-    void SetNode(Scene::Node *node) { this->node = node; }
+void LogicSystem::Update(float dt)
+{
+    for (ComponentPtr &component : components)
+    {
+        component->Update(dt);
+    }
+}
 
-    virtual void Update(float dt) = 0;
-
-protected:
-    Scene::Node *node;
-};
-
-#endif // __LOGICBASE_H__
+void LogicSystem::AddComponent(LogicComponent *component)
+{
+    components.push_back(ComponentPtr(component));
+}

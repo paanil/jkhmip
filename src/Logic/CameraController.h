@@ -22,10 +22,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __CAMERACONTROLLER_H__
 #define __CAMERACONTROLLER_H__
 
-#include "LogicBase.h"
+#include "LogicComponent.h"
 #include "../Math/Vector3.h"
 
-class CameraController : public LogicBase
+class CameraController : public LogicComponent
 {
 public:
     CameraController();

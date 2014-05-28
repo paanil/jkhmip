@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Object.h"
 #include "../Render/Model.h"
-#include "../Render/RenderCommand.h"
+#include "../Render/RenderCommandList.h"
 
 namespace Scene
 {

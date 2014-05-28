@@ -28,8 +28,7 @@ const char *VA_NAMES[] =
 {
     "Position",
     "TexCoord",
-    "Normal",
-    "Color"
+    "Normal"
 };
 
 VertexBuffer::VertexBuffer()
@@ -75,12 +74,6 @@ void VertexBuffer::SetAttribute(uint index, uint stride, const void *pointer)
         break;
 
     case VA_NORMAL:
-        attributes[index].size = 3;
-        attributes[index].type = GL_FLOAT;
-        attributes[index].normalized = GL_FALSE;
-        break;
-
-    case VA_COLOR:
         attributes[index].size = 3;
         attributes[index].type = GL_FLOAT;
         attributes[index].normalized = GL_FALSE;

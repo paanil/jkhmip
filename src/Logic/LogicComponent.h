@@ -19,23 +19,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __ROTATOR_H__
-#define __ROTATOR_H__
+#ifndef __LOGICCOMPONENT_H__
+#define __LOGICCOMPONENT_H__
 
-#include "LogicComponent.h"
-#include "../Math/Vector3.h"
+namespace Scene
+{
+    class Node;
+}
 
-class Rotator : public LogicComponent
+class LogicComponent
 {
 public:
-    void SetAxis(const Vector3 &axis);
-    void SetAngularVelocity(float degPerSec);
+    LogicComponent() : node(0) {}
+    virtual ~LogicComponent() {}
 
-    void Update(float dt);
+    void SetNode(Scene::Node *node) { this->node = node; }
 
-private:
-    Vector3 axis;
-    float angVel;
+    virtual void Update(float dt) = 0;
+
+protected:
+    Scene::Node *node;
 };
 
-#endif // __ROTATOR_H__
+#endif // __LOGICCOMPONENT_H__

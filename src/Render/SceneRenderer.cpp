@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <GL/glew.h>
 
 SceneRenderer::SceneRenderer() :
-    vpX(0), vpY(0), vpW(800), vpH(600), camera(0)
+    vpX(0), vpY(0), vpW(800), vpH(600), camera(0), dynamicShadows(true)
 {
 }
 
@@ -102,6 +102,16 @@ void SceneRenderer::SetCamera(Scene::Camera *camera)
         camera->SetAspectRatio( float(vpW)/float(vpH) );
 }
 
+void SceneRenderer::SetDynamicShadows(bool dynamic)
+{
+    dynamicShadows = dynamic;
+}
+
+void SceneRenderer::ToggleDynamicShadows()
+{
+    dynamicShadows = !dynamicShadows;
+}
+
 void SceneRenderer::DoFrustumCull(Scene::Scene &scene)
 {
     const Matrix4 proj = camera->GetProjection();
@@ -113,7 +123,7 @@ void SceneRenderer::DoFrustumCull(Scene::Scene &scene)
     scene.FrustumCull(frus, objects, lights);
 }
 
-void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene, bool dynamic)
+void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene)
 {
     AABB wholeScene = scene.GetBoundingBox();
     AABB visibleScene = AABB::Degenerate();
@@ -125,51 +135,51 @@ void SceneRenderer::UpdateShadowMaps(Scene::Scene &scene, bool dynamic)
         Texture *shadowMap = light->GetShadowMap();
         int shadowRes = light->GetShadowRes();
 
-        if (shadowMap == 0) continue;
-        if (!dynamic && light->ready) continue;
-
-        light->UpdateMatrix(visibleScene, wholeScene);
-
-        Matrix4 lightMatrix = light->GetMatrix();
-        Frustum frus = Frustum::Extract(lightMatrix);
-
-        objectsInLight.clear();
-        scene.FrustumCullForShadowMap(frus, objectsInLight);
-
-        commands.Clear();
-        visibleScene = AABB::Degenerate();
-        for (Scene::Object *object : objectsInLight)
+        if ( shadowMap && (dynamicShadows || light->IsShadowDirty()) )
         {
-            object->GetRenderCommands(commands);
-            visibleScene.Update(object->GetWorldAABB());
+            light->UpdateMatrix(visibleScene, wholeScene);
+
+            Matrix4 lightMatrix = light->GetMatrix();
+            Frustum frus = Frustum::Extract(lightMatrix);
+
+            objectsInLight.clear();
+            scene.FrustumCullForShadowMap(frus, objectsInLight);
+
+            commands.Clear();
+            visibleScene = AABB::Degenerate();
+            for (Scene::Object *object : objectsInLight)
+            {
+                object->GetRenderCommands(commands);
+                visibleScene.Update(object->GetWorldAABB());
+            }
+
+            light->UpdateMatrixNear(visibleScene);
+            lightMatrix = light->GetMatrix();
+
+            shadowFBO->AttachDepthTex2D(shadowMap);
+            shadowFBO->Bind(true);
+
+            Graphics::SetViewport(0, 0, shadowRes, shadowRes);
+            Graphics::Clear(CLEAR_DEPTH);
+            Graphics::ResetState();
+            Graphics::SetShader(depthShader);
+            depthShader->SetUniform("LightMatrix", lightMatrix);
+            for (RenderCommand &command : commands)
+            {
+                if (command.material->IsDoubleSided())
+                    Graphics::SetCullFace(CULL_NONE);
+                else
+                    Graphics::SetCullFace(CULL_BACK);
+
+                depthShader->SetUniform("Model", command.modelMatrix);
+                Graphics::SetTexture(command.material->GetTexture(0), 0);
+                Graphics::SetVertexBuffer(command.vbo);
+                Graphics::SetIndexBuffer(command.ibo);
+                Graphics::DrawTriangles(command.firstIndex, command.indexCount);
+            }
+
+            light->SetShadowDirty(false);
         }
-
-        light->UpdateMatrixNear(visibleScene);
-        lightMatrix = light->GetMatrix();
-
-        shadowFBO->AttachDepthTex2D(shadowMap);
-        shadowFBO->Bind(true);
-
-        Graphics::SetViewport(0, 0, shadowRes, shadowRes);
-        Graphics::Clear(CLEAR_DEPTH);
-        Graphics::ResetState();
-        Graphics::SetShader(depthShader);
-        depthShader->SetUniform("LightMatrix", lightMatrix);
-        for (RenderCommand &command : commands)
-        {
-            if (command.material->IsDoubleSided())
-                Graphics::SetCullFace(CULL_NONE);
-            else
-                Graphics::SetCullFace(CULL_BACK);
-
-            depthShader->SetUniform("Model", command.modelMatrix);
-            Graphics::SetTexture(command.material->GetTexture(0), 0);
-            Graphics::SetVertexBuffer(command.vbo);
-            Graphics::SetIndexBuffer(command.ibo);
-            Graphics::DrawTriangles(command.firstIndex, command.indexCount);
-        }
-
-        light->ready = true;
     }
 
     shadowFBO->Unbind();
@@ -277,11 +287,11 @@ void SceneRenderer::RenderSky(Scene::Object *sky)
     }
 }
 
-void SceneRenderer::Render(Scene::Scene &scene, bool dynamicShadows)
+void SceneRenderer::Render(Scene::Scene &scene)
 {
     DoFrustumCull(scene);
 
-    UpdateShadowMaps(scene, dynamicShadows);
+    UpdateShadowMaps(scene);
 
     RenderObjects();
     RenderSky(scene.GetSky());

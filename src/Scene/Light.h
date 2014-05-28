@@ -49,6 +49,7 @@ namespace Scene
         void UpdateMatrix(const AABB &visibleScene, const AABB &wholeScene);
         void UpdateMatrixNear(const AABB &visibleScene);
         void CreateShadowMap(int shadowRes);
+        void SetShadowDirty(bool dirty);
 
         Vector3 GetType() const;
         Vector3 GetPos();
@@ -61,10 +62,9 @@ namespace Scene
         int GetShadowRes() const;
         Texture *GetShadowMap() const;
         const AABB &GetLightAABB();
+        bool IsShadowDirty() const;
 
         bool Affects(const AABB &aabb);
-
-        bool ready;
 
     protected:
         void OnDirty();
@@ -79,6 +79,7 @@ namespace Scene
         int         shadowRes;
         TexturePtr  shadowMap;
         AABB        lightAABB;
+        bool        shadowDirty;
     };
 
     typedef std::vector<Light *> LightList;

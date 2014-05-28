@@ -1,8 +1,28 @@
+/*
+================================================================================
+
+Copyright (c) 2014 Ilari Paananen
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+================================================================================
+*/
 
 #include "SceneLoader.h"
 #include "ModelCache.h"
 #include "../Scene/Scene.h"
-#include "../Logic/Logic.h"
+#include "../Logic/LogicSystem.h"
 #include "../Logic/Rotator.h"
 #include "../Logger.h"
 
@@ -25,7 +45,7 @@ void SceneLoader::SetModelCache(ModelCache &modelCache)
     this->modelCache = &modelCache;
 }
 
-bool SceneLoader::Load(Scene::Scene &scene, Logic &logic, const String &file)
+bool SceneLoader::Load(Scene::Scene &scene, LogicSystem &logic, const String &file)
 {
     String filePath = directory + file;
     LOG_INFO("Loading scene '%'...", filePath);

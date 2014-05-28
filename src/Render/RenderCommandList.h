@@ -19,33 +19,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#ifndef __LOGIC_H__
-#define __LOGIC_H__
+#ifndef __RENDERCOMMANDLIST_H__
+#define __RENDERCOMMANDLIST_H__
 
-#include "LogicBase.h"
+#include "RenderCommand.h"
+#include "../Scene/Light.h"
 
-#include <memory>
 #include <vector>
 
-class CameraController;
-class Rotator;
-
-class Logic
+class RenderCommandList
 {
-    typedef std::unique_ptr<LogicBase> LogicPtr;
-    typedef std::vector<LogicPtr> LogicList;
+    typedef std::vector<RenderCommand> CommandList;
+
 public:
+    void ResetLights();
 
-    CameraController *CreateCameraController();
-    Rotator *CreateRotator();
+    bool AddLight(Scene::Light *light);
 
-    void Update(float dt);
+    void SetModelMatrix(const Matrix4 &modelMatrix);
+    void SetMaterial(Material *material);
+    void SetVertexBuffer(VertexBuffer *vbo);
+    void SetIndexBuffer(IndexBuffer *ibo);
+
+    void AddRenderCommand(uint firstIndex, uint indexCount);
+
+    size_t Size() const;
+    void Clear();
+
+    RenderCommand &operator[](int i);
+
+    CommandList::iterator begin();
+    CommandList::iterator end();
 
 private:
-    void AddLogic(LogicBase *logic);
-
-private:
-    LogicList logics;
+    RenderCommand command;
+    CommandList commands;
 };
 
-#endif // __LOGIC_H__
+#endif // __RENDERCOMMANDLIST_H__

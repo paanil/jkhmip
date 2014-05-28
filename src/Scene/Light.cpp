@@ -25,27 +25,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../Math/Math.h"
 #include "../Logger.h"
 
-
-
 namespace Scene
 {
 
-
-
 Light::Light() :
-    ready(false),
     type(1.0f, 0.0f, 0.0f),
     radius(5.0f),
     cutoff(Math::PI/2.0f),
     color(1.0f, 1.0f, 1.0f),
     energy(1.0f),
     matrix(),
+    shadowRes(0),
     shadowMap(),
-    lightAABB()
+    lightAABB(),
+    shadowDirty(true)
 {
 }
-
-
 
 void Light::SetType(const Vector3 &type)
 {
@@ -95,20 +90,10 @@ void Light::UpdateMatrixNear(const AABB &visibleScene)
     if (type.x > 0.0f)
     {
         Matrix4 view = GetInverseWorldTransform();
-//        lightAABB.min.z = visibleScene.Transform(view).min.z;
         lightAABB = visibleScene.Transform(view);
         Matrix4 proj = lightAABB.CreateOrthoProjection();
         matrix = proj * view;
     }
-//    else if (type.y > 0.0f)
-//    {
-//        Matrix4 view = GetInverseWorldTransform();
-//        float min_z = visibleScene.Transform(view).min.z;
-//        float zNear = Math::Max(radius * 0.001f, min_z - radius * 0.001f);
-//        LOG_DEBUG("min_z: % zNear: %", min_z, zNear);
-//        Matrix4 proj = Matrix4::Perspective(2.0f * cutoff * Math::RAD_TO_DEG, 1.0f, zNear, radius);
-//        matrix = proj * view;
-//    }
 }
 
 void Light::CreateShadowMap(int shadowRes)
@@ -116,9 +101,13 @@ void Light::CreateShadowMap(int shadowRes)
     shadowMap.reset(new Texture());
     shadowMap->CreateTex2D(shadowRes, shadowRes, TexFmt_DEPTH);
     this->shadowRes = shadowRes;
+    SetShadowDirty(true);
 }
 
-
+void Light::SetShadowDirty(bool dirty)
+{
+    shadowDirty = dirty;
+}
 
 Vector3 Light::GetType() const
 {
@@ -197,7 +186,10 @@ const AABB &Light::GetLightAABB()
     return lightAABB;
 }
 
-
+bool Light::IsShadowDirty() const
+{
+    return shadowDirty;
+}
 
 bool Light::Affects(const AABB &aabb)
 {
@@ -222,8 +214,6 @@ bool Light::Affects(const AABB &aabb)
     return pos.Length() < radius;
 }
 
-
-
 void Light::OnDirty()
 {
     if (type.x > 0.0f)
@@ -232,7 +222,5 @@ void Light::OnDirty()
         position = Vector3(0.0f, 0.0f, 0.0f);
     }
 }
-
-
 
 } // Scene

@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Resource/ResourceManager.h"
 #include "Render/SceneRenderer.h"
 #include "Scene/Scene.h"
-#include "Logic/Logic.h"
+#include "Logic/LogicSystem.h"
 #include "UI/Text.h"
 
 #include <random>
@@ -74,13 +74,12 @@ private:
     Scene::Camera *camera;
     SceneRenderer renderer;
 
-    Logic logic;
+    LogicSystem logic;
 
     Matrix4 proj2d;
     UI::Text text;
 
     std::random_device rd;
-    bool dynamicShadows;
 };
 
 #endif // __APPLICATION_H__

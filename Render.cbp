@@ -77,9 +77,9 @@
 		<Unit filename="src/Logger.h" />
 		<Unit filename="src/Logic/CameraController.cpp" />
 		<Unit filename="src/Logic/CameraController.h" />
-		<Unit filename="src/Logic/Logic.cpp" />
-		<Unit filename="src/Logic/Logic.h" />
-		<Unit filename="src/Logic/LogicBase.h" />
+		<Unit filename="src/Logic/LogicComponent.h" />
+		<Unit filename="src/Logic/LogicSystem.cpp" />
+		<Unit filename="src/Logic/LogicSystem.h" />
 		<Unit filename="src/Logic/Rotator.cpp" />
 		<Unit filename="src/Logic/Rotator.h" />
 		<Unit filename="src/Math/AABB.cpp" />
@@ -113,6 +113,8 @@
 		<Unit filename="src/Render/Model.cpp" />
 		<Unit filename="src/Render/Model.h" />
 		<Unit filename="src/Render/RenderCommand.h" />
+		<Unit filename="src/Render/RenderCommandList.cpp" />
+		<Unit filename="src/Render/RenderCommandList.h" />
 		<Unit filename="src/Render/SceneRenderer.cpp" />
 		<Unit filename="src/Render/SceneRenderer.h" />
 		<Unit filename="src/Render/Shader.cpp" />

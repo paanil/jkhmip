@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __SCENERENDERER_H__
 #define __SCENERENDERER_H__
 
-#include "RenderCommand.h"
+#include "RenderCommandList.h"
 #include "FrameBuffer.h"
 #include "UniformBuffer.h"
 #include "../Scene/Object.h"
@@ -50,15 +50,17 @@ public:
 
     void SetViewport(int x, int y, int w, int h);
     void SetCamera(Scene::Camera *camera);
+    void SetDynamicShadows(bool dynamic);
+    void ToggleDynamicShadows();
 
 private:
     void DoFrustumCull(Scene::Scene &scene);
-    void UpdateShadowMaps(Scene::Scene &scene, bool dynamic);
+    void UpdateShadowMaps(Scene::Scene &scene);
     void RenderObjects();
     void RenderSky(Scene::Object *sky);
 
 public:
-    void Render(Scene::Scene &scene, bool dynamicShadows);
+    void Render(Scene::Scene &scene);
 
     size_t GetObjectCount() const { return objects.size(); }
     size_t GetLightCount() const { return lights.size(); }
@@ -66,7 +68,9 @@ public:
 
 private:
     int vpX, vpY, vpW, vpH;
-    Scene::Camera *   camera;
+    Scene::Camera *camera;
+    bool dynamicShadows;
+
     Shader *          depthShader;
     FrameBufferPtr    shadowFBO;
     UniformBufferPtr  lightsUBO;

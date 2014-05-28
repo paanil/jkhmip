@@ -40,7 +40,7 @@ public:
     Model *     GetModel(const String &file);
     Font *      GetFont(const String &file);
 
-    void LoadScene(Scene::Scene &scene, Logic &logic, const String &file);
+    void LoadScene(Scene::Scene &scene, LogicSystem &logic, const String &file);
 
 private:
     TextureCache    textureCache;

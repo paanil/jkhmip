@@ -1,16 +1,30 @@
-Render-kurssi, harkka
-=====================
+Shadow mapping school project
+=============================
 
 Contents of this file:
 
-* ABOUT THIS PROJECT
+* ABOUT THE PROJECT
 * LICENSE
 
 
-ABOUT THIS PROJECT
-==================
+ABOUT THE PROJECT
+=================
 
+This software was developed as a school project.
+The goal of the project was to create a rendering
+engine focusing on shadow mapping.
 
+Simple shadow mapping works for directional and
+spot lights and the basics of a limited rendering
+engine are in place.
+
+IMPORTANT: The software is not ready to be used
+---------- in any project larger than a simple
+demonstrative application. It lacks proper scene
+management, some parts have just been hacked to work
+(like the UBO for lights, ugh), other areas were
+started but never finished (e.g. the UI) and overall
+it needs lots of refactoring and clean up.
 
 
 LICENSE

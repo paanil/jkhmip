@@ -19,33 +19,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ================================================================================
 */
 
-#include "Logic.h"
-#include "CameraController.h"
-#include "Rotator.h"
+#ifndef __LOGICSYSTEM_H__
+#define __LOGICSYSTEM_H__
 
-CameraController *Logic::CreateCameraController()
-{
-    CameraController *cameraController = new CameraController();
-    AddLogic(cameraController);
-    return cameraController;
-}
+#include "LogicComponent.h"
 
-Rotator *Logic::CreateRotator()
-{
-    Rotator *rotator = new Rotator();
-    AddLogic(rotator);
-    return rotator;
-}
+#include <memory>
+#include <vector>
 
-void Logic::Update(float dt)
-{
-    for (LogicPtr &logic : logics)
-    {
-        logic->Update(dt);
-    }
-}
+class CameraController;
+class Rotator;
 
-void Logic::AddLogic(LogicBase *logic)
+class LogicSystem
 {
-    logics.push_back(LogicPtr(logic));
-}
+    typedef std::unique_ptr<LogicComponent> ComponentPtr;
+    typedef std::vector<ComponentPtr> ComponentList;
+public:
+
+    CameraController *CreateCameraController();
+    Rotator *CreateRotator();
+
+    void Update(float dt);
+
+private:
+    void AddComponent(LogicComponent *component);
+
+private:
+    ComponentList components;
+};
+
+#endif // __LOGICSYSTEM_H__
