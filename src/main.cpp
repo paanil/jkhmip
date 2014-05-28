@@ -30,10 +30,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /// initializes it and runs it.
 int main(int argc, char **argv)
 {
-    Logger::Info().SetStream(&std::cout);
-    Logger::Info().SetPrefix("INFO     ");
+
+#ifdef RE_DEBUG
     Logger::Debug().SetStream(&std::cout);
     Logger::Debug().SetPrefix("DEBUG    ");
+#endif // RE_DEBUG
+
+    Logger::Info().SetStream(&std::cout);
+    Logger::Info().SetPrefix("INFO     ");
     Logger::Warning().SetStream(&std::cout);
     Logger::Warning().SetPrefix("WARNING  ");
     Logger::Error().SetStream(&std::cout);
